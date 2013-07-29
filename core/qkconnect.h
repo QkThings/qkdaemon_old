@@ -36,11 +36,12 @@ public:
     explicit QkConnect(QkCore *qk, QObject *parent = 0);
     ~QkConnect();
 
-    QSerialPort *getSerialPort();
+    QList<Connection*> connections();
     
 signals:
     void connectionAdded(QkConnect::Connection *c);
     void connectionRemoved(QkConnect::Connection *c);
+    void error(QString message);
     
 public slots:
     bool validate(ConnectionType type, const QString param1, const QString param2);

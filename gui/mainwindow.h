@@ -8,7 +8,7 @@ class MainWindow;
 }
 
 class QkExplorerWidget;
-class QkConnectWidget;
+class QkDaemonWidget;
 class QkConnect;
 class QkCore;
 
@@ -30,8 +30,8 @@ private:
 
     Ui::MainWindow *ui;
     QkCore *m_qk;
-    QkConnect *m_conn;
-    QkConnectWidget *m_connectWidget;
+    QkConnect *m_connect;
+    QkDaemonWidget *m_daemonWidget;
     QkExplorerWidget *m_explorerWidget;
 
 };

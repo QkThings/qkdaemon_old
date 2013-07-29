@@ -21,22 +21,29 @@ LIBS += -lQk
 
 SOURCES += main.cpp\
         gui/mainwindow.cpp \
-        gui/qkconnectwidget.cpp \
     core/qkdaemon.cpp \
     core/qkconnect.cpp \
     gui/qkexplorerwidget.cpp \
-    gui/connectionstable.cpp
+    gui/connectionstable.cpp \
+    gui/qkdaemonwidget.cpp \
+    gui/qkconnectwidget.cpp \
+    gui/ptablewidget.cpp \
+    gui/ptoolbutton.cpp
 
 HEADERS  += gui/mainwindow.h \
-        gui/qkconnectwidget.h \
     core/qkdaemon.h \
     core/qkconnect.h \
     gui/qkexplorerwidget.h \
-    gui/connectionstable.h
+    gui/connectionstable.h \
+    gui/qkdaemonwidget.h \
+    gui/qkconnectwidget.h \
+    gui/ptablewidget.h \
+    gui/ptoolbutton.h
 
-FORMS    += ui/mainwindow.ui \
-        ui/qkconnectwidget.ui \
-    gui/qkexplorerwidget.ui
+FORMS    += gui/mainwindow.ui \
+    gui/qkexplorerwidget.ui \
+    gui/qkdaemonwidget.ui \
+    gui/qkconnectwidget.ui
 
 RESOURCES += \
     shared/icons/icons.qrc

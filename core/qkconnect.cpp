@@ -15,6 +15,11 @@ QkConnect::~QkConnect()
 
 }
 
+QList<QkConnect::Connection*> QkConnect::connections()
+{
+    return m_conn;
+}
+
 void QkConnect::setupConnections()
 {
     /*connect(m_serialPort, SIGNAL(readyRead()),
@@ -48,6 +53,14 @@ bool QkConnect::validate(ConnectionType type, const QString param1, const QStrin
 QkConnect::Connection* QkConnect::addConnection(ConnectionType type, const QString param1, const QString param2)
 {
     Connection *conn = new Connection();
+
+    if(findConnection(type, param1, param2) != 0)
+    {
+        emit error("Connection already exists.");
+        delete conn;
+        return 0;
+    }
+
     conn->type = type;
     conn->param1 = param1;
     conn->param2 = param2;
@@ -57,6 +70,10 @@ QkConnect::Connection* QkConnect::addConnection(ConnectionType type, const QStri
         conn->serialPort = new QSerialPort(this);
         conn->serialPort->setPortName(param1);
         conn->serialPort->setBaudRate(param2.toInt());
+    }
+    else if(conn->type == ctTCP)
+    {
+
     }
 
     m_conn.append(conn);
@@ -74,11 +91,20 @@ QkConnect::Connection* QkConnect::findConnection(ConnectionType type, const QStr
 {
     foreach(Connection *conn, m_conn)
     {
-        if(conn->type == type &&
-           conn->param1 == param1 &&
-           conn->param2 == param2)
+        if(conn->type == type)
         {
-            return conn;
+            switch(type)
+            {
+            case ctSerial:
+                if(conn->param1 == param1)
+                    return conn;
+                break;
+            case ctTCP:
+                if(conn->param1 == param1 && conn->param2 == param2) {
+                    return conn;
+                }
+                break;
+            }
         }
     }
     return 0;

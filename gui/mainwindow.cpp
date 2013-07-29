@@ -4,6 +4,7 @@
 #include "qk.h"
 #include "qkconnect.h"
 #include "qkconnectwidget.h"
+#include "qkdaemonwidget.h"
 #include "qkexplorerwidget.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -13,9 +14,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     m_qk = new QkCore();
-    m_conn = new QkConnect(m_qk);
-    m_connectWidget = new QkConnectWidget(m_conn, this);
-    m_explorerWidget = new QkExplorerWidget(this);
+    m_connect = new QkConnect(m_qk);
+    m_daemonWidget = new QkDaemonWidget(m_connect, this);
 
     setupLayout();
     setupConnections();
@@ -29,10 +29,11 @@ MainWindow::~MainWindow()
 void MainWindow::setupLayout()
 {
     ui->menuBar->hide();
-    ui->mainToolBar->addWidget(m_connectWidget);
+    ui->mainToolBar->addWidget(m_daemonWidget);
+    //ui->mainToolBar->addWidget(ui->connectWidget);
     ui->mainToolBar->setMovable(false);
     ui->statusBar->hide();
-    ui->tableWidget->setQkConnect(m_conn);
+    ui->connectWidget->setQkConnect(m_connect);
 
     setWindowTitle("QkDaemon");
     logMessage("Using QkLib " + m_qk->version());
@@ -40,8 +41,7 @@ void MainWindow::setupLayout()
 
 void MainWindow::setupConnections()
 {
-    connect(ui->showExplorer_toolButton, SIGNAL(clicked()),
-            this, SLOT(slotShowExplorer()));
+
 }
 
 void MainWindow::logMessage(QString text)
@@ -51,8 +51,5 @@ void MainWindow::logMessage(QString text)
 
 void MainWindow::slotShowExplorer()
 {
-    if(m_explorerWidget->isHidden())
-        m_explorerWidget->show();
-    else
-        m_explorerWidget->hide();
+
 }
