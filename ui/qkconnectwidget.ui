@@ -6,22 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>749</width>
-    <height>35</height>
+    <width>713</width>
+    <height>31</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_2">
-   <property name="spacing">
-    <number>4</number>
-   </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_3">
    <property name="topMargin">
-    <number>4</number>
+    <number>2</number>
    </property>
    <property name="bottomMargin">
-    <number>4</number>
+    <number>2</number>
    </property>
    <item>
     <widget class="QLabel" name="label">
@@ -58,10 +55,36 @@
        <height>0</height>
       </size>
      </property>
+     <property name="maximum">
+      <number>9999</number>
+     </property>
+     <property name="value">
+      <number>1234</number>
+     </property>
     </widget>
    </item>
    <item>
-    <widget class="QComboBox" name="interface_comboBox">
+    <widget class="QPushButton" name="connect_pushButton">
+     <property name="text">
+      <string>Connect</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>0</width>
+       <height>10</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QComboBox" name="connType_comboBox">
      <property name="minimumSize">
       <size>
        <width>100</width>
@@ -100,45 +123,152 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QComboBox" name="comboBox_2"/>
-       </item>
-       <item>
         <widget class="QToolButton" name="refreshSerial_toolButton">
+         <property name="toolTip">
+          <string>Refresh available serial ports</string>
+         </property>
          <property name="text">
           <string>...</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../shared/icons/icons.qrc">
+           <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
+         </property>
+         <property name="autoRaise">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="comboBox_3"/>
+        <widget class="QComboBox" name="portName_comboBox">
+         <property name="toolTip">
+          <string>Port name</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="baudRate_comboBox">
+         <property name="toolTip">
+          <string>Baud rate</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="page_2"/>
+     <widget class="QWidget" name="page_2">
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QLineEdit" name="lineEdit">
+         <property name="minimumSize">
+          <size>
+           <width>120</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Host</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSpinBox" name="serverPort_spinBox_2">
+         <property name="minimumSize">
+          <size>
+           <width>70</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="toolTip">
+          <string>Port</string>
+         </property>
+         <property name="maximum">
+          <number>9999</number>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+    <widget class="QToolButton" name="add_toolButton">
+     <property name="toolTip">
+      <string>Add connection</string>
      </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>79</width>
-       <height>10</height>
-      </size>
+     <property name="text">
+      <string>...</string>
      </property>
-    </spacer>
+     <property name="icon">
+      <iconset resource="../shared/icons/icons.qrc">
+       <normaloff>:/icons/plus_16.png</normaloff>:/icons/plus_16.png</iconset>
+     </property>
+     <property name="autoRaise">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="connect_pushButton">
+    <widget class="QToolButton" name="remove_toolButton">
+     <property name="toolTip">
+      <string>Remove connection</string>
+     </property>
      <property name="text">
-      <string>Connect</string>
+      <string>...</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../shared/icons/icons.qrc">
+       <normaloff>:/icons/minus_16.png</normaloff>:/icons/minus_16.png</iconset>
+     </property>
+     <property name="autoRaise">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
   </layout>
+  <zorder>label</zorder>
+  <zorder>serverIP_lineEdit</zorder>
+  <zorder>label_2</zorder>
+  <zorder>serverPort_spinBox</zorder>
+  <zorder>connType_comboBox</zorder>
+  <zorder>stackedWidget</zorder>
+  <zorder>connect_pushButton</zorder>
+  <zorder>refreshSerial_toolButton</zorder>
+  <zorder>refreshSerial_toolButton</zorder>
+  <zorder>portName_comboBox</zorder>
+  <zorder>add_toolButton</zorder>
+  <zorder>remove_toolButton</zorder>
  </widget>
- <resources/>
- <connections/>
+ <resources>
+  <include location="../shared/icons/icons.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>connType_comboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>stackedWidget</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>353</x>
+     <y>23</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>523</x>
+     <y>43</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

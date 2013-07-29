@@ -7,7 +7,10 @@ namespace Ui {
 class MainWindow;
 }
 
+class QkExplorerWidget;
 class QkConnectWidget;
+class QkConnect;
+class QkCore;
 
 class MainWindow : public QMainWindow
 {
@@ -16,11 +19,20 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+public slots:
+    void slotShowExplorer();
+    void logMessage(QString text);
     
 private:
-    Ui::MainWindow *ui;
+    void setupLayout();
+    void setupConnections();
 
+    Ui::MainWindow *ui;
+    QkCore *m_qk;
+    QkConnect *m_conn;
     QkConnectWidget *m_connectWidget;
+    QkExplorerWidget *m_explorerWidget;
 
 };
 
