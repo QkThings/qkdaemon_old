@@ -1,11 +1,59 @@
 #include "qkconnect.h"
 
+#include "qk.h"
+
 #include <QDebug>
 #include <QtSerialPort/QSerialPortInfo>
+#include <QStringList>
+#include <QIODevice>
 
-QkConnect::QkConnect(QkCore *qk, QObject *parent) :
-    QObject(parent),
-    m_qk(qk)
+void QkConnection::_slotDataReady()
+{
+    qDebug() << "_slotReadyRead";
+    qk.comm_processBytes(device->readAll());
+}
+
+void QkConnection::_slotSendBytes(QByteArray frame)
+{
+    qDebug() << "_slotSendBytes" << frame;
+    device->write(frame);
+}
+
+QkConnection::Type QkConnection::typeFromString(const QString &str)
+{
+    if(str == "Serial Port")
+    {
+        return ctSerial;
+    }
+    else if(str == "TCP/IP")
+    {
+        return ctTCP;
+    }
+
+}
+
+QString QkConnection::typeToString(QkConnection::Type type)
+{
+    QString str;
+    switch(type)
+    {
+    case QkConnection::ctSerial: str = "Serial Port"; break;
+    case QkConnection::ctTCP: str = "TCP/IP"; break;
+    default: str = "???";
+    }
+    return str;
+}
+
+void QkConnection::setup()
+{
+    connect(device, SIGNAL(readyRead()),
+            this, SLOT(_slotDataReady()));
+    connect(&qk, SIGNAL(comm_sendBytes(QByteArray)),
+            this, SLOT(_slotSendBytes(QByteArray)));
+}
+
+QkConnect::QkConnect(QObject *parent) :
+    QObject(parent)
 {
 
 }
@@ -15,29 +63,22 @@ QkConnect::~QkConnect()
 
 }
 
-QList<QkConnect::Connection*> QkConnect::connections()
+QList<QkConnection*> QkConnect::connections()
 {
-    return m_conn;
+    return m_connections;
 }
 
-void QkConnect::setupConnections()
+bool QkConnect::validate(const QkConnection::Descriptor &connDesc)
 {
-    /*connect(m_serialPort, SIGNAL(readyRead()),
-            this, SLOT(slotReadyRead());*/
-}
-
-void QkConnect::slotSerialPortSendBytes(quint8 *buf, int count)
-{
-
-}
-
-bool QkConnect::validate(ConnectionType type, const QString param1, const QString param2)
-{
-    if(type == ctSerial)
+    if(connDesc.type == QkConnection::ctSerial)
     {
-        QString portName = param1;
-        //int baudRate = QString::number(param2);
+        if(connDesc.params.count() != 2)
+        {
+            return false;
+        }
+        QString portName = connDesc.params.at(0);;
         bool validPort = false;
+        bool validBaud = connDesc.params.at(1).toInt() > 0 ? true : false;
 
         foreach(QSerialPortInfo sp, QSerialPortInfo::availablePorts())
         {
@@ -46,63 +87,87 @@ bool QkConnect::validate(ConnectionType type, const QString param1, const QStrin
                 validPort = true;
             }
         }
-        return validPort;
+        return validPort & validBaud;
     }
+    return false;
 }
 
-QkConnect::Connection* QkConnect::addConnection(ConnectionType type, const QString param1, const QString param2)
+QkConnection* QkConnect::addConnection(const QkConnection::Descriptor &connDesc)
 {
-    Connection *conn = new Connection();
+    QkConnection *conn = new QkConnection();
+    QSerialPort *sp;
 
-    if(findConnection(type, param1, param2) != 0)
+    if(findConnection(connDesc) != 0)
     {
-        emit error("Connection already exists.");
+        emit error(tr("Connection already exists."));
         delete conn;
         return 0;
     }
 
-    conn->type = type;
-    conn->param1 = param1;
-    conn->param2 = param2;
+    conn->descriptor.type = connDesc.type;
+    conn->descriptor.params.clear();
+    conn->descriptor.params << connDesc.params;
 
-    if(conn->type == ctSerial)
+    if(connDesc.type == QkConnection::ctSerial)
     {
-        conn->serialPort = new QSerialPort(this);
-        conn->serialPort->setPortName(param1);
-        conn->serialPort->setBaudRate(param2.toInt());
+        sp = new QSerialPort(this);
+        sp->setPortName(connDesc.params.at(0));
+        sp->setBaudRate(connDesc.params.at(1).toInt());
+        sp->setParity(QSerialPort::NoParity);
+        sp->setFlowControl(QSerialPort::NoFlowControl);
+        sp->setDataBits(QSerialPort::Data8);
+        if(sp->open(QIODevice::ReadWrite))
+        {
+            conn->device = sp;
+        }
+        else
+        {
+            error(tr("Unable to open port") + sp->portName());
+            delete conn;
+            return 0;
+        }
     }
-    else if(conn->type == ctTCP)
+    else if(connDesc.type == QkConnection::ctTCP)
     {
 
     }
 
-    m_conn.append(conn);
+    conn->setup();
+
+    m_connections.append(conn);
     emit connectionAdded(conn);
 
     return conn;
 }
 
-void QkConnect::removeConnection(ConnectionType type, const QString param1, const QString param2)
+void QkConnect::removeConnection(const QkConnection::Descriptor &connDesc)
 {
-
+    QkConnection *conn = findConnection(connDesc);
+    if(conn != 0)
+    {
+        if(conn->device->isOpen())
+        {
+            conn->device->close();
+        }
+        emit connectionRemoved(conn);
+        m_connections.removeOne(conn);
+        delete conn;
+    }
 }
 
-QkConnect::Connection* QkConnect::findConnection(ConnectionType type, const QString param1, const QString param2)
+QkConnection* QkConnect::findConnection(const QkConnection::Descriptor &connDesc)
 {
-    foreach(Connection *conn, m_conn)
+    foreach(QkConnection *conn, m_connections)
     {
-        if(conn->type == type)
+        if(conn->descriptor.type == connDesc.type)
         {
-            switch(type)
+            switch(connDesc.type)
             {
-            case ctSerial:
-                if(conn->param1 == param1)
+            case QkConnection::ctSerial:
+                if(conn->descriptor.params.at(0) == connDesc.params.at(0))
                     return conn;
                 break;
-            case ctTCP:
-                if(conn->param1 == param1 && conn->param2 == param2) {
-                    return conn;
-                }
+            case QkConnection::ctTCP:
                 break;
             }
         }

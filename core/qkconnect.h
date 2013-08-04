@@ -3,61 +3,65 @@
 
 #include <QObject>
 #include <QtSerialPort/QSerialPort>
+#include <QStringList>
 
-class QkCore;
+#include "qk.h"
+
+class QkConnection : public QObject
+{
+    Q_OBJECT
+public:
+    enum Type
+    {
+        ctSerial,
+        ctTCP
+    };
+    class Descriptor
+    {
+    public:
+        Type type;
+        QStringList params;
+    };
+
+    static Type typeFromString(const QString &str);
+    static QString typeToString(Type type);
+
+    Descriptor descriptor;
+    QIODevice *device;
+    QkCore qk;
+
+    void setup();
+
+private slots:
+    void _slotDataReady();
+    void _slotSendBytes(QByteArray frame);
+
+private:
+
+};
 
 class QkConnect : public QObject
 {
     Q_OBJECT
 public:
-    enum ConnectionType {
-        ctSerial,
-        ctTCP
-    };
-    class Connection {
-    public:
-        ConnectionType type;
-        QString param1;
-        QString param2;
-        QSerialPort *serialPort;
-        //QTcpSocket *m_tcp;
-
-        /*bool operator==(Connection *other) {
-            if(other->type == type &&
-               QString::compare(other->param1, param1) == 0 &&
-               QString::compare(other->param2, param2) == 0)
-            {
-               return true;
-            }
-            return false;
-        }*/
-    };
-
-    explicit QkConnect(QkCore *qk, QObject *parent = 0);
+    explicit QkConnect(QObject *parent = 0);
     ~QkConnect();
 
-    QList<Connection*> connections();
+    QList<QkConnection*> connections();
+    QkConnection* findConnection(const QkConnection::Descriptor &connDesc);
     
 signals:
-    void connectionAdded(QkConnect::Connection *c);
-    void connectionRemoved(QkConnect::Connection *c);
+    void connectionAdded(QkConnection *c);
+    void connectionRemoved(QkConnection *c);
     void error(QString message);
     
 public slots:
-    bool validate(ConnectionType type, const QString param1, const QString param2);
-    Connection* addConnection(ConnectionType type, const QString param1, const QString param2);
-    void removeConnection(ConnectionType type, const QString param1, const QString param2);
-    //void slotSerialPortConnect(QString portName, int baudRate);
-    //void slorSerialPortDisconnect();
-    void slotSerialPortSendBytes(quint8 *buf, int count);
-    //void slotSerialPortRead();
+    bool validate(const QkConnection::Descriptor &connDesc);
+    QkConnection* addConnection(const QkConnection::Descriptor &connDesc);
+    void removeConnection(const QkConnection::Descriptor &connDesc);
 
 private:
-    void setupConnections();
-    Connection* findConnection(ConnectionType type, const QString param1, const QString param2);
-
-    QkCore *m_qk;
-    QList<Connection*>  m_conn;
+    QList<QkConnection*>  m_connections;
 };
 
 #endif // QKCONNECT_H

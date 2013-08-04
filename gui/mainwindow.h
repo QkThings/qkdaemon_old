@@ -21,7 +21,7 @@ public:
     ~MainWindow();
 
 public slots:
-    void slotShowExplorer();
+    void slotShowHideExplorer();
     void logMessage(QString text);
     
 private:
@@ -33,6 +33,7 @@ private:
     QkConnect *m_connect;
     QkDaemonWidget *m_daemonWidget;
     QkExplorerWidget *m_explorerWidget;
+    QToolBar *m_tools;
 
 };
 

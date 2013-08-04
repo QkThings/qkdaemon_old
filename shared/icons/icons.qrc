@@ -1,12 +1,12 @@
 <RCC>
     <qresource prefix="/icons">
-        <file>refresh.png</file>
         <file>explorer.png</file>
         <file>off_16.png</file>
         <file>on_16.png</file>
         <file>off_icon&amp;24.png</file>
         <file>on_icon&amp;24.png</file>
-        <file>plus_16.png</file>
         <file>minus_16.png</file>
+        <file>plus_16.png</file>
+        <file>reload.png</file>
     </qresource>
 </RCC>

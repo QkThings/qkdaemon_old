@@ -17,7 +17,6 @@ QkConnectWidget::QkConnectWidget(QWidget *parent) :
     ui->setupUi(this);
 
     setupLayout();
-    //setupConnections();
     slotReloadAvailableSerialPorts();
     updateInterface();
 }
@@ -51,7 +50,7 @@ void QkConnectWidget::setupLayout()
     QTableWidget *table = ui->connectionsTable;
     table->setColumnCount(4);
     QHeaderView *header = table->horizontalHeader();
-    header->setSectionResizeMode(ColumnOpenClose , QHeaderView::ResizeToContents);
+    header->setSectionResizeMode(ColumnOpenClose , QHeaderView::Fixed);
     header->setSectionResizeMode(ColumnConnType  , QHeaderView::Fixed);
     header->setSectionResizeMode(ColumnParam1    , QHeaderView::Fixed);
     header->setSectionResizeMode(ColumnParam2    , QHeaderView::Stretch);
@@ -60,8 +59,11 @@ void QkConnectWidget::setupLayout()
 
     table->setColumnWidth(ColumnConnType, 80);
     table->setColumnWidth(ColumnParam1, 80);
+    table->setColumnWidth(ColumnOpenClose, 100);
 
     table->setAlternatingRowColors(true);
+
+//    table->hideColumn(ColumnOpenClose);
 }
 
 void QkConnectWidget::setupConnections()
@@ -74,71 +76,126 @@ void QkConnectWidget::setupConnections()
             this, SLOT(slotAddConnection()));
     connect(ui->remove_button, SIGNAL(clicked()),
             this, SLOT(slotRemoveConnection()));
-    connect(m_connect, SIGNAL(connectionAdded(QkConnect::Connection*)),
-            this, SLOT(slotConnectionAdded(QkConnect::Connection*)));
-    connect(m_connect, SIGNAL(connectionRemoved(QkConnect::Connection*)),
-            this, SLOT(slotConnectionRemoved(QkConnect::Connection*)));
+    connect(m_connect, SIGNAL(connectionAdded(QkConnection*)),
+            this, SLOT(slotConnectionAdded(QkConnection*)));
+    connect(m_connect, SIGNAL(connectionRemoved(QkConnection*)),
+            this, SLOT(slotConnectionRemoved(QkConnection*)));
+    connect(ui->connectionsTable, SIGNAL(currentCellChanged(int,int,int,int)),
+            this, SLOT(slotCurrentCellChanged(int,int,int,int)));
 }
 
-void QkConnectWidget::fillRow(int row, QkConnect::Connection *c)
+void QkConnectWidget::fillRow(int row, QkConnection *conn)
 {
     qDebug() << "fillRow";
+    int i, col;
     pTableWidget *table = ui->connectionsTable;
-    QString connTypeName;
 
-    switch(c->type)
+    QTableWidgetItem *connType = new QTableWidgetItem(QkConnection::typeToString(conn->descriptor.type));
+    table->setItem(row, ColumnConnType, connType);
+
+    QTableWidgetItem *param;
+    for(i = 0, col = ColumnParam1; i < conn->descriptor.params.count() && col < ColumnMaxCount; i++, col++)
     {
-    case QkConnect::ctSerial: connTypeName = "Serial Port"; break;
-    case QkConnect::ctTCP: connTypeName = "TCP/IP"; break;
-    default: connTypeName = "???";
+        param = new QTableWidgetItem(conn->descriptor.params.at(i));
+        table->setItem(row, col, param);
     }
-
-    QTableWidgetItem *connType = new QTableWidgetItem(connTypeName);
-    QTableWidgetItem *param1 = new QTableWidgetItem(c->param1);
-    QTableWidgetItem *param2 = new QTableWidgetItem(c->param2);
 
     pToolButton *openCloseButton = new pToolButton(this);
     openCloseButton->setAutoRaise(true);
     openCloseButton->setContextMenuPolicy(Qt::NoContextMenu);
-    openCloseButton->setText(tr("Close"));
+    openCloseButton->setText(tr("Connected"));
 
     connect(openCloseButton, SIGNAL(pressed()), table, SLOT(updateSelectedRowFromToolButton()));
-    //connect(openCloseButton, SIGNAL(clicked()), this, SLOT(viewDatasheetHandler()));
+    connect(openCloseButton, SIGNAL(clicked()), this, SLOT(slotOpenCloseConnection()));
 
     table->setCellWidget(row, ColumnOpenClose, openCloseButton);
+}
 
-    table->setItem(row, ColumnConnType, connType);
-    table->setItem(row, ColumnParam1, param1);
-    table->setItem(row, ColumnParam2, param2);
+void QkConnectWidget::slotOpenCloseConnection()
+{
+    pToolButton *button = reinterpret_cast<pToolButton*>(sender());
+
+    pTableWidget *table = ui->connectionsTable;
+    int r = table->currentRow();
+
+    QkConnection::Descriptor connDesc;
+
+    connDesc.type = QkConnection::typeFromString(table->item(r, ColumnConnType)->text());
+    connDesc.params.append(table->item(r, ColumnParam1)->text());
+    connDesc.params.append(table->item(r, ColumnParam2)->text());
+
+    QkConnection *conn = m_connect->findConnection(connDesc);
+
+    if(conn == 0) {
+        return;
+    }
+
+    QSerialPort *sp;
+
+    switch(conn->descriptor.type)
+    {
+    case QkConnection::ctSerial:
+        sp = (QSerialPort*)(conn->device);
+        if(sp->isOpen())
+        {
+            sp->close();
+            button->setText(tr("Disconnected"));
+        }
+        else
+        {
+            sp->setPortName(connDesc.params.at(0));
+            sp->setBaudRate(QSerialPort::Baud38400);
+            if(sp->open(QIODevice::ReadWrite))
+            {
+                button->setText(tr("Connected"));
+            }
+            else
+            {
+                qDebug() << sp->errorString() << sp->portName() << sp->baudRate();
+            }
+        }
+        break;
+    default: ;
+    }
+
 }
 
 void QkConnectWidget::slotAddConnection()
 {
+    QkConnection::Descriptor connDesc;
     if(ui->connType_combo->currentIndex() == 0)  // Serial
     {
-        m_connect->addConnection(QkConnect::ctSerial,
-                                 ui->serialPort_portName_combo->currentText(),
-                                 ui->serialPort_baudRate_combo->currentText());
+        connDesc.type = QkConnection::ctSerial;
+        connDesc.params.append(ui->serialPort_portName_combo->currentText());
+        connDesc.params.append(ui->serialPort_baudRate_combo->currentText());
+        m_connect->addConnection(connDesc);
     }
 }
 
 void QkConnectWidget::slotRemoveConnection()
 {
 
+    QkConnection::Descriptor connDesc;
+    pTableWidget *table = ui->connectionsTable;
+    connDesc = connectionDescriptor(table->currentRow());
+    m_connect->removeConnection(connDesc);
 }
 
-void QkConnectWidget::slotConnectionAdded(QkConnect::Connection *c)
+void QkConnectWidget::slotConnectionAdded(QkConnection *conn)
 {
     qDebug() << "slotConnectionAdded";
     int row = ui->connectionsTable->rowCount();
     ui->connectionsTable->insertRow(row);
-    fillRow(row, c);
-    //ui->connectionsTable->updateToolButtonNumber();
+    fillRow(row, conn);
+    ui->connectionsTable->updateToolButtonNumber();
 }
 
-void QkConnectWidget::slotConnectionRemoved(QkConnect::Connection *c)
+void QkConnectWidget::slotConnectionRemoved(QkConnection *conn)
 {
-
+    qDebug() << "slotConnectionRemoved";
+    int r = findConnection(conn->descriptor);
+    qDebug() << "remove row" << r;
+    ui->connectionsTable->removeRow(r);
 }
 
 void QkConnectWidget::slotReloadAvailableSerialPorts()
@@ -148,8 +205,10 @@ void QkConnectWidget::slotReloadAvailableSerialPorts()
     foreach(QSerialPortInfo sp, QSerialPortInfo::availablePorts())
     {
         //FIXME Show all virtual serial ports
+#ifdef Q_OS_UNIX
         if(!sp.portName().contains("USB"))
             continue;
+#endif
 
         qDebug() << "Port name:    " << sp.portName();
         if(sp.hasVendorIdentifier())
@@ -160,6 +219,27 @@ void QkConnectWidget::slotReloadAvailableSerialPorts()
     }
     ui->serialPort_portName_combo->clear();
     ui->serialPort_portName_combo->addItems(availablePorts);
+
+    updateInterface();
+}
+
+void QkConnectWidget::slotCurrentCellChanged(int curRow, int curCol, int prevRow, int prevCol)
+{
+    (void)curCol;
+    (void)prevCol;
+
+    QkConnection::Descriptor connDesc;
+    if(curRow != prevRow && curRow != -1)
+    {
+        connDesc = connectionDescriptor(curRow);
+        QkConnection *conn = m_connect->findConnection(connDesc);
+        if(conn != 0)
+        {
+            emit currentConnectionChanged(conn);
+        }
+    }
+
+    updateInterface();
 }
 
 void QkConnectWidget::slotShowError(QString message)
@@ -167,14 +247,55 @@ void QkConnectWidget::slotShowError(QString message)
     QMessageBox::critical(this, tr("Error"), message);
 }
 
+int QkConnectWidget::findConnection(const QkConnection::Descriptor &connDesc)
+{
+    pTableWidget *table = ui->connectionsTable;
+    int r;
+    for(r = 0; r < table->rowCount(); r++)
+    {
+        if(table->item(r, ColumnConnType)->text() == QkConnection::typeToString(connDesc.type) &&
+           table->item(r, ColumnParam1)->text() == connDesc.params.at(0))
+        {
+            return r;
+        }
+    }
+
+    return -1;
+}
+
+QkConnection::Descriptor QkConnectWidget::connectionDescriptor(int row)
+{
+    QkConnection::Descriptor connDesc;
+    pTableWidget *table = ui->connectionsTable;
+
+    if(row >= 0 || row < table->rowCount())
+    {
+        connDesc.type = QkConnection::typeFromString(table->item(row, ColumnConnType)->text());
+        connDesc.params.append(table->item(row, ColumnParam1)->text());
+        connDesc.params.append(table->item(row, ColumnParam2)->text());
+    }
+    return connDesc;
+}
+
 void QkConnectWidget::updateInterface()
 {
+    QkConnection::Descriptor connDesc;
     bool okToAdd = false;
     if(ui->connType_combo->currentIndex() == 0)  // Serial
     {
-        okToAdd = m_connect->validate(QkConnect::ctSerial,
-                                      ui->serialPort_portName_combo->currentText(),
-                                      ui->serialPort_baudRate_combo->currentText());
+        connDesc.type = QkConnection::ctSerial;
+        connDesc.params.append(ui->serialPort_portName_combo->currentText());
+        connDesc.params.append(ui->serialPort_baudRate_combo->currentText());
+        okToAdd = m_connect->validate(connDesc);
     }
     ui->add_button->setEnabled(okToAdd);
+
+    if(ui->connectionsTable->currentRow() >= 0)
+    {
+        ui->remove_button->setEnabled(true);
+    }
+    else
+    {
+        ui->remove_button->setEnabled(false);
+    }
 }

@@ -8,6 +8,7 @@ class QkDaemonWidget;
 }
 
 class QkConnect;
+class QkExplorerWidget;
 
 class QkDaemonWidget : public QWidget
 {
@@ -18,12 +19,9 @@ public:
     ~QkDaemonWidget();
 
 public slots:
-    //void setConnectionToRemove(QkConnect::Connection *c);
 
 private slots:
-    void slotRefreshSerialPorts();
-    void slotAddConnection();
-    void slotUpdateInterface();
+
     
 private:
     void setupConnections();

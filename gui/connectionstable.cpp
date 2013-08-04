@@ -36,14 +36,13 @@ void ConnectionsTable::setupConnections()
             this, SLOT(slotAddConnection(QkConnect::Connection*)));
 }
 
-void ConnectionsTable::slotAddConnection(QkConnect::Connection *c)
+void ConnectionsTable::slotAddConnection(QkConnect::Connection *conn)
 {
-
-    int r = rowCount();
+    int i,c,r = rowCount();
     insertRow(r);
 
     QString connTypeName;
-    switch(c->type)
+    switch(conn->descriptor.type)
     {
     case QkConnect::ctSerial: connTypeName = "Serial Port"; break;
     case QkConnect::ctTCP: connTypeName = "TCP/IP"; break;
@@ -51,7 +50,11 @@ void ConnectionsTable::slotAddConnection(QkConnect::Connection *c)
     }
 
     setItem(r, ColumnConnType, new QTableWidgetItem(connTypeName));
-    setItem(r, ColumnParam1, new QTableWidgetItem(c->param1));
-    setItem(r, ColumnParam2, new QTableWidgetItem(c->param2));
+    for(i=0, c = ColumnParam1; i < conn->descriptor.params.count(); c++, i++)
+    {
+        setItem(r, c, new QTableWidgetItem(conn->descriptor.params.at(i)));
+    }
+    //setItem(r, ColumnParam1, new QTableWidgetItem(c->param1));
+    //setItem(r, ColumnParam2, new QTableWidgetItem(c->param2));
     setCellWidget(r, ColumnConnect, new QPushButton("Open"));
 }

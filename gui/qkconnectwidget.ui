@@ -6,14 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>577</width>
-    <height>134</height>
+    <width>499</width>
+    <height>109</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>1</number>
+   </property>
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -45,18 +51,6 @@
      </property>
      <item>
       <widget class="QComboBox" name="connType_combo">
-       <property name="minimumSize">
-        <size>
-         <width>100</width>
-         <height>26</height>
-        </size>
-       </property>
-       <property name="maximumSize">
-        <size>
-         <width>100</width>
-         <height>16777215</height>
-        </size>
-       </property>
        <item>
         <property name="text">
          <string>Serial Port</string>
@@ -101,7 +95,7 @@
            </property>
            <property name="icon">
             <iconset resource="../shared/icons/icons.qrc">
-             <normaloff>:/icons/refresh.png</normaloff>:/icons/refresh.png</iconset>
+             <normaloff>:/icons/reload.png</normaloff>:/icons/reload.png</iconset>
            </property>
            <property name="autoRaise">
             <bool>true</bool>
@@ -258,7 +252,7 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>100</height>
+       <height>80</height>
       </size>
      </property>
      <property name="editTriggers">

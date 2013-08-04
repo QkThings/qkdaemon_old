@@ -2,6 +2,7 @@
 #include "ui_qkdaemonwidget.h"
 
 #include "qkconnect.h"
+#include "qkexplorerwidget.h"
 
 #include <QDebug>
 #include <QMessageBox>
@@ -34,17 +35,3 @@ void QkDaemonWidget::setupLayout()
 
 }
 
-void QkDaemonWidget::slotRefreshSerialPorts()
-{
-
-}
-
-void QkDaemonWidget::slotAddConnection()
-{
-
-}
-
-void QkDaemonWidget::slotUpdateInterface()
-{
-
-}

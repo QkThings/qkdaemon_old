@@ -24,7 +24,6 @@ SOURCES += main.cpp\
     core/qkdaemon.cpp \
     core/qkconnect.cpp \
     gui/qkexplorerwidget.cpp \
-    gui/connectionstable.cpp \
     gui/qkdaemonwidget.cpp \
     gui/qkconnectwidget.cpp \
     gui/ptablewidget.cpp \
@@ -34,7 +33,6 @@ HEADERS  += gui/mainwindow.h \
     core/qkdaemon.h \
     core/qkconnect.h \
     gui/qkexplorerwidget.h \
-    gui/connectionstable.h \
     gui/qkdaemonwidget.h \
     gui/qkconnectwidget.h \
     gui/ptablewidget.h \
