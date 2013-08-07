@@ -10,7 +10,8 @@
 
 QkExplorerWidget::QkExplorerWidget(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::QkExplorerWidget)
+    ui(new Ui::QkExplorerWidget),
+    m_conn(0)
 {
     setupLayout();
     setupConnections();
@@ -32,6 +33,7 @@ void QkExplorerWidget::setupLayout()
     ui->explorerTree->setIndentation(5);
 
     setWindowTitle("QkExplorer");
+    updateInterface();
 }
 
 void QkExplorerWidget::setupConnections()
@@ -52,6 +54,8 @@ void QkExplorerWidget::setCurrentConnection(QkConnection *conn)
     explorerTree_updateGateway();
     explorerTree_updateNetwork();
     explorerTree_updateNodes();
+
+    updateInterface();
 }
 
 void QkExplorerWidget::explorerTree_init()
@@ -103,12 +107,11 @@ void QkExplorerWidget::explorerTree_updateNodes()
 
 void QkExplorerWidget::explorerTree_updateNode(int address)
 {
-
+    (void)address;
 }
 
 void QkExplorerWidget::_slotSearch()
 {
-    qDebug() << "_slotSearch()";
     m_conn->qk.search();
 }
 
@@ -120,4 +123,23 @@ void QkExplorerWidget::_slotStart()
 void QkExplorerWidget::_slotStop()
 {
     m_conn->qk.stop();
+}
+
+void QkExplorerWidget::updateInterface()
+{
+    bool enableButtons = false;
+    if(m_conn == 0)
+    {
+        enableButtons = false;
+    }
+    else
+    {
+        enableButtons = true;
+    }
+
+    ui->search_button->setEnabled(enableButtons);
+    ui->start_button->setEnabled(enableButtons);
+    ui->stop_button->setEnabled(enableButtons);
+    ui->update_button->setEnabled(enableButtons);
+    ui->save_button->setEnabled(enableButtons);
 }

@@ -47,6 +47,8 @@ private:
     void explorerTree_updateNodes();
     void explorerTree_updateNode(int address = 0);
 
+    void updateInterface();
+
     Ui::QkExplorerWidget *ui;
     QkConnection *m_conn;
 };

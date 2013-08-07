@@ -7,6 +7,8 @@
 
 #include "qk.h"
 
+class QSerialPort;
+
 class QkConnection : public QObject
 {
     Q_OBJECT
@@ -23,6 +25,8 @@ public:
         QStringList params;
     };
 
+    QkConnection(QObject *parent);
+
     static Type typeFromString(const QString &str);
     static QString typeToString(Type type);
 
@@ -31,13 +35,47 @@ public:
     QkCore qk;
 
     void setup();
+    virtual bool tryOpen() = 0;
 
-private slots:
-    void _slotDataReady();
-    void _slotSendBytes(QByteArray frame);
+signals:
+    void error(QString message);
+
+protected slots:
+    virtual void slotDataReady() = 0;
+    virtual void slotSendFrame(QByteArray frame) = 0;
 
 private:
 
+};
+
+class QkSerialConnection : public QkConnection
+{
+    Q_OBJECT
+public:
+    QkSerialConnection(QString portName, int baudRate, QObject *parent);
+
+    bool tryOpen();
+
+protected slots:
+    void slotDataReady();
+    void slotSendFrame(QByteArray frame);
+
+private:
+    class Comm
+    {
+    public:
+        QByteArray frame;
+        volatile bool txdata;
+        volatile bool rxdata;
+        volatile bool frameReady;
+        volatile bool seq;
+        volatile bool dle;
+        volatile bool valid;
+        volatile int count;
+    };
+    void parseIncomingData(quint8 data);
+    Comm m_comm;
+    QSerialPort *m_sp;
 };
 
 class QkConnect : public QObject

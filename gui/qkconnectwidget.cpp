@@ -188,6 +188,7 @@ void QkConnectWidget::slotConnectionAdded(QkConnection *conn)
     ui->connectionsTable->insertRow(row);
     fillRow(row, conn);
     ui->connectionsTable->updateToolButtonNumber();
+    ui->connectionsTable->selectRow(row);
 }
 
 void QkConnectWidget::slotConnectionRemoved(QkConnection *conn)
