@@ -11,19 +11,30 @@ QkSerialConnection::QkSerialConnection(QString portName, int baudRate, QObject *
     QkConnection(parent)
 {
     m_sp = new QSerialPort(this);
-    m_sp->setPortName(portName);
-    m_sp->setBaudRate(baudRate);
-    m_sp->setParity(QSerialPort::NoParity);
-    m_sp->setFlowControl(QSerialPort::NoFlowControl);
-    m_sp->setDataBits(QSerialPort::Data8);
     device = m_sp;
+
+    m_portName = portName;
+    m_baudRate = baudRate;
+
+    m_comm.rxdata = false;
+    m_comm.valid = false;
+    m_comm.dle = false;
+    m_comm.frameReady = false;
 }
 
 bool QkSerialConnection::tryOpen()
 {
+
+    m_sp->setPortName(m_portName);
     if(m_sp->open(QIODevice::ReadWrite))
     {
-        m_sp->close();
+        m_sp->setBaudRate(m_baudRate);
+        m_sp->setParity(QSerialPort::NoParity);
+        m_sp->setFlowControl(QSerialPort::NoFlowControl);
+        //m_sp->setFlowControl(QSerialPort::HardwareControl);
+        m_sp->setDataBits(QSerialPort::Data8);
+        //m_sp->close();
+        //m_sp->readAll();
         return true;
     }
     else
@@ -40,36 +51,41 @@ void QkSerialConnection::slotSendFrame(QByteArray frame)
 {
     int i;
     // Byte stuffing
-    char stuffByte = QK_COMM_DLE;
-    char *frameBuf = frame.data();
+    char flagByte = QK_COMM_FLAG;
+    char dleByte = QK_COMM_DLE;
+    quint8 *frameBuf = (quint8*)frame.data();
+
+    m_sp->write(&flagByte, 1);
     for(i = 0; i < frame.count(); i++)
     {
         if(*frameBuf == QK_COMM_FLAG || *frameBuf == QK_COMM_DLE)
         {
-            device->write(&stuffByte, 1);
+            m_sp->write(&dleByte, 1);
         }
-        device->write(frameBuf, 1);
+        m_sp->write((char*)frameBuf, 1);
         frameBuf++;
     }
+    m_sp->write(&flagByte, 1);
 }
 
 void QkSerialConnection::slotDataReady()
 {
-    QDebug debug(QtDebugMsg);
+    //QDebug debug(QtDebugMsg);
     int count;
 
     // Unstuff bytes
     QByteArray data = device->readAll();
     char *bufPtr = data.data();
     count = data.count();
-    debug << "rx: ";
+    //debug << "rx: ";
     while(count--)
     {
-        debug << QString().sprintf("%02X", *bufPtr);
+        //debug << QString().sprintf("%02X", (quint8)*bufPtr);
         parseIncomingData((quint8)*bufPtr++);
         if(m_comm.frameReady)
         {
             qk.comm_processFrame(m_comm.frame);
+            emit incomingFrame(m_comm.frame); //FIXME just emit the signal (?)
             m_comm.frameReady = false;
         }
     }
@@ -127,6 +143,17 @@ QkConnection::QkConnection(QObject *parent) :
 
 }
 
+QkConnection::~QkConnection()
+{
+    qDebug() << "Deleting connection...";
+    if(device != 0)
+    {
+        if(device->isOpen())
+            device->close();
+        delete device;
+    }
+}
+
 QkConnection::Type QkConnection::typeFromString(const QString &str)
 {
     if(str == "Serial Port")
@@ -168,7 +195,7 @@ QkConnect::QkConnect(QObject *parent) :
 
 QkConnect::~QkConnect()
 {
-
+    qDebug() << "Delete connections:";
 }
 
 QList<QkConnection*> QkConnect::connections()
@@ -216,6 +243,7 @@ QkConnection* QkConnect::addConnection(const QkConnection::Descriptor &connDesc)
     {
         QString portName = connDesc.params.at(0);
         int baudRate = connDesc.params.at(1).toInt();
+        qDebug() << portName << baudRate;
         conn = new QkSerialConnection(portName, baudRate, this);
         connect(conn, SIGNAL(error(QString)), this, SIGNAL(error(QString)));
     }
@@ -238,7 +266,6 @@ QkConnection* QkConnect::addConnection(const QkConnection::Descriptor &connDesc)
     conn->descriptor.type = connDesc.type;
     conn->descriptor.params.clear();
     conn->descriptor.params.append(connDesc.params);
-    conn->device->open(QIODevice::ReadWrite);
 
     m_connections.append(conn);
     emit connectionAdded(conn);

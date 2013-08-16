@@ -26,6 +26,7 @@ public:
     };
 
     QkConnection(QObject *parent);
+    ~QkConnection();
 
     static Type typeFromString(const QString &str);
     static QString typeToString(Type type);
@@ -38,14 +39,17 @@ public:
     virtual bool tryOpen() = 0;
 
 signals:
+    void incomingFrame(QByteArray frame);
     void error(QString message);
 
 protected slots:
     virtual void slotDataReady() = 0;
     virtual void slotSendFrame(QByteArray frame) = 0;
 
-private:
+protected:
+    QThread *m_commThread;
 
+private:
 };
 
 class QkSerialConnection : public QkConnection
@@ -76,6 +80,8 @@ private:
     void parseIncomingData(quint8 data);
     Comm m_comm;
     QSerialPort *m_sp;
+    QString m_portName;
+    int m_baudRate;
 };
 
 class QkConnect : public QObject

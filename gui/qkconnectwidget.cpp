@@ -212,10 +212,10 @@ void QkConnectWidget::slotReloadAvailableSerialPorts()
 #endif
 
         qDebug() << "Port name:    " << sp.portName();
-        if(sp.hasVendorIdentifier())
+        /*if(sp.hasVendorIdentifier())
             qDebug() << "Vendor ID:    " << sp.vendorIdentifier();
         if(sp.hasProductIdentifier())
-            qDebug() << "Product ID:   " << sp.productIdentifier();
+            qDebug() << "Product ID:   " << sp.productIdentifier();*/
         availablePorts.append(sp.portName());
     }
     ui->serialPort_portName_combo->clear();

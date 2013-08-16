@@ -24,8 +24,17 @@ private slots:
     void _slotSearch();
     void _slotStart();
     void _slotStop();
+    void _slotInitExplorerTrees();
+    void showError(int code);
+    void showError(const QString &message);
     
 private:
+    enum ExplorerTreeID {
+        etID_Module,
+        etID_Device,
+        etID_Gateway,
+        etID_Network
+    };
     enum {
         ExplorerTreeTopGateway,
         ExplorerTreeTopNetwork,
@@ -38,7 +47,7 @@ private:
 
     void setupLayout();
     void setupConnections();
-    void explorerTree_init();
+    void explorerTree_init(ExplorerTreeID id);
     //void explorerTree_createNode();
     //void explorerTree_deleteNode();
 

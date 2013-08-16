@@ -7,6 +7,7 @@
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QHeaderView>
+#include <QMessageBox>
 
 QkExplorerWidget::QkExplorerWidget(QWidget *parent) :
     QMainWindow(parent),
@@ -28,9 +29,11 @@ void QkExplorerWidget::setupLayout()
     ui->menubar->hide();
     ui->statusbar->hide();
 
-    QHeaderView *header = ui->explorerTree->header();
+    //ui->explorerTree2->hide();
+
+    /*QHeaderView *header = ui->explorerTree->header();
     header->setSectionResizeMode(0, QHeaderView::ResizeToContents);
-    ui->explorerTree->setIndentation(5);
+    ui->explorerTree->setIndentation(5);*/
 
     setWindowTitle("QkExplorer");
     updateInterface();
@@ -44,23 +47,39 @@ void QkExplorerWidget::setupConnections()
             this, SLOT(_slotStart()));
     connect(ui->stop_button, SIGNAL(clicked()),
             this, SLOT(_slotStop()));
+    connect(ui->explorerList, SIGNAL(currentRowChanged(int)),
+            this, SLOT(_slotInitExplorerTrees()));
 }
 
 void QkExplorerWidget::setCurrentConnection(QkConnection *conn)
 {
-    qDebug() << "QkExplorerWidget::setCurrentConnection()";
+    if(m_conn != 0)
+    {
+        disconnect(&(m_conn->qk), SIGNAL(error(int)), this, SLOT(showError(int)));
+    }
+
     m_conn = conn;
-    explorerTree_init();
-    explorerTree_updateGateway();
-    explorerTree_updateNetwork();
-    explorerTree_updateNodes();
+    connect(&(m_conn->qk), SIGNAL(error(int)), this, SLOT(showError(int)));
 
     updateInterface();
 }
 
-void QkExplorerWidget::explorerTree_init()
+void QkExplorerWidget::_slotInitExplorerTrees()
 {
-    QTreeWidget *tree = ui->explorerTree;
+    QString itemText = ui->explorerList->currentItem()->text();
+}
+
+void QkExplorerWidget::explorerTree_init(ExplorerTreeID id)
+{
+    QTreeWidget *tree;
+    switch(id)
+    {
+    case etID_Module: tree = ui->explorerTreeLeft; break;
+    case etID_Device: tree = ui->explorerTreeRight; break;
+    case etID_Gateway: tree = ui->explorerTreeLeft; break;
+    case etID_Network: tree = ui->explorerTreeRight; break;
+    }
+
     tree->clear();
     if(m_conn == 0)
         return;
@@ -70,22 +89,22 @@ void QkExplorerWidget::explorerTree_init()
     QTreeWidgetItem *item;
 
     strings.clear();
-    strings << "Gateway";
-    if(qk->gateway() == 0)
-        strings << "(n/a)";
+    strings << "Qk";
+    //if(qk->gateway() == 0)
+      //  strings << "(n/a)";
     item = new QTreeWidgetItem(strings);
     tree->addTopLevelItem(item);
 
     strings.clear();
-    strings << "Network";
-    if(qk->network() == 0)
-        strings << "(n/a)";
+    strings << "Board";
+    //if(qk->network() == 0)
+      //  strings << "(n/a)";
     item = new QTreeWidgetItem(strings);
     tree->addTopLevelItem(item);
 
     strings.clear();
-    strings << "Nodes";
-    strings << QString::number(qk->nodes().count());
+    strings << "Configuration";
+    //strings << QString::number(qk->nodes().count());
     item = new QTreeWidgetItem(strings);
     tree->addTopLevelItem(item);
 }
@@ -142,4 +161,14 @@ void QkExplorerWidget::updateInterface()
     ui->stop_button->setEnabled(enableButtons);
     ui->update_button->setEnabled(enableButtons);
     ui->save_button->setEnabled(enableButtons);
+}
+
+void QkExplorerWidget::showError(int code)
+{
+    showError(QkCore::errorMessage(code));
+}
+
+void QkExplorerWidget::showError(const QString &message)
+{
+    QMessageBox::critical(this, tr("Error"), message);
 }

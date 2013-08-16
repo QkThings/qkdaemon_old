@@ -6,28 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>426</width>
-    <height>278</height>
+    <width>692</width>
+    <height>308</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_4">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <property name="spacing">
      <number>0</number>
     </property>
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
+    <property name="margin">
      <number>0</number>
     </property>
     <item>
@@ -39,113 +30,304 @@
        <attribute name="title">
         <string>Explorer</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <property name="spacing">
-         <number>0</number>
-        </property>
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="QTreeWidget" name="explorerTree">
-          <property name="columnCount">
-           <number>2</number>
-          </property>
-          <attribute name="headerVisible">
-           <bool>false</bool>
-          </attribute>
-          <attribute name="headerDefaultSectionSize">
-           <number>50</number>
-          </attribute>
-          <attribute name="headerShowSortIndicator" stdset="0">
-           <bool>false</bool>
-          </attribute>
-          <column>
-           <property name="text">
-            <string>Element</string>
-           </property>
-          </column>
-          <column>
-           <property name="text">
-            <string>Value</string>
-           </property>
-          </column>
-         </widget>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="text">
+               <string>Connected devices:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Preferred</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>10</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QVBoxLayout" name="verticalLayout_5">
+            <item>
+             <widget class="QPushButton" name="search_button">
+              <property name="text">
+               <string>Search</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QListWidget" name="explorerList">
+              <property name="minimumSize">
+               <size>
+                <width>130</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>130</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="lineEdit">
+              <property name="minimumSize">
+               <size>
+                <width>130</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>130</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="inputMask">
+               <string/>
+              </property>
+              <property name="placeholderText">
+               <string>Find</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout">
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <property name="spacing">
+           <number>2</number>
+          </property>
           <item>
-           <widget class="QToolButton" name="search_button">
-            <property name="text">
-             <string>Search</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
+           <widget class="QLabel" name="label_2">
+            <property name="minimumSize">
              <size>
-              <width>6</width>
-              <height>20</height>
+              <width>0</width>
+              <height>15</height>
              </size>
             </property>
-           </spacer>
-          </item>
-          <item>
-           <widget class="QToolButton" name="start_button">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
             <property name="text">
-             <string>Start</string>
+             <string>QkModule</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QToolButton" name="stop_button">
-            <property name="text">
-             <string>Stop</string>
+           <widget class="QTreeWidget" name="explorerTreeLeft">
+            <property name="alternatingRowColors">
+             <bool>true</bool>
             </property>
+            <property name="headerHidden">
+             <bool>false</bool>
+            </property>
+            <property name="columnCount">
+             <number>3</number>
+            </property>
+            <attribute name="headerCascadingSectionResizes">
+             <bool>false</bool>
+            </attribute>
+            <attribute name="headerDefaultSectionSize">
+             <number>20</number>
+            </attribute>
+            <column>
+             <property name="text">
+              <string notr="true">1</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>2</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string>3</string>
+             </property>
+            </column>
+            <item>
+             <property name="text">
+              <string>Qk</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Version</string>
+              </property>
+              <property name="text">
+               <string>0.0.1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Baud rate</string>
+              </property>
+              <property name="text">
+               <string>38400</string>
+              </property>
+             </item>
+            </item>
+            <item>
+             <property name="text">
+              <string>Board</string>
+             </property>
+             <item>
+              <property name="text">
+               <string>Name</string>
+              </property>
+              <property name="text">
+               <string>QkMotion</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Firmware</string>
+              </property>
+              <property name="text">
+               <string>0AF2</string>
+              </property>
+             </item>
+            </item>
            </widget>
           </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <property name="spacing">
+           <number>2</number>
+          </property>
           <item>
-           <spacer name="horizontalSpacer">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
+           <widget class="QLabel" name="label_3">
+            <property name="minimumSize">
              <size>
-              <width>40</width>
-              <height>20</height>
+              <width>0</width>
+              <height>15</height>
              </size>
             </property>
-           </spacer>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="autoFillBackground">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>QkDevice</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
           </item>
           <item>
-           <widget class="QToolButton" name="update_button">
+           <widget class="QTreeWidget" name="explorerTreeRight">
+            <property name="alternatingRowColors">
+             <bool>true</bool>
+            </property>
+            <property name="columnCount">
+             <number>3</number>
+            </property>
+            <attribute name="headerDefaultSectionSize">
+             <number>20</number>
+            </attribute>
+            <column>
+             <property name="text">
+              <string notr="true">1</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string notr="true">2</string>
+             </property>
+            </column>
+            <column>
+             <property name="text">
+              <string notr="true">3</string>
+             </property>
+            </column>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QPushButton" name="update_button">
             <property name="text">
              <string>Update</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QToolButton" name="save_button">
+           <widget class="QPushButton" name="save_button">
             <property name="text">
              <string>Save</string>
             </property>
            </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="start_button">
+            <property name="text">
+             <string>Start</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="stop_button">
+            <property name="text">
+             <string>Stop</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pushButton">
+            <property name="text">
+             <string>Log...</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </item>
@@ -156,16 +338,7 @@
         <string>Logger</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_2">
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
+        <property name="margin">
          <number>0</number>
         </property>
         <item>
@@ -178,16 +351,7 @@
         <string>Debug</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
-        <property name="leftMargin">
-         <number>0</number>
-        </property>
-        <property name="topMargin">
-         <number>0</number>
-        </property>
-        <property name="rightMargin">
-         <number>0</number>
-        </property>
-        <property name="bottomMargin">
+        <property name="margin">
          <number>0</number>
         </property>
         <item>
@@ -204,7 +368,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>426</width>
+     <width>692</width>
      <height>21</height>
     </rect>
    </property>

@@ -8,5 +8,6 @@
         <file>minus_16.png</file>
         <file>plus_16.png</file>
         <file>reload.png</file>
+        <file>raw.png</file>
     </qresource>
 </RCC>

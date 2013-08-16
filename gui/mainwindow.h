@@ -7,6 +7,7 @@ namespace Ui {
 class MainWindow;
 }
 
+class QkRawWidget;
 class QkExplorerWidget;
 class QkDaemonWidget;
 class QkConnect;
@@ -22,6 +23,7 @@ public:
 
 public slots:
     void slotShowHideExplorer();
+    void slotShowHideRaw();
     void logMessage(QString text);
     
 private:
@@ -33,8 +35,8 @@ private:
     QkConnect *m_connect;
     QkDaemonWidget *m_daemonWidget;
     QkExplorerWidget *m_explorerWidget;
+    QkRawWidget *m_rawWidget;
     QToolBar *m_tools;
-
 };
 
 #endif // MAINWINDOW_H

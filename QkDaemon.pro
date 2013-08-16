@@ -16,8 +16,8 @@ INCLUDEPATH += gui
 INCLUDEPATH += ../QkLib
 
 QMAKE_LIBDIR += ../QkLib/build/release
-
 LIBS += -lQk
+#LIBS += -lQk
 
 SOURCES += main.cpp\
         gui/mainwindow.cpp \
@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     gui/qkdaemonwidget.cpp \
     gui/qkconnectwidget.cpp \
     gui/ptablewidget.cpp \
-    gui/ptoolbutton.cpp
+    gui/ptoolbutton.cpp \
+    gui/qkrawwidget.cpp
 
 HEADERS  += gui/mainwindow.h \
     core/qkdaemon.h \
@@ -36,17 +37,19 @@ HEADERS  += gui/mainwindow.h \
     gui/qkdaemonwidget.h \
     gui/qkconnectwidget.h \
     gui/ptablewidget.h \
-    gui/ptoolbutton.h
+    gui/ptoolbutton.h \
+    gui/qkrawwidget.h
 
 FORMS    += gui/mainwindow.ui \
     gui/qkexplorerwidget.ui \
     gui/qkdaemonwidget.ui \
-    gui/qkconnectwidget.ui
+    gui/qkconnectwidget.ui \
+    gui/qkrawwidget.ui
 
 RESOURCES += \
     shared/icons/icons.qrc
 
-CONFIG(debug, debug|release) {
+CONFIG(debug, debug_and_release) {
     DESTDIR = build/debug
 } else {
     DESTDIR = build/release
