@@ -13,11 +13,14 @@ TEMPLATE = app
 
 INCLUDEPATH += core
 INCLUDEPATH += gui
+INCLUDEPATH += gui/utils
 INCLUDEPATH += ../QkLib
 
 QMAKE_LIBDIR += ../QkLib/build/release
 LIBS += -lQk
 #LIBS += -lQk
+
+#CONFIG += extserialport
 
 SOURCES += main.cpp\
         gui/mainwindow.cpp \
@@ -26,9 +29,13 @@ SOURCES += main.cpp\
     gui/qkexplorerwidget.cpp \
     gui/qkdaemonwidget.cpp \
     gui/qkconnectwidget.cpp \
-    gui/ptablewidget.cpp \
-    gui/ptoolbutton.cpp \
-    gui/qkrawwidget.cpp
+    gui/utils/ptablewidget.cpp \
+    gui/utils/ptoolbutton.cpp \
+    gui/qkrawwidget.cpp \
+    gui/utils/qhexspinbox.cpp \
+    gui/utils/cpropertybrowser.cpp \
+    gui/utils/cproperty.cpp \
+    gui/utils/ptreeitemproperty.cpp
 
 HEADERS  += gui/mainwindow.h \
     core/qkdaemon.h \
@@ -36,9 +43,13 @@ HEADERS  += gui/mainwindow.h \
     gui/qkexplorerwidget.h \
     gui/qkdaemonwidget.h \
     gui/qkconnectwidget.h \
-    gui/ptablewidget.h \
-    gui/ptoolbutton.h \
-    gui/qkrawwidget.h
+    gui/utils/ptablewidget.h \
+    gui/utils/ptoolbutton.h \
+    gui/qkrawwidget.h \
+    gui/utils/qhexspinbox.h \
+    gui/utils/cpropertybrowser.h \
+    gui/utils/cproperty.h \
+    gui/utils/ptreeitemproperty.h
 
 FORMS    += gui/mainwindow.ui \
     gui/qkexplorerwidget.ui \

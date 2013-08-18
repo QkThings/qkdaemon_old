@@ -33,7 +33,7 @@ public:
 
     Descriptor descriptor;
     QIODevice *device;
-    QkCore qk;
+    QkCore *qk;
 
     void setup();
     virtual bool tryOpen() = 0;
@@ -93,6 +93,8 @@ public:
 
     QList<QkConnection*> connections();
     QkConnection* findConnection(const QkConnection::Descriptor &connDesc);
+
+    void setSearchOnConnect(bool search);
     
 signals:
     void connectionAdded(QkConnection *c);
@@ -106,6 +108,7 @@ public slots:
 
 private:
     QList<QkConnection*>  m_connections;
+    bool m_searchOnConnect;
 };
 
 #endif // QKCONNECT_H

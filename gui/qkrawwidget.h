@@ -24,6 +24,7 @@ public slots:
 private slots:
     void slotIncomingFrame(QByteArray frame);
     void slotSendSearch();
+    void slotPrintASCII(bool enabled);
 
 private:
     enum ColumnPacket
@@ -31,6 +32,7 @@ private:
         ColumnPacketTime,
         ColumnPacketSource,
         ColumnPacketAddress,
+        ColumnPacketFlags,
         ColumnPacketCode,
         ColumnPacketData
     };
@@ -45,6 +47,7 @@ private:
 
     Ui::QkRawWidget *ui;
     QkConnection *m_conn;
+    bool m_printASCII;
 };
 
 #endif // QKRAWWIDGET_H

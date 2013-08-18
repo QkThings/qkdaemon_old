@@ -7,6 +7,9 @@
 #include <QStringList>
 #include <QIODevice>
 
+//#include <QtExtSerialPort/qextserialenumerator.h>
+//#include <QtExtSerialPort/qextserialport.h>
+
 QkSerialConnection::QkSerialConnection(QString portName, int baudRate, QObject *parent) :
     QkConnection(parent)
 {
@@ -24,7 +27,6 @@ QkSerialConnection::QkSerialConnection(QString portName, int baudRate, QObject *
 
 bool QkSerialConnection::tryOpen()
 {
-
     m_sp->setPortName(m_portName);
     if(m_sp->open(QIODevice::ReadWrite))
     {
@@ -50,20 +52,20 @@ bool QkSerialConnection::tryOpen()
 void QkSerialConnection::slotSendFrame(QByteArray frame)
 {
     int i;
+    char chBuf;
     // Byte stuffing
-    char flagByte = QK_COMM_FLAG;
-    char dleByte = QK_COMM_DLE;
-    quint8 *frameBuf = (quint8*)frame.data();
+    const char flagByte = QK_COMM_FLAG;
+    const char dleByte = QK_COMM_DLE;
 
     m_sp->write(&flagByte, 1);
     for(i = 0; i < frame.count(); i++)
     {
-        if(*frameBuf == QK_COMM_FLAG || *frameBuf == QK_COMM_DLE)
+        chBuf = frame.at(i);
+        if((quint8)chBuf == QK_COMM_FLAG || (quint8)chBuf == QK_COMM_DLE)
         {
             m_sp->write(&dleByte, 1);
         }
-        m_sp->write((char*)frameBuf, 1);
-        frameBuf++;
+        m_sp->write(&chBuf, 1);
     }
     m_sp->write(&flagByte, 1);
 }
@@ -84,7 +86,7 @@ void QkSerialConnection::slotDataReady()
         parseIncomingData((quint8)*bufPtr++);
         if(m_comm.frameReady)
         {
-            qk.comm_processFrame(m_comm.frame);
+            //qk.comm_processFrame(m_comm.frame);
             emit incomingFrame(m_comm.frame); //FIXME just emit the signal (?)
             m_comm.frameReady = false;
         }
@@ -140,7 +142,7 @@ void QkSerialConnection::parseIncomingData(quint8 data)
 QkConnection::QkConnection(QObject *parent) :
     QObject(parent)
 {
-
+    qk = new QkCore();
 }
 
 QkConnection::~QkConnection()
@@ -152,6 +154,7 @@ QkConnection::~QkConnection()
             device->close();
         delete device;
     }
+    delete qk;
 }
 
 QkConnection::Type QkConnection::typeFromString(const QString &str)
@@ -183,14 +186,16 @@ void QkConnection::setup()
 {
     connect(device, SIGNAL(readyRead()),
             this, SLOT(slotDataReady()));
-    connect(&qk, SIGNAL(comm_sendFrame(QByteArray)),
+    connect(this, SIGNAL(incomingFrame(QByteArray)),
+            qk, SLOT(comm_processFrame(QByteArray)));
+    connect(qk, SIGNAL(comm_sendFrame(QByteArray)),
             this, SLOT(slotSendFrame(QByteArray)));
 }
 
 QkConnect::QkConnect(QObject *parent) :
     QObject(parent)
 {
-
+    m_searchOnConnect = true;
 }
 
 QkConnect::~QkConnect()
@@ -235,7 +240,6 @@ QkConnection* QkConnect::addConnection(const QkConnection::Descriptor &connDesc)
     if(findConnection(connDesc) != 0)
     {
         emit error(tr("Connection already exists."));
-        delete conn;
         return 0;
     }
 
@@ -269,6 +273,9 @@ QkConnection* QkConnect::addConnection(const QkConnection::Descriptor &connDesc)
 
     m_connections.append(conn);
     emit connectionAdded(conn);
+
+    if(m_searchOnConnect)
+        conn->qk->search();
 
     return conn;
 }
@@ -306,4 +313,9 @@ QkConnection* QkConnect::findConnection(const QkConnection::Descriptor &connDesc
         }
     }
     return 0;
+}
+
+void QkConnect::setSearchOnConnect(bool search)
+{
+    m_searchOnConnect = search;
 }

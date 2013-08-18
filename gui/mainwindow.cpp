@@ -58,9 +58,9 @@ void MainWindow::setupLayout()
 void MainWindow::setupConnections()
 {
     connect(ui->connectWidget, SIGNAL(currentConnectionChanged(QkConnection*)),
-            m_explorerWidget, SLOT(setCurrentConnection(QkConnection*)));
-    connect(ui->connectWidget, SIGNAL(currentConnectionChanged(QkConnection*)),
             m_rawWidget, SLOT(setCurrentConnection(QkConnection*)));
+    connect(ui->connectWidget, SIGNAL(currentConnectionChanged(QkConnection*)),
+            m_explorerWidget, SLOT(setCurrentConnection(QkConnection*)));
 }
 
 void MainWindow::logMessage(QString text)

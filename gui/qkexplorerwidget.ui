@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>692</width>
-    <height>308</height>
+    <width>752</width>
+    <height>361</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -117,7 +117,7 @@
            <number>2</number>
           </property>
           <item>
-           <widget class="QLabel" name="label_2">
+           <widget class="QLabel" name="boardTypeLabelLeft">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -142,21 +142,21 @@
            </widget>
           </item>
           <item>
-           <widget class="QTreeWidget" name="explorerTreeLeft">
-            <property name="alternatingRowColors">
-             <bool>true</bool>
-            </property>
+           <widget class="CPropertyBrowser" name="explorerTreeLeft">
             <property name="headerHidden">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="columnCount">
              <number>3</number>
             </property>
-            <attribute name="headerCascadingSectionResizes">
+            <attribute name="headerVisible">
              <bool>false</bool>
             </attribute>
             <attribute name="headerDefaultSectionSize">
              <number>20</number>
+            </attribute>
+            <attribute name="headerStretchLastSection">
+             <bool>false</bool>
             </attribute>
             <column>
              <property name="text">
@@ -165,56 +165,14 @@
             </column>
             <column>
              <property name="text">
-              <string>2</string>
+              <string notr="true">2</string>
              </property>
             </column>
             <column>
              <property name="text">
-              <string>3</string>
+              <string notr="true">3</string>
              </property>
             </column>
-            <item>
-             <property name="text">
-              <string>Qk</string>
-             </property>
-             <item>
-              <property name="text">
-               <string>Version</string>
-              </property>
-              <property name="text">
-               <string>0.0.1</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Baud rate</string>
-              </property>
-              <property name="text">
-               <string>38400</string>
-              </property>
-             </item>
-            </item>
-            <item>
-             <property name="text">
-              <string>Board</string>
-             </property>
-             <item>
-              <property name="text">
-               <string>Name</string>
-              </property>
-              <property name="text">
-               <string>QkMotion</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Firmware</string>
-              </property>
-              <property name="text">
-               <string>0AF2</string>
-              </property>
-             </item>
-            </item>
            </widget>
           </item>
          </layout>
@@ -225,7 +183,7 @@
            <number>2</number>
           </property>
           <item>
-           <widget class="QLabel" name="label_3">
+           <widget class="QLabel" name="boardTypeLabelRight">
             <property name="minimumSize">
              <size>
               <width>0</width>
@@ -250,15 +208,21 @@
            </widget>
           </item>
           <item>
-           <widget class="QTreeWidget" name="explorerTreeRight">
+           <widget class="CPropertyBrowser" name="explorerTreeRight">
             <property name="alternatingRowColors">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="columnCount">
              <number>3</number>
             </property>
+            <attribute name="headerVisible">
+             <bool>false</bool>
+            </attribute>
             <attribute name="headerDefaultSectionSize">
              <number>20</number>
+            </attribute>
+            <attribute name="headerStretchLastSection">
+             <bool>false</bool>
             </attribute>
             <column>
              <property name="text">
@@ -368,13 +332,20 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>692</width>
+     <width>752</width>
      <height>21</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CPropertyBrowser</class>
+   <extends>QTreeWidget</extends>
+   <header>cpropertybrowser.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
