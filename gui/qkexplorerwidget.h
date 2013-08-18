@@ -32,6 +32,7 @@ private slots:
     void _slotExplorerList_reload();
     void _slotExplorerList_addNode(int address);
     void _handleExplorerListRowChanged(int row);
+    void _slotDebugLog(int address, QString debugStr);
     void showError(int code);
     void showError(const QString &message);
     
@@ -71,7 +72,7 @@ private:
         QList<CProperty*> actionsList;
         CProperty *events;
         QList<CProperty*> eventsList;
-    } ;
+    };
 
     enum SelectedBoardType
     {
@@ -105,6 +106,7 @@ private:
 
     void setupLayout();
     void setupConnections();
+    int explorerList_findNode(int address);
     void explorerTree_reload(ExplorerTreeID id, bool na = false);
     void explorerTree_refresh(ExplorerTreeID id, RefreshFlags flags = rfAll);
     CPropertyBrowser* explorerTree_browser(ExplorerTreeID id);

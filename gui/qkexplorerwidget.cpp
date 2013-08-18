@@ -10,6 +10,7 @@
 #include <QTreeWidgetItem>
 #include <QHeaderView>
 #include <QMessageBox>
+#include <QTime>
 
 QkExplorerWidget::QkExplorerWidget(QWidget *parent) :
     QMainWindow(parent),
@@ -52,6 +53,10 @@ void QkExplorerWidget::setupLayout()
     ui->explorerTreeLeft->setIndentation(10);
     ui->explorerTreeRight->setIndentation(10);
 
+#ifdef Q_OS_WIN
+    ui->debugText->setFont(QFont("Consolas",9));
+#endif
+
     setWindowTitle("QkExplorer");
     updateInterface();
 }
@@ -77,11 +82,13 @@ void QkExplorerWidget::setCurrentConnection(QkConnection *conn)
     {
         disconnect(m_conn->qk, SIGNAL(error(int)), this, SLOT(showError(int)));
         disconnect(m_conn->qk, SIGNAL(deviceDetected(int)), this, SLOT(_slotExplorerList_addNode(int)));
+        disconnect(m_conn->qk, SIGNAL(debugString(int,QString)), this, SLOT(_slotDebugLog(int,QString)));
     }
 
     m_conn = conn;
     connect(m_conn->qk, SIGNAL(error(int)), this, SLOT(showError(int)));
     connect(m_conn->qk, SIGNAL(deviceDetected(int)), this, SLOT(_slotExplorerList_addNode(int)));
+    connect(m_conn->qk, SIGNAL(debugString(int,QString)), this, SLOT(_slotDebugLog(int,QString)));
 
     updateInterface();
 }
@@ -121,6 +128,9 @@ void QkExplorerWidget::_slotExplorerList_reload() //FIXME is it really needed?
 
 void QkExplorerWidget::_slotExplorerList_addNode(int address)
 {
+    if(explorerList_findNode(address) >= 0)
+        return;
+
     ui->explorerList->addItem(tr("Node") + QString().sprintf(" %04X", address));
     if(ui->explorerList->count() == 1)
     {
@@ -143,7 +153,7 @@ void QkExplorerWidget::_slotExplorerTrees_reload()
         else
         {
             explorerTree_reload(etID_Module);
-            //explorerTree_refresh(etID_Module);
+            explorerTree_refresh(etID_Module);
         }
         if(m_selNode->device() == 0)
             explorerTree_reload(etID_Device, true);
@@ -266,16 +276,11 @@ void QkExplorerWidget::explorerTree_refresh(ExplorerTreeID id, RefreshFlags flag
     CPropertyBrowser *browser;
     ExplorerTreeSel treeSel;
 
-    int count;
-
     if((id == etID_Device || id == etID_Module) && m_selNode == 0)
         return;
 
     browser = explorerTree_browser(id);
     treeSel = explorerTree_select(id);
-
-    qDebug() << "m_conn" << m_conn;
-    qDebug() << "m_selNode" << m_selNode;
 
     switch(id)
     {
@@ -295,8 +300,6 @@ void QkExplorerWidget::explorerTree_refresh(ExplorerTreeID id, RefreshFlags flag
     default:
         selBoard = 0;
     }
-
-    qDebug() << "selBoard" << selBoard;
 
     if(selBoard == 0)
         return;
@@ -347,6 +350,14 @@ void QkExplorerWidget::explorerTree_refresh(ExplorerTreeID id, RefreshFlags flag
         m_sampProp.triggerClock->setValue(selDevice->samplingInfo().triggerClock);
         m_sampProp.triggerScaler->setValue(selDevice->samplingInfo().triggerScaler);
         m_sampProp.N->setValue(selDevice->samplingInfo().N);
+
+        browser->clearChildren(m_deviceProp.data);
+        foreach(QkDevice::Data data, selDevice->data())
+        {
+            CProperty *dataProp = new CProperty(data.label(), CProperty::Double, m_deviceProp.data);
+            dataProp->setValue(data.value());
+            browser->addProperty(dataProp, m_deviceProp.data);
+        }
     }
 
 }
@@ -377,6 +388,26 @@ QkExplorerWidget::ExplorerTreeSel QkExplorerWidget::explorerTree_select(Explorer
         return etSel_Right;
     }
     return etSel_Right;
+}
+
+int QkExplorerWidget::explorerList_findNode(int address)
+{
+
+    int row;
+
+    for(row = 0; row < ui->explorerList->count(); row++)
+    {
+        QString itemText = ui->explorerList->item(row)->text();
+        if(itemText.contains(tr("Node")))
+        {
+            bool ok;
+            QString addrStr = itemText.split(' ').at(1);
+            int addr = addrStr.toInt(&ok, 16);
+            if(addr == address)
+                return row;
+        }
+    }
+    return -1;
 }
 
 void QkExplorerWidget::_slotSearch()
@@ -412,6 +443,16 @@ void QkExplorerWidget::updateInterface()
     ui->stop_button->setEnabled(enableButtons);
     ui->update_button->setEnabled(enableButtons);
     ui->save_button->setEnabled(enableButtons);
+}
+
+void QkExplorerWidget::_slotDebugLog(int address, QString debugStr)
+{
+    qDebug() << "_slotDebugLog()";
+    QString str;
+    str.append(QTime::currentTime().toString("hh:mm:ss") + " ");
+    str.append("[" + QString().sprintf("%04X", address) + "] ");
+    str.append(debugStr);
+    ui->debugText->append(str);
 }
 
 void QkExplorerWidget::showError(int code)

@@ -51,12 +51,14 @@ bool QkSerialConnection::tryOpen()
 
 void QkSerialConnection::slotSendFrame(QByteArray frame)
 {
+    QDebug debug(QtDebugMsg);
     int i;
     char chBuf;
     // Byte stuffing
     const char flagByte = QK_COMM_FLAG;
     const char dleByte = QK_COMM_DLE;
 
+    debug << "tx: ";
     m_sp->write(&flagByte, 1);
     for(i = 0; i < frame.count(); i++)
     {
@@ -65,6 +67,7 @@ void QkSerialConnection::slotSendFrame(QByteArray frame)
         {
             m_sp->write(&dleByte, 1);
         }
+        debug << QString().sprintf("%02X", (quint8)chBuf);
         m_sp->write(&chBuf, 1);
     }
     m_sp->write(&flagByte, 1);
