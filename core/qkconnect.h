@@ -42,9 +42,11 @@ signals:
     void incomingFrame(QByteArray frame);
     void error(QString message);
 
-protected slots:
-    virtual void slotDataReady() = 0;
+public slots:
     virtual void slotSendFrame(QByteArray frame) = 0;
+
+protected slots:
+    virtual void _slotDataReady() = 0;
 
 protected:
     QThread *m_commThread;
@@ -60,9 +62,11 @@ public:
 
     bool tryOpen();
 
-protected slots:
-    void slotDataReady();
+public slots:
     void slotSendFrame(QByteArray frame);
+
+protected slots:
+    void _slotDataReady();
 
 private:
     class Comm

@@ -23,11 +23,6 @@ MainWindow::MainWindow(QWidget *parent) :
     m_explorerWidget = new QkExplorerWidget(this);
     m_rawWidget = new QkRawWidget(this);
     m_tools = new QToolBar(tr("Tools"), this);
-    m_tools->setFloatable(false);
-    m_tools->setIconSize(QSize(16,16));
-    m_tools->addAction(QIcon(":icons/explorer.png"), "QkExplorer", this, SLOT(slotShowHideExplorer()));
-    m_tools->addAction(QIcon(":icons/raw.png"), "QkRaw", this, SLOT(slotShowHideRaw()));
-    addToolBar(Qt::BottomToolBarArea, m_tools);
 
     setupLayout();
     setupConnections();
@@ -47,9 +42,17 @@ void MainWindow::setupLayout()
 {
     ui->menuBar->hide();
     ui->mainToolBar->addWidget(m_daemonWidget);
-    //ui->mainToolBar->setMovable(false);
+    ui->mainToolBar->setMovable(false);
     ui->statusBar->hide();
     ui->connectWidget->setQkConnect(m_connect);
+
+    m_tools->setFloatable(false);
+    m_tools->setMovable(false);
+    m_tools->setIconSize(QSize(16,16));
+    m_tools->addAction(QIcon(":icons/settings_16.png"), "Settings", this, SLOT(slotShowHideSettings()));
+    m_tools->addAction(QIcon(":icons/explorer.png"), "QkExplorer", this, SLOT(slotShowHideExplorer()));
+    m_tools->addAction(QIcon(":icons/raw.png"), "QkRaw", this, SLOT(slotShowHideRaw()));
+    addToolBar(Qt::BottomToolBarArea, m_tools);
 
     setWindowTitle("QkDaemon");
     logMessage("Using QkLib " + m_qk->version());
@@ -66,6 +69,11 @@ void MainWindow::setupConnections()
 void MainWindow::logMessage(QString text)
 {
     qDebug() << "logMessage()" << text;
+}
+
+void MainWindow::slotShowHideSettings()
+{
+
 }
 
 void MainWindow::slotShowHideExplorer()

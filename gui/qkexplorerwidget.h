@@ -27,14 +27,22 @@ private slots:
     void _slotSearch();
     void _slotStart();
     void _slotStop();
+    void _slotUpdate();
+    void _slotClear();
     void _slotExplorerTrees_reload();
-    void _slotExplorerTrees_refresh();
+    //void _slotExplorerTrees_refresh(int address);
     void _slotExplorerList_reload();
     void _slotExplorerList_addNode(int address);
     void _handleExplorerListRowChanged(int row);
-    void _slotDebugLog(int address, QString debugStr);
-    void showError(int code);
+    void _handleDataReceived(int address);
+    void _handleNodeUpdated(int address);
+    void _handleSamplingModeChanged();
+    void _slotLogger_append(int address, QkDevice::Event event);
+    void _slotDebug_log(int address, QString debugStr);
+    void _slotDebug_updateOptions();
+    void showError(int code, int arg);
     void showError(const QString &message);
+    void updateInterface();
     
 private:
     class QkProperties
@@ -69,7 +77,7 @@ private:
         CProperty *data;
         QList<CProperty*> dataList;
         CProperty *actions;
-        QList<CProperty*> actionsList;
+        //QList<CProperty*> actionsList;
         CProperty *events;
         QList<CProperty*> eventsList;
     };
@@ -98,21 +106,37 @@ private:
         ExplorerTreeColumnValue,
         ExplorerTreeColumnPopup
     };
-    enum RefreshFlags
+    enum RefreshFlags //FIXME not used?
     {
         rfAll,
         rfData
+    };
+    enum
+    {
+        LoggerColumnEventTimestamp,
+        LoggerColumnEventSource,
+        LoggerColumnEventLabel,
+        LoggerColumnEventMessage,
+        LoggerColumnEventArguments
+    };
+    enum
+    {
+        LoggerColumnNotificationTimestamp,
+        LoggerColumnNotificationSource,
+        LoggerColumnNotificationMessage,
+        LoggerColumnNotificationArguments
     };
 
     void setupLayout();
     void setupConnections();
     int explorerList_findNode(int address);
-    void explorerTree_reload(ExplorerTreeID id, bool na = false);
+    void explorerTree_reload(ExplorerTreeID id, QkBoard *board);
     void explorerTree_refresh(ExplorerTreeID id, RefreshFlags flags = rfAll);
+    void explorerTree_refresh_data(QkDevice *device);
     CPropertyBrowser* explorerTree_browser(ExplorerTreeID id);
     ExplorerTreeSel explorerTree_select(ExplorerTreeID id);
 
-    void updateInterface();
+    QString insertArgsOnMessage(QString msg, QList<float> args);
 
     Ui::QkExplorerWidget *ui;
     QkConnection *m_conn;
@@ -122,6 +146,9 @@ private:
     BoardProperties m_boardProp[etSel_COUNT];
     SamplingProperties m_sampProp;
     DeviceProperties m_deviceProp;
+
+    bool m_debugPrintTime;
+    bool m_debugPrintSource;
 };
 
 #endif // QKEXPLORERWIDGET_H

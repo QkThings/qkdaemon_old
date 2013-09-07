@@ -244,7 +244,8 @@ QVariant CProperty::value()
     else if(m_type == CProperty::Enum)
     {
         QComboBox* box = reinterpret_cast<QComboBox*>(m_valueWidget);
-        return box->currentText();
+        //return box->currentText();
+        return box->currentIndex();
     }
     else if(m_type == CProperty::Text)
     {

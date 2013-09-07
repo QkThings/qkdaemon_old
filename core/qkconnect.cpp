@@ -58,7 +58,7 @@ void QkSerialConnection::slotSendFrame(QByteArray frame)
     const char flagByte = QK_COMM_FLAG;
     const char dleByte = QK_COMM_DLE;
 
-    debug << "tx: ";
+    //debug << "tx: ";
     m_sp->write(&flagByte, 1);
     for(i = 0; i < frame.count(); i++)
     {
@@ -67,7 +67,7 @@ void QkSerialConnection::slotSendFrame(QByteArray frame)
         {
             m_sp->write(&dleByte, 1);
         }
-        debug << QString().sprintf("%02X", (quint8)chBuf);
+        //debug << QString().sprintf("%02X", (quint8)chBuf);
         m_sp->write(&chBuf, 1);
     }
     m_sp->write(&flagByte, 1);
@@ -75,7 +75,7 @@ void QkSerialConnection::slotSendFrame(QByteArray frame)
 
 void QkSerialConnection::slotDataReady()
 {
-    //QDebug debug(QtDebugMsg);
+    QDebug debug(QtDebugMsg);
     int count;
 
     // Unstuff bytes

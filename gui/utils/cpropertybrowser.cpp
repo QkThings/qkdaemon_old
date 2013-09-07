@@ -1,12 +1,7 @@
 #include "cpropertybrowser.h"
 
-
-
-
-
 #include <QHeaderView>
 #include <QDebug>
-
 
 CPropertyBrowser::CPropertyBrowser(QWidget *parent) :
     QTreeWidget(parent)
@@ -45,7 +40,6 @@ void CPropertyBrowser::clearChildren(CProperty *root)
     foreach(QTreeWidgetItem *item, list)
     {
         pTreeItemProperty *itemProperty = (pTreeItemProperty*) item;
-        qDebug() << "itemProperty";
         widget = (QWidget*)itemWidget(item, 0);
         if(widget != 0)
         {

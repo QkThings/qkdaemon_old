@@ -22,6 +22,7 @@ public:
     ~MainWindow();
 
 public slots:
+    void slotShowHideSettings();
     void slotShowHideExplorer();
     void slotShowHideRaw();
     void logMessage(QString text);
