@@ -10,5 +10,7 @@
         <file>reload.png</file>
         <file>raw.png</file>
         <file>settings_16.png</file>
+        <file>help_16.png</file>
+        <file>info_16.png</file>
     </qresource>
 </RCC>

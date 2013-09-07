@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include "qk.h"
+#include "qkdaemon.h"
 #include "qkconnect.h"
 #include "qkconnectwidget.h"
 #include "qkdaemonwidget.h"
@@ -10,6 +11,7 @@
 
 #include <QDebug>
 #include <QToolBar>
+#include <QTime>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,9 +19,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    m_qk = new QkCore();
-    m_connect = new QkConnect(m_qk);
-    m_daemonWidget = new QkDaemonWidget(m_connect, this);
+    m_connect = new QkConnect();
+    m_daemon = new QkDaemon(m_connect);
+    m_daemonWidget = new QkDaemonWidget(m_daemon, this);
     m_explorerWidget = new QkExplorerWidget(this);
     m_rawWidget = new QkRawWidget(this);
     m_tools = new QToolBar(tr("Tools"), this);
@@ -34,7 +36,6 @@ MainWindow::~MainWindow()
     delete m_explorerWidget;
     delete m_daemonWidget;
     delete m_connect;
-    delete m_qk;
     delete ui;
 }
 
@@ -52,23 +53,52 @@ void MainWindow::setupLayout()
     m_tools->addAction(QIcon(":icons/settings_16.png"), "Settings", this, SLOT(slotShowHideSettings()));
     m_tools->addAction(QIcon(":icons/explorer.png"), "QkExplorer", this, SLOT(slotShowHideExplorer()));
     m_tools->addAction(QIcon(":icons/raw.png"), "QkRaw", this, SLOT(slotShowHideRaw()));
+    m_tools->addAction(QIcon(":icons/info_16.png"), "Info", this, SLOT(slotShowHideSettings()));
     addToolBar(Qt::BottomToolBarArea, m_tools);
 
     setWindowTitle("QkDaemon");
-    logMessage("Using QkLib " + m_qk->version());
+
+    QString info;
+    info.append("QkDaemon " + QString().sprintf("%d.%d.%d ", QKDAEMON_VERSION_MAJOR,
+                                                QKDAEMON_VERSION_MINOR,
+                                                QKDAEMON_VERSION_PATCH));
+    info.append("using QkLib " + QkCore::version());
+    logMessage(info);
 }
 
 void MainWindow::setupConnections()
 {
+    connect(m_daemon, SIGNAL(statusMessage(QString)), this, SLOT(_handleDaemonStatusMessage(QString)));
     connect(ui->connectWidget, SIGNAL(currentConnectionChanged(QkConnection*)),
             m_rawWidget, SLOT(setCurrentConnection(QkConnection*)));
     connect(ui->connectWidget, SIGNAL(currentConnectionChanged(QkConnection*)),
             m_explorerWidget, SLOT(setCurrentConnection(QkConnection*)));
 }
 
-void MainWindow::logMessage(QString text)
+void MainWindow::_handleDaemonStatusMessage(QString message)
+{
+    logMessage(message, lmtInfo);
+}
+
+void MainWindow::logMessage(QString text, LogMessageType lmt)
 {
     qDebug() << "logMessage()" << text;
+    QColor textColor;
+    switch(lmt)
+    {
+    //case lmtInfo: textColor = Qt::blue; break;
+    //case lmtError: textColor = Qt::red; break;
+    default:
+        textColor = Qt::black;
+    }
+    ui->log->setTextColor(textColor);
+
+    QString msg;
+
+    if(lmt == lmtInfo || lmt == lmtError)
+        msg.append("[" + QTime::currentTime().toString("hh:mm:ss") + "] ");
+    msg.append(text);
+    ui->log->append(msg);
 }
 
 void MainWindow::slotShowHideSettings()

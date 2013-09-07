@@ -73,7 +73,7 @@ void QkSerialConnection::slotSendFrame(QByteArray frame)
     m_sp->write(&flagByte, 1);
 }
 
-void QkSerialConnection::slotDataReady()
+void QkSerialConnection::_slotDataReady()
 {
     QDebug debug(QtDebugMsg);
     int count;
@@ -188,7 +188,7 @@ QString QkConnection::typeToString(QkConnection::Type type)
 void QkConnection::setup()
 {
     connect(device, SIGNAL(readyRead()),
-            this, SLOT(slotDataReady()));
+            this, SLOT(_slotDataReady()));
     connect(this, SIGNAL(incomingFrame(QByteArray)),
             qk, SLOT(comm_processFrame(QByteArray)));
     connect(qk, SIGNAL(comm_sendFrame(QByteArray)),

@@ -10,14 +10,21 @@ class MainWindow;
 class QkRawWidget;
 class QkExplorerWidget;
 class QkDaemonWidget;
+class QkDaemon;
 class QkConnect;
-class QkCore;
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
     
 public:
+    enum LogMessageType
+    {
+        lmtBlank,
+        lmtInfo,
+        lmtError
+    };
+
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
@@ -25,15 +32,18 @@ public slots:
     void slotShowHideSettings();
     void slotShowHideExplorer();
     void slotShowHideRaw();
-    void logMessage(QString text);
+    void logMessage(QString text, LogMessageType lmt = lmtBlank);
     
+private slots:
+    void _handleDaemonStatusMessage(QString message);
+
 private:
     void setupLayout();
     void setupConnections();
 
     Ui::MainWindow *ui;
-    QkCore *m_qk;
     QkConnect *m_connect;
+    QkDaemon *m_daemon;
     QkDaemonWidget *m_daemonWidget;
     QkExplorerWidget *m_explorerWidget;
     QkRawWidget *m_rawWidget;

@@ -28,7 +28,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QLineEdit" name="serverIP_lineEdit">
+    <widget class="QLineEdit" name="hostAddress_lineEdit">
      <property name="minimumSize">
       <size>
        <width>120</width>
@@ -54,7 +54,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QSpinBox" name="serverPort_spinBox">
+    <widget class="QSpinBox" name="port_spinBox">
      <property name="minimumSize">
       <size>
        <width>70</width>
@@ -70,7 +70,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="connect_pushButton">
+    <widget class="QPushButton" name="connect_button">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -79,6 +79,21 @@
      </property>
      <property name="text">
       <string>Connect</string>
+     </property>
+     <property name="checkable">
+      <bool>false</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <property name="autoDefault">
+      <bool>false</bool>
+     </property>
+     <property name="default">
+      <bool>false</bool>
+     </property>
+     <property name="flat">
+      <bool>false</bool>
      </property>
     </widget>
    </item>

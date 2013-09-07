@@ -1,6 +1,7 @@
 #include "qkdaemonwidget.h"
 #include "ui_qkdaemonwidget.h"
 
+#include "qkdaemon.h"
 #include "qkconnect.h"
 #include "qkexplorerwidget.h"
 
@@ -9,10 +10,10 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QtSerialPort/QSerialPort>
 
-QkDaemonWidget::QkDaemonWidget(QkConnect *conn, QWidget *parent) :
+QkDaemonWidget::QkDaemonWidget(QkDaemon *daemon, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::QkDaemonWidget),
-    m_conn(conn)
+    m_daemon(daemon)
 {
     ui->setupUi(this);
 
@@ -27,11 +28,31 @@ QkDaemonWidget::~QkDaemonWidget()
 
 void QkDaemonWidget::setupConnections()
 {
-
+    connect(ui->connect_button, SIGNAL(clicked()), this, SLOT(_slotConnect()));
 }
 
 void QkDaemonWidget::setupLayout()
 {
 
+}
+
+void QkDaemonWidget::_slotConnect()
+{
+    if(!m_daemon->isListening())
+        m_daemon->connectToHost(ui->hostAddress_lineEdit->text(), ui->port_spinBox->value());
+    else
+        m_daemon->disconnectFromHost();
+    updateInterface();
+}
+
+void QkDaemonWidget::updateInterface()
+{
+    bool canConnect;
+    if(m_daemon->isListening())
+        canConnect = false;
+    else
+        canConnect = true;
+    ui->hostAddress_lineEdit->setEnabled(canConnect);
+    ui->port_spinBox->setEnabled(canConnect);
 }
 

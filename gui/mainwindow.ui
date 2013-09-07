@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>246</width>
-    <height>133</height>
+    <width>302</width>
+    <height>204</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,6 +29,28 @@
         <height>80</height>
        </size>
       </property>
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>80</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTextEdit" name="log">
+      <property name="font">
+       <font>
+        <family>Courier New</family>
+        <pointsize>8</pointsize>
+       </font>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::HLine</enum>
+      </property>
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
    </layout>
@@ -38,7 +60,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>246</width>
+     <width>302</width>
      <height>21</height>
     </rect>
    </property>
