@@ -29,6 +29,7 @@ public:
     ~MainWindow();
 
 public slots:
+    void slotShowHideInfo();
     void slotShowHideSettings();
     void slotShowHideExplorer();
     void slotShowHideRaw();
@@ -48,6 +49,8 @@ private:
     QkExplorerWidget *m_explorerWidget;
     QkRawWidget *m_rawWidget;
     QToolBar *m_tools;
+
+    QAction *asd;
 };
 
 #endif // MAINWINDOW_H

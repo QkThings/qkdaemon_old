@@ -36,7 +36,10 @@ SOURCES += main.cpp\
     gui/utils/cpropertybrowser.cpp \
     gui/utils/cproperty.cpp \
     gui/utils/ptreeitemproperty.cpp \
-    gui/settingsdialog.cpp
+    gui/settingsdialog.cpp \
+    core/qkdaemonthread.cpp \
+    core/qkdaemonserver.cpp \
+    core/qkdaemonclient.cpp
 
 HEADERS  += gui/mainwindow.h \
     core/qkdaemon.h \
@@ -51,7 +54,10 @@ HEADERS  += gui/mainwindow.h \
     gui/utils/cpropertybrowser.h \
     gui/utils/cproperty.h \
     gui/utils/ptreeitemproperty.h \
-    gui/settingsdialog.h
+    gui/settingsdialog.h \
+    core/qkdaemonthread.h \
+    core/qkdaemonserver.h \
+    core/qkdaemonclient.h
 
 FORMS    += gui/mainwindow.ui \
     gui/qkexplorerwidget.ui \

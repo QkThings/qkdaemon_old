@@ -52,6 +52,12 @@ void QkDaemonWidget::updateInterface()
         canConnect = false;
     else
         canConnect = true;
+
+    if(canConnect)
+        ui->connect_button->setText(tr("Connect"));
+    else
+        ui->connect_button->setText(tr("Disconnect"));
+
     ui->hostAddress_lineEdit->setEnabled(canConnect);
     ui->port_spinBox->setEnabled(canConnect);
 }

@@ -9,6 +9,8 @@
 #include "qkexplorerwidget.h"
 #include "qkrawwidget.h"
 
+#include "settingsdialog.h"
+
 #include <QDebug>
 #include <QToolBar>
 #include <QTime>
@@ -53,7 +55,7 @@ void MainWindow::setupLayout()
     m_tools->addAction(QIcon(":icons/settings_16.png"), "Settings", this, SLOT(slotShowHideSettings()));
     m_tools->addAction(QIcon(":icons/explorer.png"), "QkExplorer", this, SLOT(slotShowHideExplorer()));
     m_tools->addAction(QIcon(":icons/raw.png"), "QkRaw", this, SLOT(slotShowHideRaw()));
-    m_tools->addAction(QIcon(":icons/info_16.png"), "Info", this, SLOT(slotShowHideSettings()));
+    m_tools->addAction(QIcon(":icons/notepad_w_16.png"), "Info", this, SLOT(slotShowHideInfo()));
     addToolBar(Qt::BottomToolBarArea, m_tools);
 
     setWindowTitle("QkDaemon");
@@ -101,9 +103,15 @@ void MainWindow::logMessage(QString text, LogMessageType lmt)
     ui->log->append(msg);
 }
 
+void MainWindow::slotShowHideInfo()
+{
+    ui->log->setVisible(!ui->log->isVisible());
+}
+
 void MainWindow::slotShowHideSettings()
 {
-
+    SettingsDialog dialog;
+    dialog.exec();
 }
 
 void MainWindow::slotShowHideExplorer()
