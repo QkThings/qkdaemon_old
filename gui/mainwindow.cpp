@@ -3,7 +3,7 @@
 
 #include "qk.h"
 #include "qkdaemon.h"
-#include "qkconnect.h"
+#include "qkconnectionmanager.h"
 #include "qkconnectwidget.h"
 #include "qkdaemonwidget.h"
 #include "qkexplorerwidget.h"
@@ -21,7 +21,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    m_connect = new QkConnect();
+    m_connect = new QkConnectionManager();
     m_daemon = new QkDaemon(m_connect);
     m_daemonWidget = new QkDaemonWidget(m_daemon, this);
     m_explorerWidget = new QkExplorerWidget(this);

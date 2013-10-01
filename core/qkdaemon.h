@@ -8,30 +8,31 @@
 #define QKDAEMON_VERSION_PATCH  1
 
 class QkCore;
-class QkConnect;
+class QkConnectionManager;
 class QTcpServer;
+class QkDaemonServer;
+class QkAPIHandler;
 
 class QkDaemon : public QObject
 {
     Q_OBJECT
 public:
-    explicit QkDaemon(QkConnect *conn, QObject *parent = 0);
+    explicit QkDaemon(QkConnectionManager *connManager, QObject *parent = 0);
     ~QkDaemon();
 
     bool connectToHost(const QString &address, int port);
     void disconnectFromHost();
     bool isListening();
 
+public slots:
 
-    
 signals:
     void statusMessage(QString msg);
 
-public slots:
-
 private:
-    QTcpServer *m_tcpServer;
-    QkConnect *m_conn;
+    QkDaemonServer *m_server;
+    QkConnectionManager *m_connManager;
+    QkAPIHandler *m_api;
 };
 
 #endif // QKDAEMON_H

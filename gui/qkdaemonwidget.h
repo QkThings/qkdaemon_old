@@ -8,7 +8,7 @@ class QkDaemonWidget;
 }
 
 class QkDaemon;
-class QkConnect;
+class QkConnectionManager;
 class QkExplorerWidget;
 
 class QkDaemonWidget : public QWidget
@@ -33,7 +33,7 @@ private:
     Ui::QkDaemonWidget *ui;
 
     QkDaemon *m_daemon;
-    QkConnect *m_conn;
+    QkConnectionManager *m_conn;
     bool m_connected;
 };
 

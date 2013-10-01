@@ -7,7 +7,7 @@ namespace Ui {
 class QkExplorerWidget;
 }
 
-#include "qkconnect.h"
+#include "qkconnectionmanager.h"
 
 class CProperty;
 class CPropertyBrowser;

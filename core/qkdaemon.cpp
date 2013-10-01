@@ -1,18 +1,19 @@
 #include "qkdaemon.h"
 
 #include "qk.h"
-#include <QTcpServer>
+#include "qkdaemonserver.h"
+#include "qkdaemonsocket.h"
 
-QkDaemon::QkDaemon(QkConnect *conn, QObject *parent) :
+QkDaemon::QkDaemon(QkConnectionManager *connManager, QObject *parent) :
     QObject(parent),
-    m_conn(conn)
+    m_connManager(connManager)
 {
-    m_tcpServer = new QTcpServer(this);
+    m_server = new QkDaemonServer(connManager, this);
 }
 
 QkDaemon::~QkDaemon()
 {
-
+    delete m_server;
 }
 
 bool QkDaemon::connectToHost(const QString &address, int port)
@@ -24,7 +25,7 @@ bool QkDaemon::connectToHost(const QString &address, int port)
     else
         hostAddress.setAddress(address);
 
-    ok = m_tcpServer->listen(hostAddress, port);
+    ok = m_server->listen(hostAddress, port);
     if(ok)
     {
         QString msg;
@@ -34,18 +35,18 @@ bool QkDaemon::connectToHost(const QString &address, int port)
         emit statusMessage(msg);
     }
     else
-        emit statusMessage(m_tcpServer->errorString());
+        emit statusMessage(m_server->errorString());
 
     return ok;
 }
 
 void QkDaemon::disconnectFromHost()
 {
-    m_tcpServer->close();
+    m_server->close();
     emit statusMessage("Disconnected");
 }
 
 bool QkDaemon::isListening()
 {
-    return m_tcpServer->isListening();
+    return m_server->isListening();
 }

@@ -1,4 +1,4 @@
-#include "qkconnect.h"
+#include "qkconnectionmanager.h"
 
 #include "qk.h"
 
@@ -145,7 +145,7 @@ void QkSerialConnection::parseIncomingData(quint8 data)
 QkConnection::QkConnection(QObject *parent) :
     QObject(parent)
 {
-    qk = new QkCore();
+    qk = new QkCore(this);
 }
 
 QkConnection::~QkConnection()
@@ -158,6 +158,17 @@ QkConnection::~QkConnection()
         delete device;
     }
     delete qk;
+}
+
+bool QkConnection::operator==(const QkConnection &other)
+{
+    if((this->descriptor.type == other.descriptor.type) &&
+       (this->descriptor.params == other.descriptor.params))
+    {
+        return true;
+    }
+    else
+        return false;
 }
 
 QkConnection::Type QkConnection::typeFromString(const QString &str)
@@ -195,23 +206,51 @@ void QkConnection::setup()
             this, SLOT(slotSendFrame(QByteArray)));
 }
 
-QkConnect::QkConnect(QObject *parent) :
+QkConnectionManager::QkConnectionManager(QObject *parent) :
     QObject(parent)
 {
     m_searchOnConnect = true;
 }
 
-QkConnect::~QkConnect()
+QkConnectionManager::~QkConnectionManager()
 {
     qDebug() << "Delete connections:";
 }
 
-QList<QkConnection*> QkConnect::connections()
+void QkConnectionManager::requestAccess()
+{
+    m_mutex.lock();
+}
+
+bool QkConnectionManager::tryAccess(int timeout)
+{
+    return m_mutex.tryLock(timeout);
+}
+
+void QkConnectionManager::freeAccess()
+{
+    m_mutex.unlock();
+}
+
+QMutex* QkConnectionManager::mutex()
+{
+    return &m_mutex;
+}
+
+QList<QkConnection*> QkConnectionManager::connections()
 {
     return m_connections;
 }
 
-bool QkConnect::validate(const QkConnection::Descriptor &connDesc)
+QkConnection* QkConnectionManager::defaultConnection()
+{
+    QkConnection *defaultConn = 0;
+    if(m_connections.count() > 0)
+        defaultConn = m_connections[0];
+    return defaultConn;
+}
+
+bool QkConnectionManager::validate(const QkConnection::Descriptor &connDesc)
 {
     if(connDesc.type == QkConnection::ctSerial)
     {
@@ -235,7 +274,7 @@ bool QkConnect::validate(const QkConnection::Descriptor &connDesc)
     return false;
 }
 
-QkConnection* QkConnect::addConnection(const QkConnection::Descriptor &connDesc)
+QkConnection* QkConnectionManager::addConnection(const QkConnection::Descriptor &connDesc)
 {
     qDebug() << "addConnection()";
     QkConnection *conn;
@@ -283,7 +322,7 @@ QkConnection* QkConnect::addConnection(const QkConnection::Descriptor &connDesc)
     return conn;
 }
 
-void QkConnect::removeConnection(const QkConnection::Descriptor &connDesc)
+void QkConnectionManager::removeConnection(const QkConnection::Descriptor &connDesc)
 {
     QkConnection *conn = findConnection(connDesc);
     if(conn != 0)
@@ -298,7 +337,7 @@ void QkConnect::removeConnection(const QkConnection::Descriptor &connDesc)
     }
 }
 
-QkConnection* QkConnect::findConnection(const QkConnection::Descriptor &connDesc)
+QkConnection* QkConnectionManager::findConnection(const QkConnection::Descriptor &connDesc)
 {
     foreach(QkConnection *conn, m_connections)
     {
@@ -318,7 +357,16 @@ QkConnection* QkConnect::findConnection(const QkConnection::Descriptor &connDesc
     return 0;
 }
 
-void QkConnect::setSearchOnConnect(bool search)
+int QkConnectionManager::connectionID(QkConnection *conn)
+{
+    int connID;
+    for(connID = 0; connID < m_connections.count(); connID++)
+        if(m_connections[connID] == conn)
+            return connID;
+    return -1;
+}
+
+void QkConnectionManager::setSearchOnConnect(bool search)
 {
     m_searchOnConnect = search;
 }

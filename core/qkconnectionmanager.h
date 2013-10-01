@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QtSerialPort/QSerialPort>
 #include <QStringList>
+#include <QMutex>
 
 #include "qk.h"
 
@@ -37,6 +38,8 @@ public:
 
     void setup();
     virtual bool tryOpen() = 0;
+
+    bool operator==(const QkConnection &other);
 
 signals:
     void incomingFrame(QByteArray frame);
@@ -88,17 +91,24 @@ private:
     int m_baudRate;
 };
 
-class QkConnect : public QObject
+class QkConnectionManager : public QObject
 {
     Q_OBJECT
 public:
-    explicit QkConnect(QObject *parent = 0);
-    ~QkConnect();
+    explicit QkConnectionManager(QObject *parent = 0);
+    ~QkConnectionManager();
 
     QList<QkConnection*> connections();
+    QkConnection* defaultConnection();
     QkConnection* findConnection(const QkConnection::Descriptor &connDesc);
+    int connectionID(QkConnection *conn);
 
     void setSearchOnConnect(bool search);
+
+    void requestAccess();
+    bool tryAccess(int timeout = 0);
+    void freeAccess();
+    QMutex *mutex();
     
 signals:
     void connectionAdded(QkConnection *c);
@@ -111,8 +121,9 @@ public slots:
     void removeConnection(const QkConnection::Descriptor &connDesc);
 
 private:
-    QList<QkConnection*>  m_connections;
+    QList<QkConnection*> m_connections;
     bool m_searchOnConnect;
+    QMutex m_mutex;
 };
 
 #endif // QKCONNECT_H

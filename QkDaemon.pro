@@ -15,17 +15,18 @@ INCLUDEPATH += core
 INCLUDEPATH += gui
 INCLUDEPATH += gui/utils
 INCLUDEPATH += ../QkLib
+INCLUDEPATH += ../QkAPI
 
 QMAKE_LIBDIR += ../QkLib/build/release
+QMAKE_LIBDIR += ../QkAPI/build/release
 LIBS += -lQk
-#LIBS += -lQk
+LIBS += -lQkAPI
 
 #CONFIG += extserialport
 
 SOURCES += main.cpp\
         gui/mainwindow.cpp \
     core/qkdaemon.cpp \
-    core/qkconnect.cpp \
     gui/qkexplorerwidget.cpp \
     gui/qkdaemonwidget.cpp \
     gui/qkconnectwidget.cpp \
@@ -39,11 +40,12 @@ SOURCES += main.cpp\
     gui/settingsdialog.cpp \
     core/qkdaemonthread.cpp \
     core/qkdaemonserver.cpp \
-    core/qkdaemonclient.cpp
+    core/qkconnectionmanager.cpp \
+    core/qkdaemonsocket.cpp \
+    core/qkapihandler.cpp
 
 HEADERS  += gui/mainwindow.h \
     core/qkdaemon.h \
-    core/qkconnect.h \
     gui/qkexplorerwidget.h \
     gui/qkdaemonwidget.h \
     gui/qkconnectwidget.h \
@@ -57,7 +59,9 @@ HEADERS  += gui/mainwindow.h \
     gui/settingsdialog.h \
     core/qkdaemonthread.h \
     core/qkdaemonserver.h \
-    core/qkdaemonclient.h
+    core/qkconnectionmanager.h \
+    core/qkdaemonsocket.h \
+    core/qkapihandler.h
 
 FORMS    += gui/mainwindow.ui \
     gui/qkexplorerwidget.ui \
@@ -67,7 +71,8 @@ FORMS    += gui/mainwindow.ui \
     gui/settingsdialog.ui
 
 RESOURCES += \
-    shared/icons/icons.qrc
+    shared/icons/icons.qrc \
+    shared/api/api.qrc
 
 CONFIG(debug, debug_and_release) {
     DESTDIR = build/debug

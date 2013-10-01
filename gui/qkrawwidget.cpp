@@ -1,7 +1,7 @@
 #include "qkrawwidget.h"
 #include "ui_qkrawwidget.h"
 
-#include "qkconnect.h"
+#include "qkconnectionmanager.h"
 
 #include <QDebug>
 #include <QTableWidgetItem>

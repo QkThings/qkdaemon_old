@@ -11,7 +11,7 @@ class QkRawWidget;
 class QkExplorerWidget;
 class QkDaemonWidget;
 class QkDaemon;
-class QkConnect;
+class QkConnectionManager;
 
 class MainWindow : public QMainWindow
 {
@@ -43,7 +43,7 @@ private:
     void setupConnections();
 
     Ui::MainWindow *ui;
-    QkConnect *m_connect;
+    QkConnectionManager *m_connect;
     QkDaemon *m_daemon;
     QkDaemonWidget *m_daemonWidget;
     QkExplorerWidget *m_explorerWidget;

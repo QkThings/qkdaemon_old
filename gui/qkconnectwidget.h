@@ -7,7 +7,7 @@ namespace Ui {
 class QkConnectWidget;
 }
 
-#include "qkconnect.h"
+#include "qkconnectionmanager.h"
 
 class pToolButton;
 
@@ -19,7 +19,7 @@ public:
     explicit QkConnectWidget(QWidget *parent = 0);
     ~QkConnectWidget();
 
-    void setQkConnect(QkConnect *conn);
+    void setQkConnect(QkConnectionManager *conn);
 
 signals:
     void currentConnectionChanged(QkConnection *conn);
@@ -53,7 +53,7 @@ private:
     QkConnection::Descriptor connectionDescriptor(int row);
 
     Ui::QkConnectWidget *ui;
-    QkConnect *m_connect;
+    QkConnectionManager *m_connManager;
 };
 
 #endif // QKCONNECTWIDGET_H
