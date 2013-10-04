@@ -270,10 +270,8 @@ QJsonObject QkAPIHandler::rpc_listConns(RPCArgs *args)
     (void)args; // not used
     QList<QkConnection::Descriptor> connDesc;
 
-    m_connManager->requestAccess();
     foreach(QkConnection *conn, m_connManager->connections())
         connDesc.append(conn->descriptor);
-    m_connManager->freeAccess();
 
     QJsonObject obj;
     QJsonArray connsArray, paramsArray;
@@ -308,12 +306,10 @@ QJsonObject QkAPIHandler::rpc_conn(RPCArgs *args)
         return rpc_error(RPCError_Qk, tr("Invalid connID: ") + parsedValueStr);
 
     QkConnection::Descriptor connDesc;
-    m_connManager->requestAccess();
     if(connID < 0 || connID > m_connManager->connections().count() - 1)
         ok = false;
     else
         connDesc = m_connManager->connections().at(connID)->descriptor;
-    m_connManager->freeAccess();
 
     if(!ok)
         return rpc_error(RPCError_Qk, tr("Invalid connID: ") + parsedValueStr);
@@ -338,12 +334,10 @@ QJsonObject QkAPIHandler::rpc_listNodes(RPCArgs *args)
     int i;
     QJsonObject obj;
 
-    m_connManager->requestAccess();
     QkConnection *conn = m_connManager->defaultConnection();
 
     if(conn != 0)
     {
-        conn->qk->requestAccess();
         QMap<int, QkNode*> nodes = conn->qk->nodes();
 
         QJsonObject nodesObj;
@@ -365,11 +359,9 @@ QJsonObject QkAPIHandler::rpc_listNodes(RPCArgs *args)
 
             nodesObj.insert(QString::number(node->address()), QJsonObject(nodeObj));
         }
-        conn->qk->freeAccess();
 
         obj.insert("nodes", QJsonValue(nodesObj));
     }
-    m_connManager->freeAccess();
 
     return obj;
 }
@@ -444,7 +436,7 @@ QJsonObject QkAPIHandler::rpc_updateDevice(RPCArgs *args)
     qDebug() << *(args->parsedValues);
     qDebug() << *(args->params);
 
-    QMutexLocker locker(m_connManager->mutex());
+    //QMutexLocker locker(m_connManager->mutex());
 
     QJsonObject errObj;
 
@@ -457,7 +449,7 @@ QJsonObject QkAPIHandler::rpc_updateDevice(RPCArgs *args)
     conn->qk->node(addr)->device()->update();
     conn->qk->getNode(addr);
 
-    return rpc_result(0);
+    return errObj;
 }
 
 QJsonObject QkAPIHandler::rpc_listCmds(RPCArgs *args)
@@ -490,9 +482,7 @@ QJsonObject QkAPIHandler::rpc_start(RPCArgs *args)
     //QMutexLocker locker(m_connManager->mutex());
 
     QJsonObject obj;
-    m_connManager->requestAccess();
     QkConnection *defaultConn = m_connManager->defaultConnection();
-    m_connManager->freeAccess();
     if(defaultConn == 0)
         obj = rpc_error(RPCError_Qk, tr("No connection available"));
     else
@@ -507,9 +497,7 @@ QJsonObject QkAPIHandler::rpc_start(RPCArgs *args)
 QJsonObject QkAPIHandler::rpc_stop(RPCArgs *args)
 {
     QJsonObject obj;
-    m_connManager->requestAccess();
     QkConnection *defaultConn = m_connManager->defaultConnection();
-    m_connManager->freeAccess();
     if(defaultConn == 0)
         obj = rpc_error(RPCError_Qk, tr("No connection available"));
     else
@@ -695,9 +683,7 @@ void QkAPIHandler::_handleDataReceived(int address)
     QkCore *qk = (QkCore*)sender();
     QkConnection *conn = (QkConnection*)qk->parent();
 
-    m_connManager->requestAccess();
     int connID = m_connManager->connectionID(conn);
-    m_connManager->freeAccess();
 
     QJsonDocument jsonDoc;
     RPCArgsRT args;
@@ -719,9 +705,7 @@ void QkAPIHandler::_handleEventReceived(int address, QkDevice::Event event)
     QkCore *qk = (QkCore*)sender();
     QkConnection *conn = (QkConnection*)qk->parent();
 
-    m_connManager->requestAccess();
     int connID = m_connManager->connectionID(conn);
-    m_connManager->freeAccess();
 
     QJsonDocument jsonDoc;
     RPCArgsRT args;
@@ -744,9 +728,7 @@ void QkAPIHandler::_handleDebugStringReceived(int address, QString str)
     QkCore *qk = (QkCore*)sender();
     QkConnection *conn = (QkConnection*)qk->parent();
 
-    m_connManager->requestAccess();
     int connID = m_connManager->connectionID(conn);
-    m_connManager->freeAccess();
 
     QJsonDocument jsonDoc;
     RPCArgsRT args;

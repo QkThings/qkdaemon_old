@@ -53,7 +53,7 @@ void QkSerialConnection::slotSendFrame(QByteArray frame)
 {
     QDebug debug(QtDebugMsg);
     int i;
-    char chBuf;
+    quint8 chBuf;
     // Byte stuffing
     const char flagByte = QK_COMM_FLAG;
     const char dleByte = QK_COMM_DLE;
@@ -62,13 +62,14 @@ void QkSerialConnection::slotSendFrame(QByteArray frame)
     m_sp->write(&flagByte, 1);
     for(i = 0; i < frame.count(); i++)
     {
-        chBuf = frame.at(i);
-        if((quint8)chBuf == QK_COMM_FLAG || (quint8)chBuf == QK_COMM_DLE)
+        chBuf = frame[i] & 0xFF;
+        if(chBuf == QK_COMM_FLAG || chBuf == QK_COMM_DLE)
         {
             m_sp->write(&dleByte, 1);
         }
         //debug << QString().sprintf("%02X", (quint8)chBuf);
-        m_sp->write(&chBuf, 1);
+        qDebug() << "tx:" << QString().sprintf("%02X", chBuf);
+        m_sp->write((char*)&chBuf, 1);
     }
     m_sp->write(&flagByte, 1);
 }
@@ -215,21 +216,6 @@ QkConnectionManager::QkConnectionManager(QObject *parent) :
 QkConnectionManager::~QkConnectionManager()
 {
     qDebug() << "Delete connections:";
-}
-
-void QkConnectionManager::requestAccess()
-{
-    m_mutex.lock();
-}
-
-bool QkConnectionManager::tryAccess(int timeout)
-{
-    return m_mutex.tryLock(timeout);
-}
-
-void QkConnectionManager::freeAccess()
-{
-    m_mutex.unlock();
 }
 
 QMutex* QkConnectionManager::mutex()

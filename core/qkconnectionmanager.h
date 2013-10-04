@@ -105,9 +105,6 @@ public:
 
     void setSearchOnConnect(bool search);
 
-    void requestAccess();
-    bool tryAccess(int timeout = 0);
-    void freeAccess();
     QMutex *mutex();
     
 signals:

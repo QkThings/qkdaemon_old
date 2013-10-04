@@ -45,7 +45,10 @@ void QkDaemonThread::run()
 void QkDaemonThread::sendJson(const QJsonDocument &doc)
 {
     qDebug() << "QkDaemonThread::sendJson()";
-    QByteArray data = doc.toJson();
+    QByteArray data;
+    if(!doc.isEmpty())
+        data = doc.toJson();
+
     if(m_socket->isOpen() && !data.isEmpty())
         m_socket->write(data);
 }
