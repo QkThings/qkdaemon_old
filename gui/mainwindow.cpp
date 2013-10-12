@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "qk.h"
+#include "qkcore.h"
 #include "qkdaemon.h"
 #include "qkconnectionmanager.h"
 #include "qkconnectwidget.h"

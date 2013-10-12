@@ -124,7 +124,7 @@ void QkConnectWidget::slotOpenCloseConnection()
     connDesc.params.append(table->item(r, ColumnParam1)->text());
     connDesc.params.append(table->item(r, ColumnParam2)->text());
 
-    QkConnection *conn = m_connManager->findConnection(connDesc);
+    QkConnection *conn = m_connManager->connection(connDesc);
 
     if(conn == 0) {
         return;
@@ -233,7 +233,7 @@ void QkConnectWidget::slotCurrentCellChanged(int curRow, int curCol, int prevRow
     if(curRow != prevRow && curRow != -1)
     {
         connDesc = connectionDescriptor(curRow);
-        QkConnection *conn = m_connManager->findConnection(connDesc);
+        QkConnection *conn = m_connManager->connection(connDesc);
         if(conn != 0)
         {
             emit currentConnectionChanged(conn);

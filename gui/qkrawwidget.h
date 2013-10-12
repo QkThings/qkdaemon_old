@@ -8,7 +8,7 @@ class QkRawWidget;
 }
 
 class QkConnection;
-#include "qk.h"
+#include "qkcore.h"
 
 class QkRawWidget : public QMainWindow
 {

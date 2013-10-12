@@ -13,6 +13,7 @@ QkDaemonThread::QkDaemonThread(int socketDescriptor, QkConnectionManager *connMa
     m_socket = 0;
     m_connManager = connManager;
     m_apiHandler = new QkAPIHandler(connManager, this);
+    //m_apiHandler->moveToThread(this);
     _setupConnections();
 }
 
@@ -47,7 +48,7 @@ void QkDaemonThread::sendJson(const QJsonDocument &doc)
     qDebug() << "QkDaemonThread::sendJson()";
     QByteArray data;
     if(!doc.isEmpty())
-        data = doc.toJson();
+        data = doc.toJson(QJsonDocument::Compact);
 
     if(m_socket->isOpen() && !data.isEmpty())
         m_socket->write(data);

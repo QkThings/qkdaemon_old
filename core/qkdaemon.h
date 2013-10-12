@@ -33,6 +33,8 @@ private:
     QkDaemonServer *m_server;
     QkConnectionManager *m_connManager;
     QkAPIHandler *m_api;
+
+    QThread *m_thread;
 };
 
 #endif // QKDAEMON_H

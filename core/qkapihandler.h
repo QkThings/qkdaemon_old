@@ -4,11 +4,12 @@
 #include <QObject>
 #include <QMap>
 #include <QSet>
-#include "qk.h"
+#include <QStringList>
+#include "qkcore.h"
 
 class QkConnectionManager;
 class QkConnection;
-class QSignalMapper;
+
 
 class QkAPIHandler : public QObject
 {
@@ -55,8 +56,9 @@ private:
     class RPCArgs
     {
     public:
+        QStringList path;
         MethodType methodType;
-        QMap<QString,QVariant> *parsedValues;
+        QMap<QString,QVariant> *parsed;
         QVariantList *params;
     };
 
@@ -92,15 +94,27 @@ private:
     void create();
     QJsonObject run(const QString &methodName, const QString &path, QVariantList params);
 
+    QJsonObject create_object_conn(int connID);
+    QJsonObject create_object_node(int address = 0, bool insertAddress = true);
+    QJsonObject create_object_samplingInfo(int address);
+
+
     QJsonObject rpc_error(int code, const QString &message);
     QJsonObject rpc_result(int value);
     QJsonObject rpc_listQk(RPCArgs *args);
     QJsonObject rpc_listConns(RPCArgs *args);
     QJsonObject rpc_conn(RPCArgs *args);
     QJsonObject rpc_listNodes(RPCArgs *args);
+    QJsonObject rpc_node(RPCArgs *args);
+    QJsonObject rpc_comm(RPCArgs *args);
+    QJsonObject rpc_device(RPCArgs *args);
+    QJsonObject rpc_info(RPCArgs *args);
+    QJsonObject rpc_listConfigs(RPCArgs *args);
+    QJsonObject rpc_config(RPCArgs *args);
+    QJsonObject rpc_samplingInfo(RPCArgs *args);
     QJsonObject rpc_samplingFrequency(RPCArgs *args);
     QJsonObject rpc_samplingMode(RPCArgs *args);
-    QJsonObject rpc_updateDevice(RPCArgs *args);
+    QJsonObject rpc_update(RPCArgs *args);
     QJsonObject rpc_listCmds(RPCArgs *args);
     QJsonObject rpc_search(RPCArgs *args);
     QJsonObject rpc_start(RPCArgs *args);
@@ -115,7 +129,10 @@ private:
     QJsonObject rpc_rt_event(RPCArgsRT *args);
     QJsonObject rpc_rt_debug(RPCArgsRT *args);
 
-    bool validate_rpc_device(RPCArgs *args, QJsonObject *errorObj);
+    bool check_rpc_connection(QJsonObject *errorObj);
+    bool check_rpc_connection(QJsonObject *errorObj, int connID);
+    bool validate_rpc_node(QJsonObject *errorObj, RPCArgs *args);
+    bool validate_rpc_device(QJsonObject *errorObj, RPCArgs *args);
 
     QkConnectionManager *m_connManager;
     APITreeItem *m_apiTreeRoot;

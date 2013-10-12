@@ -6,7 +6,7 @@
 #include <QStringList>
 #include <QMutex>
 
-#include "qk.h"
+#include "qkcore.h"
 
 class QSerialPort;
 
@@ -100,7 +100,8 @@ public:
 
     QList<QkConnection*> connections();
     QkConnection* defaultConnection();
-    QkConnection* findConnection(const QkConnection::Descriptor &connDesc);
+    QkConnection* connection(const QkConnection::Descriptor &connDesc);
+    QkConnection* connection(int connID);
     int connectionID(QkConnection *conn);
 
     void setSearchOnConnect(bool search);

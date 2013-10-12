@@ -1,13 +1,16 @@
 #include "qkdaemon.h"
 
-#include "qk.h"
+#include "qkcore.h"
 #include "qkdaemonserver.h"
 #include "qkdaemonsocket.h"
+
+#include <QThread>
 
 QkDaemon::QkDaemon(QkConnectionManager *connManager, QObject *parent) :
     QObject(parent),
     m_connManager(connManager)
 {
+
     m_server = new QkDaemonServer(connManager, this);
 }
 

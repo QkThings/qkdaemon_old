@@ -1,6 +1,6 @@
 #include "qkconnectionmanager.h"
 
-#include "qk.h"
+#include "qkcore.h"
 
 #include <QDebug>
 #include <QtSerialPort/QSerialPortInfo>
@@ -265,7 +265,7 @@ QkConnection* QkConnectionManager::addConnection(const QkConnection::Descriptor 
     qDebug() << "addConnection()";
     QkConnection *conn;
 
-    if(findConnection(connDesc) != 0)
+    if(connection(connDesc) != 0)
     {
         emit error(tr("Connection already exists."));
         return 0;
@@ -310,7 +310,7 @@ QkConnection* QkConnectionManager::addConnection(const QkConnection::Descriptor 
 
 void QkConnectionManager::removeConnection(const QkConnection::Descriptor &connDesc)
 {
-    QkConnection *conn = findConnection(connDesc);
+    QkConnection *conn = connection(connDesc);
     if(conn != 0)
     {
         if(conn->device->isOpen())
@@ -323,7 +323,7 @@ void QkConnectionManager::removeConnection(const QkConnection::Descriptor &connD
     }
 }
 
-QkConnection* QkConnectionManager::findConnection(const QkConnection::Descriptor &connDesc)
+QkConnection* QkConnectionManager::connection(const QkConnection::Descriptor &connDesc)
 {
     foreach(QkConnection *conn, m_connections)
     {
@@ -341,6 +341,14 @@ QkConnection* QkConnectionManager::findConnection(const QkConnection::Descriptor
         }
     }
     return 0;
+}
+
+QkConnection* QkConnectionManager::connection(int connID)
+{
+    if(connID < 0 || connID >= m_connections.count())
+        return 0;
+    else
+        return m_connections.at(connID);
 }
 
 int QkConnectionManager::connectionID(QkConnection *conn)

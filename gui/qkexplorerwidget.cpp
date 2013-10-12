@@ -1,7 +1,7 @@
 #include "qkexplorerwidget.h"
 #include "ui_qkexplorerwidget.h"
 
-#include "qk.h"
+#include "qkcore.h"
 #include "cproperty.h"
 #include "cpropertybrowser.h"
 
@@ -209,8 +209,6 @@ void QkExplorerWidget::_slotExplorerList_addNode(int address)
 
 void QkExplorerWidget::_slotExplorerTrees_reload()
 {    
-    qDebug() << "_slotExplorerTrees_reload()";
-
     if(ui->explorerList->currentRow() < 0)
         return;
 
@@ -378,7 +376,6 @@ void QkExplorerWidget::explorerTree_reload(ExplorerTreeID id, QkBoard *board)
 
 void QkExplorerWidget::explorerTree_refresh(ExplorerTreeID id, RefreshFlags flags)
 {
-    qDebug() << "explorerTree_refresh()";
     int i;
     QkBoard *selBoard = 0;
     QkDevice *selDevice = 0;
