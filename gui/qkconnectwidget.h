@@ -7,7 +7,7 @@ namespace Ui {
 class QkConnectWidget;
 }
 
-#include "qkconnectionmanager.h"
+#include "qkconnect.h"
 
 class pToolButton;
 

@@ -1,7 +1,7 @@
 #include "qkdaemonthread.h"
 
 #include "qkdaemonsocket.h"
-#include "qkconnectionmanager.h"
+#include "qkconnect.h"
 #include "qkapihandler.h"
 
 #include <QJsonDocument>

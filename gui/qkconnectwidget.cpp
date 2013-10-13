@@ -1,7 +1,7 @@
 #include "qkconnectwidget.h"
 #include "ui_qkconnectwidget.h"
 
-#include "qkconnectionmanager.h"
+#include "qkconnect.h"
 #include "ptoolbutton.h"
 #include "ptablewidget.h"
 

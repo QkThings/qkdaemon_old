@@ -1,4 +1,4 @@
-#include "qkconnectionmanager.h"
+#include "qkconnect.h"
 
 #include "qkcore.h"
 

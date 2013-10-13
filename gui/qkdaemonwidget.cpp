@@ -2,7 +2,7 @@
 #include "ui_qkdaemonwidget.h"
 
 #include "qkdaemon.h"
-#include "qkconnectionmanager.h"
+#include "qkconnect.h"
 #include "qkexplorerwidget.h"
 
 #include <QDebug>

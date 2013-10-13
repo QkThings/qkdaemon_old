@@ -3,7 +3,7 @@
 
 #include "qkcore.h"
 #include "qkdaemon.h"
-#include "qkconnectionmanager.h"
+#include "qkconnect.h"
 #include "qkconnectwidget.h"
 #include "qkdaemonwidget.h"
 #include "qkexplorerwidget.h"

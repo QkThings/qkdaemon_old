@@ -18,9 +18,9 @@ INCLUDEPATH += ../qkcore
 INCLUDEPATH += ../api/qt/qkapi
 
 QMAKE_LIBDIR += ../qkcore/release
-QMAKE_LIBDIR += ../api/qt/qkapi/build/release
+QMAKE_LIBDIR += ../api/qt/qkapi/release
 LIBS += -lqkcore
-LIBS += -lQkAPI
+LIBS += -lqkapi
 
 #CONFIG += extserialport
 
@@ -40,9 +40,9 @@ SOURCES += main.cpp\
     gui/settingsdialog.cpp \
     core/qkdaemonthread.cpp \
     core/qkdaemonserver.cpp \
-    core/qkconnectionmanager.cpp \
     core/qkdaemonsocket.cpp \
-    core/qkapihandler.cpp
+    core/qkapihandler.cpp \
+    core/qkconnect.cpp
 
 HEADERS  += gui/mainwindow.h \
     core/qkdaemon.h \
@@ -59,9 +59,9 @@ HEADERS  += gui/mainwindow.h \
     gui/settingsdialog.h \
     core/qkdaemonthread.h \
     core/qkdaemonserver.h \
-    core/qkconnectionmanager.h \
     core/qkdaemonsocket.h \
-    core/qkapihandler.h
+    core/qkapihandler.h \
+    core/qkconnect.h
 
 FORMS    += gui/mainwindow.ui \
     gui/qkexplorerwidget.ui \
