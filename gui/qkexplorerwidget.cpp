@@ -698,6 +698,6 @@ void QkExplorerWidget::showError(int code, int arg)
 
 void QkExplorerWidget::showError(const QString &message)
 {
-    //QMessageBox::critical(this, tr("Error"), message);
+    QMessageBox::critical(this, tr("Error"), message);
     qDebug() << "ERROR:" << message;
 }

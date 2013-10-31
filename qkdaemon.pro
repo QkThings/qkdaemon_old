@@ -42,7 +42,8 @@ SOURCES += main.cpp\
     core/qkdaemonserver.cpp \
     core/qkdaemonsocket.cpp \
     core/qkapihandler.cpp \
-    core/qkconnect.cpp
+    core/qkconnect.cpp \
+    core/qkconnectthread.cpp
 
 HEADERS  += gui/mainwindow.h \
     core/qkdaemon.h \
@@ -61,7 +62,8 @@ HEADERS  += gui/mainwindow.h \
     core/qkdaemonserver.h \
     core/qkdaemonsocket.h \
     core/qkapihandler.h \
-    core/qkconnect.h
+    core/qkconnect.h \
+    core/qkconnectthread.h
 
 FORMS    += gui/mainwindow.ui \
     gui/qkexplorerwidget.ui \

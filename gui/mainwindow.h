@@ -12,6 +12,7 @@ class QkExplorerWidget;
 class QkDaemonWidget;
 class QkDaemon;
 class QkConnectionManager;
+class QkConnectThread;
 
 class MainWindow : public QMainWindow
 {
@@ -50,7 +51,7 @@ private:
     QkRawWidget *m_rawWidget;
     QToolBar *m_tools;
 
-    QAction *asd;
+    QkConnectThread *m_connectThread;
 };
 
 #endif // MAINWINDOW_H

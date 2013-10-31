@@ -58,7 +58,7 @@ void QkSerialConnection::slotSendFrame(QByteArray frame)
     const char flagByte = QK_COMM_FLAG;
     const char dleByte = QK_COMM_DLE;
 
-    //debug << "tx: ";
+    debug << "tx: ";
     m_sp->write(&flagByte, 1);
     for(i = 0; i < frame.count(); i++)
     {
@@ -67,8 +67,8 @@ void QkSerialConnection::slotSendFrame(QByteArray frame)
         {
             m_sp->write(&dleByte, 1);
         }
-        //debug << QString().sprintf("%02X", (quint8)chBuf);
-        qDebug() << "tx:" << QString().sprintf("%02X", chBuf);
+        debug << QString().sprintf("%02X", (quint8)chBuf);
+        //qDebug() << "tx:" << QString().sprintf("%02X", chBuf);
         m_sp->write((char*)&chBuf, 1);
     }
     m_sp->write(&flagByte, 1);
@@ -83,10 +83,10 @@ void QkSerialConnection::_slotDataReady()
     QByteArray data = device->readAll();
     char *bufPtr = data.data();
     count = data.count();
-    //debug << "rx: ";
+    debug << "rx: ";
     while(count--)
     {
-        //debug << QString().sprintf("%02X", (quint8)*bufPtr);
+        debug << QString().sprintf("%02X", (quint8)*bufPtr);
         parseIncomingData((quint8)*bufPtr++);
         if(m_comm.frameReady)
         {
@@ -215,7 +215,8 @@ QkConnectionManager::QkConnectionManager(QObject *parent) :
 
 QkConnectionManager::~QkConnectionManager()
 {
-    qDebug() << "Delete connections:";
+    qDebug() << "Delete connections: ";
+    qDeleteAll(m_connections.begin(), m_connections.end());
 }
 
 QMutex* QkConnectionManager::mutex()
@@ -276,8 +277,8 @@ QkConnection* QkConnectionManager::addConnection(const QkConnection::Descriptor 
         QString portName = connDesc.params.at(0);
         int baudRate = connDesc.params.at(1).toInt();
         qDebug() << portName << baudRate;
-        conn = new QkSerialConnection(portName, baudRate, this);
-        connect(conn, SIGNAL(error(QString)), this, SIGNAL(error(QString)));
+        conn = new QkSerialConnection(portName, baudRate);
+        //connect(conn, SIGNAL(error(QString)), this, SIGNAL(error(QString)));
     }
     else if(connDesc.type == QkConnection::ctTCP)
     {
@@ -301,6 +302,12 @@ QkConnection* QkConnectionManager::addConnection(const QkConnection::Descriptor 
 
     m_connections.append(conn);
     emit connectionAdded(conn);
+
+    QThread *connThread = new QThread();
+    conn->moveToThread(connThread);
+    connect(conn, SIGNAL(destroyed()), connThread, SLOT(quit()));
+    connect(connThread, SIGNAL(finished()), connThread, SLOT(deleteLater()));
+    connThread->start();
 
     if(m_searchOnConnect)
         conn->qk->search();

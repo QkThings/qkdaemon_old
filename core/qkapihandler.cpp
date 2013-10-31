@@ -1,6 +1,6 @@
 #include "qkapihandler.h"
 
-#include "qkconnectionmanager.h"
+#include "qkconnect.h"
 #include "qkcore.h"
 
 #include <QDebug>

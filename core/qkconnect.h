@@ -5,6 +5,7 @@
 #include <QtSerialPort/QSerialPort>
 #include <QStringList>
 #include <QMutex>
+#include <QThread>
 
 #include "qkcore.h"
 
@@ -26,7 +27,7 @@ public:
         QStringList params;
     };
 
-    QkConnection(QObject *parent);
+    QkConnection(QObject *parent = 0);
     ~QkConnection();
 
     static Type typeFromString(const QString &str);
@@ -61,7 +62,7 @@ class QkSerialConnection : public QkConnection
 {
     Q_OBJECT
 public:
-    QkSerialConnection(QString portName, int baudRate, QObject *parent);
+    QkSerialConnection(QString portName, int baudRate, QObject *parent = 0);
 
     bool tryOpen();
 
@@ -121,6 +122,7 @@ public slots:
 private:
     QList<QkConnection*> m_connections;
     bool m_searchOnConnect;
+    QList<QThread *> m_connThreads;
     QMutex m_mutex;
 };
 
