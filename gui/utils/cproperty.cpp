@@ -53,6 +53,7 @@ CProperty::CProperty(QString label, Type type, CProperty *top) :
         QDoubleSpinBox* spin = new QDoubleSpinBox();
         spin->setMinimum(-99999999);
         spin->setMaximum(99999999);
+        spin->setDecimals(3); // float precision
 
         m_valueWidget = spin;
         connect(spin, SIGNAL(valueChanged(double)), this, SLOT(slotValueChanged()));

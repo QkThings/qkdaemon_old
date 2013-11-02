@@ -174,15 +174,21 @@ void QkExplorerWidget::_handleNodeUpdated(int address)
 
 void QkExplorerWidget::_handleSamplingModeChanged()
 {
-    bool enableTriggeredMode;
-    if(m_sampProp.mode->value().toInt() == 0)
-        enableTriggeredMode = false;
-    else
-        enableTriggeredMode = true;
+    bool enTriggeredMode, enNumberOfSamples;
+    QkDevice::SamplingMode curSampMode = (QkDevice::SamplingMode)m_sampProp.mode->value().toInt();
 
-    m_sampProp.triggerClock->setEnabled(enableTriggeredMode);
-    m_sampProp.triggerScaler->setEnabled(enableTriggeredMode);
-    m_sampProp.N->setEnabled(enableTriggeredMode);
+    if(curSampMode == QkDevice::smTriggered)
+        enTriggeredMode = true;
+    else
+        enTriggeredMode = false;
+    if(curSampMode == QkDevice::smContinuous)
+        enNumberOfSamples = false;
+    else
+        enNumberOfSamples = true;
+
+    m_sampProp.N->setEnabled(enNumberOfSamples);
+    m_sampProp.triggerClock->setEnabled(enTriggeredMode);
+    m_sampProp.triggerScaler->setEnabled(enTriggeredMode);
 }
 
 void QkExplorerWidget::_slotExplorerList_reload() //FIXME is it really needed?
@@ -322,21 +328,22 @@ void QkExplorerWidget::explorerTree_reload(ExplorerTreeID id, QkBoard *board)
 
         m_sampProp.mode = new CProperty("Mode", CProperty::Enum, m_sampProp.top);
         QStringList samplingModes;
-        samplingModes << "Continuous" << "Triggered";
+        samplingModes << "Single" << "Continuous" << "Triggered";
         m_sampProp.mode->setEnumList(samplingModes);
         browser->addProperty(m_sampProp.mode, m_sampProp.top);
 
+        m_sampProp.N = new CProperty("N", CProperty::Int, m_sampProp.top);
+        browser->addProperty(m_sampProp.N, m_sampProp.top);
+
         m_sampProp.triggerClock = new CProperty("Trigger clock", CProperty::Enum, m_sampProp.top);
         QStringList triggerClocks;
-        triggerClocks << "Single" << "1sec" << "10sec" << "1min" << "10min" << "1hour";
+        triggerClocks << "1sec" << "10sec" << "1min" << "10min" << "1hour";
+
         m_sampProp.triggerClock->setEnumList(triggerClocks);
         browser->addProperty(m_sampProp.triggerClock, m_sampProp.top);
 
         m_sampProp.triggerScaler = new CProperty("Trigger scaler", CProperty::Int, m_sampProp.top);
         browser->addProperty(m_sampProp.triggerScaler, m_sampProp.top);
-
-        m_sampProp.N = new CProperty("N", CProperty::Int, m_sampProp.top);
-        browser->addProperty(m_sampProp.N, m_sampProp.top);
 
         m_deviceProp.data = new CProperty("Data", CProperty::Label);
         browser->addProperty(m_deviceProp.data);
