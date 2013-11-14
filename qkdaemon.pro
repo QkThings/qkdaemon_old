@@ -15,10 +15,10 @@ INCLUDEPATH += core
 INCLUDEPATH += gui
 INCLUDEPATH += gui/utils
 INCLUDEPATH += ../qkcore
-INCLUDEPATH += ../api/qt/qkapi
+INCLUDEPATH += ../qkapi/qt/qkapi
 
 QMAKE_LIBDIR += ../qkcore/release
-QMAKE_LIBDIR += ../api/qt/qkapi/release
+QMAKE_LIBDIR += ../qkapi/qt/qkapi/release
 LIBS += -lqkcore
 LIBS += -lqkapi
 
@@ -43,7 +43,8 @@ SOURCES += main.cpp\
     core/qkdaemonsocket.cpp \
     core/qkapihandler.cpp \
     core/qkconnect.cpp \
-    core/qkconnectthread.cpp
+    core/qkconnectthread.cpp \
+    gui/boardpanel.cpp
 
 HEADERS  += gui/mainwindow.h \
     core/qkdaemon.h \
@@ -63,18 +64,21 @@ HEADERS  += gui/mainwindow.h \
     core/qkdaemonsocket.h \
     core/qkapihandler.h \
     core/qkconnect.h \
-    core/qkconnectthread.h
+    core/qkconnectthread.h \
+    gui/boardpanel.h
 
 FORMS    += gui/mainwindow.ui \
     gui/qkexplorerwidget.ui \
     gui/qkdaemonwidget.ui \
     gui/qkconnectwidget.ui \
     gui/qkrawwidget.ui \
-    gui/settingsdialog.ui
+    gui/settingsdialog.ui \
+    gui/boardpanel.ui
 
 RESOURCES += \
     resources/icons/icons.qrc \
-    resources/api/api.qrc
+    resources/api/api.qrc \
+    resources/img.qrc
 
 CONFIG(debug, debug|release) {
     DESTDIR = debug

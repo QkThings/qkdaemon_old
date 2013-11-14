@@ -40,24 +40,28 @@ void QkExplorerWidget::setupLayout()
 
     QHeaderView *header;
 
-    header = ui->explorerTreeLeft->header();
+    /*header = ui->explorerTreeLeft->header();
     header->setSectionResizeMode(ExplorerTreeColumnElement, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(ExplorerTreeColumnValue, QHeaderView::Stretch);
-    header->setSectionResizeMode(ExplorerTreeColumnPopup, QHeaderView::Fixed);
+    header->setSectionResizeMode(ExplorerTreeColumnPopup, QHeaderView::Fixed);*/
 
     header = ui->explorerTreeRight->header();
     header->setSectionResizeMode(ExplorerTreeColumnElement, QHeaderView::ResizeToContents);
     header->setSectionResizeMode(ExplorerTreeColumnValue, QHeaderView::Stretch);
     header->setSectionResizeMode(ExplorerTreeColumnPopup, QHeaderView::Fixed);
 
-    ui->explorerTreeLeft->setColumnWidth(ExplorerTreeColumnPopup, 16);
+    //ui->explorerTreeLeft->setColumnWidth(ExplorerTreeColumnPopup, 16);
     ui->explorerTreeRight->setColumnWidth(ExplorerTreeColumnPopup, 16);
 
-    ui->explorerTreeLeft->setColumnHidden(ExplorerTreeColumnPopup, true);
+    //ui->explorerTreeLeft->setColumnHidden(ExplorerTreeColumnPopup, true);
     ui->explorerTreeRight->setColumnHidden(ExplorerTreeColumnPopup, true);
 
-    ui->explorerTreeLeft->setIndentation(10);
+    //ui->explorerTreeLeft->setIndentation(10);
     ui->explorerTreeRight->setIndentation(10);
+
+    //ui->boardTypeLabelLeft->hide();
+    //ui->boardTypeLabelRight->hide();
+    //ui->explorerTreeLeft->hide();
 
     header = ui->logEventTable->horizontalHeader();
     header->setSectionResizeMode(LoggerColumnEventTimestamp, QHeaderView::Fixed);
@@ -223,7 +227,7 @@ void QkExplorerWidget::_slotExplorerTrees_reload()
         if(m_selNode == 0)
             return;
 
-        explorerTree_reload(etID_Device, m_selNode->module());
+        explorerTree_reload(etID_Module, m_selNode->module());
         if(m_selNode->module() != 0)
             explorerTree_refresh(etID_Module);
 
@@ -504,7 +508,7 @@ CPropertyBrowser* QkExplorerWidget::explorerTree_browser(ExplorerTreeID id)
     {
     case etID_Gateway:
     case etID_Module:
-        return ui->explorerTreeLeft;
+        //return ui->explorerTreeLeft;
     case etID_Network:
     case etID_Device:
         return ui->explorerTreeRight;

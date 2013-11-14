@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>img/comm_text.png</file>
+        <file>img/device_text.png</file>
+        <file>img/gateway_text.png</file>
+        <file>img/network_text.png</file>
+    </qresource>
+</RCC>

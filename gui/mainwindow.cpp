@@ -49,6 +49,8 @@ void MainWindow::setupLayout()
     ui->statusBar->hide();
     ui->connectWidget->setQkConnect(m_connect);
 
+    ui->log->hide();
+
     m_tools->setFloatable(false);
     m_tools->setMovable(false);
     m_tools->setIconSize(QSize(16,16));
