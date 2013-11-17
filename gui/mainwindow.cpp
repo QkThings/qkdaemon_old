@@ -14,6 +14,7 @@
 #include <QDebug>
 #include <QToolBar>
 #include <QTime>
+#include <QSystemTrayIcon>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -27,6 +28,13 @@ MainWindow::MainWindow(QWidget *parent) :
     m_explorerWidget = new QkExplorerWidget(this);
     m_rawWidget = new QkRawWidget(this);
     m_tools = new QToolBar(tr("Tools"), this);
+
+    m_trayIcon = new QSystemTrayIcon(QIcon(":/img/qk_24.png"));
+    //m_trayIconMenu = new QMenu();
+    //m_trayIconMenu->addAction("Option 1");
+    //m_trayIconMenu->addAction("Option 2");
+    //m_trayIcon->setContextMenu(m_trayIconMenu);
+    //m_trayIcon->show();
 
     setupLayout();
     setupConnections();
@@ -61,6 +69,7 @@ void MainWindow::setupLayout()
     addToolBar(Qt::BottomToolBarArea, m_tools);
 
     setWindowTitle("QkDaemon");
+    setWindowIcon(QIcon(":img/qk_64.png"));
 
     QString info;
     info.append("QkDaemon " + QString().sprintf("%d.%d.%d ", QKDAEMON_VERSION_MAJOR,

@@ -24,6 +24,7 @@ public slots:
     void setCurrentConnection(QkConnection *conn);
 
 private slots:
+    void _test(int address, QkDevice::Event event);
     void _slotSearch();
     void _slotStart();
     void _slotStop();
@@ -34,6 +35,7 @@ private slots:
     void _slotExplorerList_reload();
     void _slotExplorerList_addNode(int address);
     void _handleExplorerListRowChanged(int row);
+    void _handleBoarderPanelTabChanged(int index);
     void _handleDataReceived(int address);
     void _handleNodeUpdated(int address);
     void _handleSamplingModeChanged();

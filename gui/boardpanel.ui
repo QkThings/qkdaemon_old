@@ -6,15 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>193</width>
+    <width>227</width>
     <height>266</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
   <property name="styleSheet">
-   <string notr="true">BoardPanel {
+   <string notr="true">QTabWidget {
+background: #eee;
+border-radius: 20px; border: 1px solid #bbb;
+}
+
+BoardPanel {
+color: #aaa;
+background: #eee;
 border-radius: 20px; border: 1px solid #bbb;
 }</string>
   </property>
@@ -62,12 +72,12 @@ border-radius: 20px; border: 1px solid #bbb;
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="pixmap">
          <property name="text">
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap resource="../resources/img.qrc">:/img/comm_text.png</pixmap>
+          <pixmap resource="../resources/img.qrc">:/img/device_text_color.png</pixmap>
          </property>
         </widget>
        </item>
@@ -106,71 +116,60 @@ border-radius: 20px; border: 1px solid #bbb;
    </item>
    <item>
     <layout class="QFormLayout" name="formLayout">
+     <property name="fieldGrowthPolicy">
+      <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
+     </property>
      <item row="0" column="0">
-      <widget class="QLabel" name="label_9">
-       <property name="text">
-        <string>Type:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLabel" name="label_10">
-       <property name="text">
-        <string>USB (Virtual Serial Port)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
         <string>Name:</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QLabel" name="label_5">
+     <item row="0" column="1">
+      <widget class="QLabel" name="label_name">
        <property name="text">
         <string>QkTestBoard</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
+     <item row="1" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
         <string>Qk version:</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QLabel" name="label_6">
+     <item row="1" column="1">
+      <widget class="QLabel" name="label_qkversion">
        <property name="text">
         <string>0.1.0</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="2" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
         <string>Firmware:</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
-      <widget class="QLabel" name="label_7">
+     <item row="2" column="1">
+      <widget class="QLabel" name="label_firmware">
        <property name="text">
         <string>EF23</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="3" column="0">
       <widget class="QLabel" name="label_8">
        <property name="text">
         <string>S/N:</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
-      <widget class="QLabel" name="label_11">
+     <item row="3" column="1">
+      <widget class="QLabel" name="label_serialnumber">
        <property name="text">
         <string>n/a</string>
        </property>

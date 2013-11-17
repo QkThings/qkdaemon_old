@@ -44,6 +44,7 @@ bool QkSerialConnection::tryOpen()
         QString errMsg;
         errMsg = tr("Unable to open port ") + m_sp->portName() + ".\n";
         errMsg += m_sp->errorString();
+        qDebug() << errMsg;
         emit error(errMsg);
         return false;
     }
@@ -76,17 +77,17 @@ void QkSerialConnection::slotSendFrame(QByteArray frame)
 
 void QkSerialConnection::_slotDataReady()
 {
-    QDebug debug(QtDebugMsg);
+    //QDebug debug(QtDebugMsg);
     int count;
 
     // Unstuff bytes
     QByteArray data = device->readAll();
     char *bufPtr = data.data();
     count = data.count();
-    debug << "rx: ";
+    //debug << "rx: ";
     while(count--)
     {
-        debug << QString().sprintf("%02X", (quint8)*bufPtr);
+        //debug << QString().sprintf("%02X", (quint8)*bufPtr);
         parseIncomingData((quint8)*bufPtr++);
         if(m_comm.frameReady)
         {

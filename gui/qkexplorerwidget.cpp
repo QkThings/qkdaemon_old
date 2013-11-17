@@ -79,6 +79,9 @@ void QkExplorerWidget::setupLayout()
 #ifdef Q_OS_WIN
     ui->logEventTable->setFont(QFont("Consolas", 9));
     ui->debugText->setFont(QFont("Consolas",9));
+#else
+    ui->logEventTable->setFont(QFont("Monospace", 9));
+    ui->debugText->setFont(QFont("Monospace",9));
 #endif
 
     setWindowTitle("QkExplorer");
@@ -101,6 +104,9 @@ void QkExplorerWidget::setupConnections()
     connect(ui->explorerList, SIGNAL(currentRowChanged(int)),
             this, SLOT(_handleExplorerListRowChanged(int)));
     connect(ui->explorerList, SIGNAL(currentRowChanged(int)),
+            this, SLOT(_slotExplorerTrees_reload()));
+
+    connect(ui->nodeTabWidget, SIGNAL(currentChanged(int)),
             this, SLOT(_slotExplorerTrees_reload()));
 
     connect(ui->debugPrintTime_check, SIGNAL(clicked()),
@@ -132,7 +138,14 @@ void QkExplorerWidget::setCurrentConnection(QkConnection *conn)
     connect(m_conn->qk, SIGNAL(eventReceived(int,QkDevice::Event)), this, SLOT(_slotLogger_append(int,QkDevice::Event)));
     connect(m_conn->qk, SIGNAL(debugString(int,QString)), this, SLOT(_slotDebug_log(int,QString)));
 
+    connect(m_conn->qk, SIGNAL(eventReceived(int,QkDevice::Event)), this, SLOT(_test(int,QkDevice::Event)));
+
     updateInterface();
+}
+
+void QkExplorerWidget::_test(int address, QkDevice::Event event)
+{
+    qDebug() << "TEST";
 }
 
 void QkExplorerWidget::_handleExplorerListRowChanged(int row)
@@ -157,6 +170,11 @@ void QkExplorerWidget::_handleExplorerListRowChanged(int row)
         m_selBoardType = sbtGatewayNetwork;
         m_selNode = 0;
     }
+}
+
+void QkExplorerWidget::_handleBoarderPanelTabChanged(int index)
+{
+
 }
 
 void QkExplorerWidget::_handleDataReceived(int address)
@@ -227,13 +245,24 @@ void QkExplorerWidget::_slotExplorerTrees_reload()
         if(m_selNode == 0)
             return;
 
-        explorerTree_reload(etID_Module, m_selNode->module());
-        if(m_selNode->module() != 0)
-            explorerTree_refresh(etID_Module);
+        ui->stackedWidget->setCurrentIndex(0);
+        ui->commBoardPanel->setBoard(m_selNode->module(), QkBoard::btModule);
+        ui->deviceBoardPanel->setBoard(m_selNode->device(), QkBoard::btDevice);
 
-        explorerTree_reload(etID_Device, m_selNode->device());
-        if(m_selNode->device() != 0)
-            explorerTree_refresh(etID_Device);
+        if(ui->nodeTabWidget->currentIndex() == 0)
+        {
+            qDebug() << "RELOAD COMM";
+            explorerTree_reload(etID_Module, m_selNode->module());
+            if(m_selNode->module() != 0)
+                explorerTree_refresh(etID_Module);
+        }
+        else
+        {
+            qDebug() << "RELOAD DEVICE";
+            explorerTree_reload(etID_Device, m_selNode->device());
+            if(m_selNode->device() != 0)
+                explorerTree_refresh(etID_Device);
+        }
 
     }
 }
@@ -264,8 +293,8 @@ void QkExplorerWidget::explorerTree_reload(ExplorerTreeID id, QkBoard *board)
     browser->addProperty(m_qkProp[treeSel].top);
     m_qkProp[treeSel].top->item()->setExpanded(true);
 
-    m_qkProp[treeSel].version = new CProperty("Version", CProperty::Label, m_qkProp[treeSel].top);
-    browser->addProperty(m_qkProp[treeSel].version, m_qkProp[treeSel].top);
+    //m_qkProp[treeSel].version = new CProperty("Version", CProperty::Label, m_qkProp[treeSel].top);
+    //browser->addProperty(m_qkProp[treeSel].version, m_qkProp[treeSel].top);
 
     m_qkProp[treeSel].baudRate = new CProperty("Baud rate (bps)", CProperty::Label, m_qkProp[treeSel].top);
     browser->addProperty(m_qkProp[treeSel].baudRate, m_qkProp[treeSel].top);
@@ -277,8 +306,8 @@ void QkExplorerWidget::explorerTree_reload(ExplorerTreeID id, QkBoard *board)
     m_boardProp[treeSel].name = new CProperty("Name", CProperty::Text, m_boardProp[treeSel].top);
     browser->addProperty(m_boardProp[treeSel].name, m_boardProp[treeSel].top);
 
-    m_boardProp[treeSel].fwVersion = new CProperty("Firmware", CProperty::Label, m_boardProp[treeSel].top);
-    browser->addProperty(m_boardProp[treeSel].fwVersion, m_boardProp[treeSel].top);
+    //m_boardProp[treeSel].fwVersion = new CProperty("Firmware", CProperty::Label, m_boardProp[treeSel].top);
+    //browser->addProperty(m_boardProp[treeSel].fwVersion, m_boardProp[treeSel].top);
 
     m_boardProp[treeSel].configs = new CProperty("Configuration", CProperty::Label);
     browser->addProperty(m_boardProp[treeSel].configs);
@@ -421,10 +450,10 @@ void QkExplorerWidget::explorerTree_refresh(ExplorerTreeID id, RefreshFlags flag
     if(selBoard == 0)
         return;
 
-    m_qkProp[treeSel].version->setValue(selBoard->qkInfo().versionString());
+    //m_qkProp[treeSel].version->setValue(selBoard->qkInfo().versionString());
     m_qkProp[treeSel].baudRate->setValue(selBoard->qkInfo().baudRate);
     m_boardProp[treeSel].name->setValue(selBoard->name());
-    m_boardProp[treeSel].fwVersion->setValue(QString().sprintf("%04X",selBoard->firmwareVersion()));
+    //m_boardProp[treeSel].fwVersion->setValue(QString().sprintf("%04X",selBoard->firmwareVersion()));
 
 
     QVector<QkBoard::Config> configs = selBoard->configs();
@@ -468,7 +497,7 @@ void QkExplorerWidget::explorerTree_refresh(ExplorerTreeID id, RefreshFlags flag
 
 void QkExplorerWidget::explorerTree_refresh_data(QkDevice *device)
 {
-    if(device == 0)
+    if(device == 0 || ui->stackedWidget->currentIndex() != 0 || ui->nodeTabWidget->currentIndex() != 1)
         return;
 
     int i;

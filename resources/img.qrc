@@ -2,7 +2,10 @@
     <qresource prefix="/">
         <file>img/comm_text.png</file>
         <file>img/device_text.png</file>
-        <file>img/gateway_text.png</file>
-        <file>img/network_text.png</file>
+        <file>img/device_text_color.png</file>
+        <file>img/comm_text_color.png</file>
+        <file>img/qk_24.png</file>
+        <file>img/daemon_text.png</file>
+        <file>img/qk_64.png</file>
     </qresource>
 </RCC>

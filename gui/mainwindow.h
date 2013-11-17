@@ -7,6 +7,8 @@ namespace Ui {
 class MainWindow;
 }
 
+class QSystemTrayIcon;
+
 class QkRawWidget;
 class QkExplorerWidget;
 class QkDaemonWidget;
@@ -50,6 +52,8 @@ private:
     QkExplorerWidget *m_explorerWidget;
     QkRawWidget *m_rawWidget;
     QToolBar *m_tools;
+    QSystemTrayIcon *m_trayIcon;
+    QMenu *m_trayIconMenu;
 
     QkConnectThread *m_connectThread;
 };

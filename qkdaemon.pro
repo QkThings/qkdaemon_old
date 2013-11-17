@@ -80,6 +80,8 @@ RESOURCES += \
     resources/api/api.qrc \
     resources/img.qrc
 
+RC_ICONS = resources/img/qk_64.png
+
 CONFIG(debug, debug|release) {
     DESTDIR = debug
 } else {
