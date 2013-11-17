@@ -17,14 +17,9 @@
    <bool>true</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true">QTabWidget {
-background: #eee;
-border-radius: 20px; border: 1px solid #bbb;
-}
-
-BoardPanel {
+   <string notr="true">BoardPanel {
 color: #aaa;
-background: #eee;
+background-color: #eee;
 border-radius: 20px; border: 1px solid #bbb;
 }</string>
   </property>
@@ -77,7 +72,7 @@ border-radius: 20px; border: 1px solid #bbb;
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap resource="../resources/img.qrc">:/img/device_text_color.png</pixmap>
+          <pixmap resource="../resources/img/img.qrc">:/img/comm_text_color.png</pixmap>
          </property>
         </widget>
        </item>
@@ -193,7 +188,7 @@ border-radius: 20px; border: 1px solid #bbb;
   </layout>
  </widget>
  <resources>
-  <include location="../resources/img.qrc"/>
+  <include location="../resources/img/img.qrc"/>
  </resources>
  <connections/>
 </ui>

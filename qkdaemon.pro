@@ -78,9 +78,9 @@ FORMS    += gui/mainwindow.ui \
 RESOURCES += \
     resources/icons/icons.qrc \
     resources/api/api.qrc \
-    resources/img.qrc
+    resources/img/img.qrc
 
-RC_ICONS = resources/img/qk_64.png
+#RC_ICONS = resources/img/qk_64.png
 
 CONFIG(debug, debug|release) {
     DESTDIR = debug
