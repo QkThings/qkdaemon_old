@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>617</width>
-    <height>346</height>
+    <width>681</width>
+    <height>325</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -38,10 +38,7 @@
        </attribute>
        <layout class="QHBoxLayout" name="horizontalLayout_6">
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <property name="sizeConstraint">
-           <enum>QLayout::SetFixedSize</enum>
-          </property>
+         <layout class="QVBoxLayout" name="verticalLayout_8">
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
@@ -71,9 +68,6 @@
           </item>
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_5">
-            <property name="sizeConstraint">
-             <enum>QLayout::SetFixedSize</enum>
-            </property>
             <item>
              <widget class="QPushButton" name="search_button">
               <property name="text">
@@ -83,6 +77,12 @@
             </item>
             <item>
              <widget class="QListWidget" name="explorerList">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="minimumSize">
                <size>
                 <width>130</width>
@@ -102,19 +102,7 @@
          </layout>
         </item>
         <item>
-         <widget class="QStackedWidget" name="stackedWidget_2">
-          <property name="minimumSize">
-           <size>
-            <width>220</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>220</width>
-            <height>16777215</height>
-           </size>
-          </property>
+         <widget class="QStackedWidget" name="stackedPanels">
           <property name="currentIndex">
            <number>0</number>
           </property>
@@ -132,31 +120,53 @@
             <property name="bottomMargin">
              <number>0</number>
             </property>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="nodePage">
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
             <item>
              <widget class="QTabWidget" name="nodeTabWidget">
-              <property name="minimumSize">
-               <size>
-                <width>220</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>220</width>
-                <height>16777215</height>
-               </size>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>1</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
               <property name="tabPosition">
-               <enum>QTabWidget::South</enum>
+               <enum>QTabWidget::West</enum>
               </property>
               <property name="currentIndex">
-               <number>0</number>
+               <number>1</number>
               </property>
               <widget class="QWidget" name="commTab">
                <attribute name="title">
                 <string>comm</string>
                </attribute>
                <layout class="QVBoxLayout" name="verticalLayout_10">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
                 <item>
                  <widget class="BoardPanel" name="commBoardPanel" native="true"/>
                 </item>
@@ -166,7 +176,19 @@
                <attribute name="title">
                 <string>device</string>
                </attribute>
-               <layout class="QVBoxLayout" name="verticalLayout_8">
+               <layout class="QHBoxLayout" name="horizontalLayout_7">
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
                 <item>
                  <widget class="BoardPanel" name="deviceBoardPanel" native="true"/>
                 </item>
@@ -176,64 +198,7 @@
             </item>
            </layout>
           </widget>
-          <widget class="QWidget" name="page_2"/>
          </widget>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="verticalLayout_4">
-          <item>
-           <widget class="CPropertyBrowser" name="explorerTreeRight">
-            <property name="alternatingRowColors">
-             <bool>false</bool>
-            </property>
-            <property name="columnCount">
-             <number>3</number>
-            </property>
-            <attribute name="headerVisible">
-             <bool>false</bool>
-            </attribute>
-            <attribute name="headerDefaultSectionSize">
-             <number>20</number>
-            </attribute>
-            <attribute name="headerStretchLastSection">
-             <bool>false</bool>
-            </attribute>
-            <column>
-             <property name="text">
-              <string notr="true">1</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string notr="true">2</string>
-             </property>
-            </column>
-            <column>
-             <property name="text">
-              <string notr="true">3</string>
-             </property>
-            </column>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
-            <item>
-             <widget class="QPushButton" name="update_button">
-              <property name="text">
-               <string>Update</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="save_button">
-              <property name="text">
-               <string>Save</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
         </item>
        </layout>
       </widget>
@@ -245,12 +210,10 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_5">
           <item>
-           <widget class="QComboBox" name="comboBox">
-            <item>
-             <property name="text">
-              <string>Events</string>
-             </property>
-            </item>
+           <widget class="QCheckBox" name="check_enableLogger">
+            <property name="text">
+             <string/>
+            </property>
            </widget>
           </item>
           <item>
@@ -265,6 +228,22 @@
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboBox">
+            <item>
+             <property name="text">
+              <string>Events</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="button_clearLogger">
+            <property name="text">
+             <string>Clear</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -290,10 +269,13 @@
             <item>
              <widget class="pTableWidget" name="logEventTable">
               <property name="editTriggers">
-               <set>QAbstractItemView::NoEditTriggers</set>
+               <set>QAbstractItemView::EditKeyPressed</set>
               </property>
               <property name="horizontalScrollMode">
                <enum>QAbstractItemView::ScrollPerPixel</enum>
+              </property>
+              <property name="gridStyle">
+               <enum>Qt::NoPen</enum>
               </property>
               <property name="columnCount">
                <number>5</number>
@@ -398,16 +380,9 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
-           <widget class="QCheckBox" name="debugPrintTime_check">
+           <widget class="QCheckBox" name="check_enableDebug">
             <property name="text">
-             <string>Timestamp</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="debugPrintSource_check">
-            <property name="text">
-             <string>Source</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -423,6 +398,27 @@
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="debugPrintTime_check">
+            <property name="text">
+             <string>Timestamp</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="debugPrintSource_check">
+            <property name="text">
+             <string>Source</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="button_clearDebug">
+            <property name="text">
+             <string>Clear</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>
@@ -453,20 +449,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="start_button">
-        <property name="text">
-         <string>Start</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="stop_button">
-        <property name="text">
-         <string>Stop</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <spacer name="horizontalSpacer_5">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -483,6 +465,20 @@
        </spacer>
       </item>
       <item>
+       <widget class="QPushButton" name="start_button">
+        <property name="text">
+         <string>Start</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="stop_button">
+        <property name="text">
+         <string>Stop</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer_4">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -495,13 +491,6 @@
         </property>
        </spacer>
       </item>
-      <item>
-       <widget class="QPushButton" name="clear_button">
-        <property name="text">
-         <string>Clear</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </item>
    </layout>
@@ -511,19 +500,14 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>617</width>
-     <height>20</height>
+     <width>681</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>CPropertyBrowser</class>
-   <extends>QTreeWidget</extends>
-   <header>cpropertybrowser.h</header>
-  </customwidget>
   <customwidget>
    <class>pTableWidget</class>
    <extends>QTableWidget</extends>
@@ -542,22 +526,6 @@
  <resources/>
  <connections>
   <connection>
-   <sender>clear_button</sender>
-   <signal>clicked()</signal>
-   <receiver>logEventTable</receiver>
-   <slot>removeAll()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>625</x>
-     <y>59</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>595</x>
-     <y>128</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>comboBox</sender>
    <signal>currentIndexChanged(int)</signal>
    <receiver>stackedWidget</receiver>
@@ -570,22 +538,6 @@
     <hint type="destinationlabel">
      <x>626</x>
      <y>93</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>clear_button</sender>
-   <signal>clicked()</signal>
-   <receiver>logNotificationTable</receiver>
-   <slot>removeAll()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>637</x>
-     <y>62</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>568</x>
-     <y>158</y>
     </hint>
    </hints>
   </connection>

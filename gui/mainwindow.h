@@ -16,18 +16,13 @@ class QkDaemon;
 class QkConnectionManager;
 class QkConnectThread;
 
+#include "messagesdialog.h"
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
     
 public:
-    enum LogMessageType
-    {
-        lmtBlank,
-        lmtInfo,
-        lmtError
-    };
-
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
@@ -36,7 +31,7 @@ public slots:
     void slotShowHideSettings();
     void slotShowHideExplorer();
     void slotShowHideRaw();
-    void logMessage(QString text, LogMessageType lmt = lmtBlank);
+    void log(const QString &message, MessagesDialog::MessageType type = MessagesDialog::mtInfo);
     
 private slots:
     void _handleDaemonStatusMessage(QString message);
@@ -56,6 +51,8 @@ private:
     QMenu *m_trayIconMenu;
 
     QkConnectThread *m_connectThread;
+
+    MessagesDialog *m_messagesDialog;
 };
 
 #endif // MAINWINDOW_H

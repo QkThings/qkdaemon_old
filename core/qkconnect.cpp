@@ -155,11 +155,11 @@ QkConnection::~QkConnection()
     qDebug() << "Deleting connection...";
     if(device != 0)
     {
-        if(device->isOpen())
-            device->close();
-        delete device;
+        //if(device->isOpen())
+        //    device->close();
+        //delete device;
     }
-    delete qk;
+    //delete qk;
 }
 
 bool QkConnection::operator==(const QkConnection &other)
@@ -304,11 +304,11 @@ QkConnection* QkConnectionManager::addConnection(const QkConnection::Descriptor 
     m_connections.append(conn);
     emit connectionAdded(conn);
 
-    QThread *connThread = new QThread();
+    /*QThread *connThread = new QThread();
     conn->moveToThread(connThread);
     connect(conn, SIGNAL(destroyed()), connThread, SLOT(quit()));
     connect(connThread, SIGNAL(finished()), connThread, SLOT(deleteLater()));
-    connThread->start();
+    connThread->start();*/
 
     if(m_searchOnConnect)
         conn->qk->search();
@@ -321,10 +321,10 @@ void QkConnectionManager::removeConnection(const QkConnection::Descriptor &connD
     QkConnection *conn = connection(connDesc);
     if(conn != 0)
     {
-        if(conn->device->isOpen())
-        {
-            conn->device->close();
-        }
+        //if(conn->device->isOpen())
+        //{
+         //   conn->device->close();
+        //}
         emit connectionRemoved(conn);
         m_connections.removeOne(conn);
         delete conn;

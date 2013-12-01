@@ -146,13 +146,9 @@ void QkConnectWidget::slotOpenCloseConnection()
             sp->setPortName(connDesc.params.at(0));
             sp->setBaudRate(QSerialPort::Baud38400);
             if(sp->open(QIODevice::ReadWrite))
-            {
                 button->setText(tr("Connected"));
-            }
             else
-            {
                 qDebug() << sp->errorString() << sp->portName() << sp->baudRate();
-            }
         }
         break;
     default: ;
@@ -193,7 +189,7 @@ void QkConnectWidget::slotConnectionAdded(QkConnection *conn)
 
 void QkConnectWidget::slotConnectionRemoved(QkConnection *conn)
 {
-    qDebug() << "slotConnectionRemoved";
+    qDebug() << "slotConnectionRemoved" << conn;
     int r = findConnection(conn->descriptor);
     qDebug() << "remove row" << r;
     ui->connectionsTable->removeRow(r);

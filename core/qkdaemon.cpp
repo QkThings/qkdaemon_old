@@ -12,6 +12,8 @@ QkDaemon::QkDaemon(QkConnectionManager *connManager, QObject *parent) :
 {
 
     m_server = new QkDaemonServer(connManager, this);
+
+    connect(m_server, SIGNAL(info(QString)), this, SIGNAL(statusMessage(QString)));
 }
 
 QkDaemon::~QkDaemon()

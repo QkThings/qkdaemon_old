@@ -22,8 +22,8 @@ QkExplorerWidget::QkExplorerWidget(QWidget *parent) :
     m_debugPrintTime = false;
     m_debugPrintSource = false;
 
-    setupLayout();
-    setupConnections();
+    _setupLayout();
+    _setupConnections();
     updateInterface();
 }
 
@@ -32,7 +32,7 @@ QkExplorerWidget::~QkExplorerWidget()
     delete ui;
 }
 
-void QkExplorerWidget::setupLayout()
+void QkExplorerWidget::_setupLayout()
 {
     ui->setupUi(this);
     ui->menubar->hide();
@@ -40,47 +40,24 @@ void QkExplorerWidget::setupLayout()
 
     QHeaderView *header;
 
-    /*header = ui->explorerTreeLeft->header();
-    header->setSectionResizeMode(ExplorerTreeColumnElement, QHeaderView::ResizeToContents);
-    header->setSectionResizeMode(ExplorerTreeColumnValue, QHeaderView::Stretch);
-    header->setSectionResizeMode(ExplorerTreeColumnPopup, QHeaderView::Fixed);*/
-
-    header = ui->explorerTreeRight->header();
-    header->setSectionResizeMode(ExplorerTreeColumnElement, QHeaderView::ResizeToContents);
-    header->setSectionResizeMode(ExplorerTreeColumnValue, QHeaderView::Stretch);
-    header->setSectionResizeMode(ExplorerTreeColumnPopup, QHeaderView::Fixed);
-
-    //ui->explorerTreeLeft->setColumnWidth(ExplorerTreeColumnPopup, 16);
-    ui->explorerTreeRight->setColumnWidth(ExplorerTreeColumnPopup, 16);
-
-    //ui->explorerTreeLeft->setColumnHidden(ExplorerTreeColumnPopup, true);
-    ui->explorerTreeRight->setColumnHidden(ExplorerTreeColumnPopup, true);
-
-    //ui->explorerTreeLeft->setIndentation(10);
-    ui->explorerTreeRight->setIndentation(10);
-
-    //ui->boardTypeLabelLeft->hide();
-    //ui->boardTypeLabelRight->hide();
-    //ui->explorerTreeLeft->hide();
-
     header = ui->logEventTable->horizontalHeader();
     header->setSectionResizeMode(LoggerColumnEventTimestamp, QHeaderView::Fixed);
     header->setSectionResizeMode(LoggerColumnEventSource, QHeaderView::Fixed);
+    header->setSectionResizeMode(LoggerColumnEventLabel, QHeaderView::Fixed);
     header->setSectionResizeMode(LoggerColumnEventMessage, QHeaderView::Interactive);
     header->setSectionResizeMode(LoggerColumnEventArguments, QHeaderView::Stretch);
 
     ui->logEventTable->setColumnWidth(LoggerColumnEventTimestamp, 70);
-    ui->logEventTable->setColumnWidth(LoggerColumnEventSource, 70);
-    ui->logEventTable->setColumnWidth(LoggerColumnEventMessage, 300);
+    ui->logEventTable->setColumnWidth(LoggerColumnEventSource, 65);
+    ui->logEventTable->setColumnWidth(LoggerColumnEventLabel, 80);
+    ui->logEventTable->setColumnWidth(LoggerColumnEventMessage, 250);
 
     ui->logEventTable->setFrameStyle(QFrame::StyledPanel);
     ui->logEventTable->setSortingEnabled(false);
 
 #ifdef Q_OS_WIN
-    ui->logEventTable->setFont(QFont("Consolas", 9));
     ui->debugText->setFont(QFont("Consolas",9));
 #else
-    ui->logEventTable->setFont(QFont("Monospace", 9));
     ui->debugText->setFont(QFont("Monospace",9));
 #endif
 
@@ -88,7 +65,7 @@ void QkExplorerWidget::setupLayout()
     updateInterface();
 }
 
-void QkExplorerWidget::setupConnections()
+void QkExplorerWidget::_setupConnections()
 {
     connect(ui->search_button, SIGNAL(clicked()),
             this, SLOT(_slotSearch()));
@@ -96,18 +73,23 @@ void QkExplorerWidget::setupConnections()
             this, SLOT(_slotStart()));
     connect(ui->stop_button, SIGNAL(clicked()),
             this, SLOT(_slotStop()));
-    connect(ui->update_button, SIGNAL(clicked()),
-            this, SLOT(_slotUpdate()));
-    connect(ui->clear_button, SIGNAL(clicked()),
-            this, SLOT(_slotClear()));
+    connect(ui->button_clearLogger, SIGNAL(clicked()),
+            ui->logEventTable, SLOT(removeAll()));
+    connect(ui->button_clearDebug, SIGNAL(clicked()),
+            ui->debugText, SLOT(clear()));
 
     connect(ui->explorerList, SIGNAL(currentRowChanged(int)),
             this, SLOT(_handleExplorerListRowChanged(int)));
     connect(ui->explorerList, SIGNAL(currentRowChanged(int)),
-            this, SLOT(_slotExplorerTrees_reload()));
+            this, SLOT(_slotBoardPanels_reload()));
 
-    connect(ui->nodeTabWidget, SIGNAL(currentChanged(int)),
-            this, SLOT(_slotExplorerTrees_reload()));
+//    connect(ui->nodeTabWidget, SIGNAL(currentChanged(int)),
+//            this, SLOT(_slotExplorerTrees_reload()));
+
+    connect(ui->check_enableLogger, SIGNAL(clicked()),
+            this, SLOT(updateInterface()));
+    connect(ui->check_enableDebug, SIGNAL(clicked()),
+            this, SLOT(updateInterface()));
 
     connect(ui->debugPrintTime_check, SIGNAL(clicked()),
             this, SLOT(_slotDebug_updateOptions()));
@@ -138,14 +120,7 @@ void QkExplorerWidget::setCurrentConnection(QkConnection *conn)
     connect(m_conn->qk, SIGNAL(eventReceived(int,QkDevice::Event)), this, SLOT(_slotLogger_append(int,QkDevice::Event)));
     connect(m_conn->qk, SIGNAL(debugString(int,QString)), this, SLOT(_slotDebug_log(int,QString)));
 
-    connect(m_conn->qk, SIGNAL(eventReceived(int,QkDevice::Event)), this, SLOT(_test(int,QkDevice::Event)));
-
     updateInterface();
-}
-
-void QkExplorerWidget::_test(int address, QkDevice::Event event)
-{
-    qDebug() << "TEST";
 }
 
 void QkExplorerWidget::_handleExplorerListRowChanged(int row)
@@ -153,6 +128,7 @@ void QkExplorerWidget::_handleExplorerListRowChanged(int row)
     if(row < 0)
     {
         m_selNode = 0;
+        ui->stackedPanels->setCurrentIndex(spiNone);
         return;
     }
 
@@ -164,6 +140,7 @@ void QkExplorerWidget::_handleExplorerListRowChanged(int row)
         QString addrStr = itemText.split(' ').at(1);
         int addr = addrStr.toInt(&ok, 16);
         m_selNode = m_conn->qk->node(addr);
+        ui->stackedPanels->setCurrentIndex(spiNode);
     }
     else
     {
@@ -172,16 +149,13 @@ void QkExplorerWidget::_handleExplorerListRowChanged(int row)
     }
 }
 
-void QkExplorerWidget::_handleBoarderPanelTabChanged(int index)
-{
-
-}
 
 void QkExplorerWidget::_handleDataReceived(int address)
 {
     if(m_selNode != 0 && m_selNode->address() == address)
     {
-        explorerTree_refresh_data(m_selNode->device());
+        //_boardPanel_device_refreshData(m_selNode->device());
+        ui->deviceBoardPanel->refreshData();
     }
 }
 
@@ -190,27 +164,8 @@ void QkExplorerWidget::_handleNodeUpdated(int address)
     if(m_selBoardType == sbtModuleDevice)
     {
         if(m_selNode != 0 && m_selNode->address() == address)
-            _slotExplorerTrees_reload();
+            _slotBoardPanels_reload();
     }
-}
-
-void QkExplorerWidget::_handleSamplingModeChanged()
-{
-    bool enTriggeredMode, enNumberOfSamples;
-    QkDevice::SamplingMode curSampMode = (QkDevice::SamplingMode)m_sampProp.mode->value().toInt();
-
-    if(curSampMode == QkDevice::smTriggered)
-        enTriggeredMode = true;
-    else
-        enTriggeredMode = false;
-    if(curSampMode == QkDevice::smContinuous)
-        enNumberOfSamples = false;
-    else
-        enNumberOfSamples = true;
-
-    m_sampProp.N->setEnabled(enNumberOfSamples);
-    m_sampProp.triggerClock->setEnabled(enTriggeredMode);
-    m_sampProp.triggerScaler->setEnabled(enTriggeredMode);
 }
 
 void QkExplorerWidget::_slotExplorerList_reload() //FIXME is it really needed?
@@ -225,7 +180,7 @@ void QkExplorerWidget::_slotExplorerList_reload() //FIXME is it really needed?
 
 void QkExplorerWidget::_slotExplorerList_addNode(int address)
 {
-    if(explorerList_findNode(address) >= 0)
+    if(_explorerList_findNode(address) >= 0)
         return;
 
     ui->explorerList->addItem(tr("Node") + QString().sprintf(" %04X", address));
@@ -235,7 +190,7 @@ void QkExplorerWidget::_slotExplorerList_addNode(int address)
     }
 }
 
-void QkExplorerWidget::_slotExplorerTrees_reload()
+void QkExplorerWidget::_slotBoardPanels_reload()
 {    
     if(ui->explorerList->currentRow() < 0)
         return;
@@ -245,321 +200,23 @@ void QkExplorerWidget::_slotExplorerTrees_reload()
         if(m_selNode == 0)
             return;
 
-        ui->stackedWidget->setCurrentIndex(0);
-        ui->commBoardPanel->setBoard(m_selNode->module(), QkBoard::btModule);
-        ui->deviceBoardPanel->setBoard(m_selNode->device(), QkBoard::btDevice);
+        ui->commBoardPanel->setBoard(m_selNode->module(), QkBoard::btModule, m_conn);
+        ui->commBoardPanel->reload();
+        ui->commBoardPanel->refresh();
 
-        if(ui->nodeTabWidget->currentIndex() == 0)
-        {
-            qDebug() << "RELOAD COMM";
-            explorerTree_reload(etID_Module, m_selNode->module());
-            if(m_selNode->module() != 0)
-                explorerTree_refresh(etID_Module);
-        }
+        ui->deviceBoardPanel->setBoard(m_selNode->device(), QkBoard::btDevice, m_conn);
+        ui->deviceBoardPanel->reload();
+        ui->deviceBoardPanel->refresh();
+
+        if(m_selNode->device() != 0)
+            ui->nodeTabWidget->setCurrentIndex(1);
         else
-        {
-            qDebug() << "RELOAD DEVICE";
-            explorerTree_reload(etID_Device, m_selNode->device());
-            if(m_selNode->device() != 0)
-                explorerTree_refresh(etID_Device);
-        }
-
+            ui->nodeTabWidget->setCurrentIndex(0);
     }
 }
 
-void QkExplorerWidget::explorerTree_reload(ExplorerTreeID id, QkBoard *board)
-{
-    QkDevice *device = 0;
-    CPropertyBrowser *browser = 0;
-    ExplorerTreeSel treeSel;
 
-    browser = explorerTree_browser(id);
-    if(browser == 0)
-        return;
-
-    int prevScrollValue = browser->verticalScrollBar()->value();
-    browser->clear();
-
-    treeSel = explorerTree_select(id);
-
-    if(board == 0) // not available
-    {
-        CProperty *naProp = new CProperty(tr("(not available)"), CProperty::Label);
-        browser->addProperty(naProp);
-        return;
-    }
-
-    m_qkProp[treeSel].top = new CProperty("Qk", CProperty::Label);
-    browser->addProperty(m_qkProp[treeSel].top);
-    m_qkProp[treeSel].top->item()->setExpanded(true);
-
-    //m_qkProp[treeSel].version = new CProperty("Version", CProperty::Label, m_qkProp[treeSel].top);
-    //browser->addProperty(m_qkProp[treeSel].version, m_qkProp[treeSel].top);
-
-    m_qkProp[treeSel].baudRate = new CProperty("Baud rate (bps)", CProperty::Label, m_qkProp[treeSel].top);
-    browser->addProperty(m_qkProp[treeSel].baudRate, m_qkProp[treeSel].top);
-
-    m_boardProp[treeSel].top = new CProperty("Board", CProperty::Label);
-    browser->addProperty(m_boardProp[treeSel].top);
-    m_boardProp[treeSel].top->item()->setExpanded(true);
-
-    m_boardProp[treeSel].name = new CProperty("Name", CProperty::Text, m_boardProp[treeSel].top);
-    browser->addProperty(m_boardProp[treeSel].name, m_boardProp[treeSel].top);
-
-    //m_boardProp[treeSel].fwVersion = new CProperty("Firmware", CProperty::Label, m_boardProp[treeSel].top);
-    //browser->addProperty(m_boardProp[treeSel].fwVersion, m_boardProp[treeSel].top);
-
-    m_boardProp[treeSel].configs = new CProperty("Configuration", CProperty::Label);
-    browser->addProperty(m_boardProp[treeSel].configs);
-    m_boardProp[treeSel].configs->item()->setExpanded(true);
-
-
-    m_boardProp[treeSel].configsList.clear();
-    foreach(QkBoard::Config config, board->configs())
-    {
-        CProperty::Type propType;
-        switch(config.type())
-        {
-        case QkBoard::Config::ctIntDec:
-            propType = CProperty::Int;
-            break;
-        case QkBoard::Config::ctIntHex:
-            propType = CProperty::Hex;
-            break;
-        case QkBoard::Config::ctFloat:
-            propType = CProperty::Double;
-            break;
-        case QkBoard::Config::ctBool:
-            propType = CProperty::Bool;
-            break;
-        case QkBoard::Config::ctDateTime:
-            propType = CProperty::DateTime;
-            break;
-        case QkBoard::Config::ctTime:
-            propType = CProperty::Time;
-            break;
-        default:
-            propType = CProperty::Label;
-        }
-
-        CProperty *configProp = new CProperty(config.label(), propType, m_boardProp[treeSel].configs);
-        configProp->setValue(config.value());
-        browser->addProperty(configProp, m_boardProp[treeSel].configs);
-        m_boardProp[treeSel].configsList.append(configProp);
-    }
-
-    if(etID_Device)
-    {
-        device = (QkDevice*) board;
-
-        m_sampProp.top = new CProperty("Sampling", CProperty::Label);
-        browser->addProperty(m_sampProp.top);
-        m_sampProp.top->item()->setExpanded(true);
-
-        m_sampProp.frequency = new CProperty("Frequency (Hz)", CProperty::Int, m_sampProp.top);
-        browser->addProperty(m_sampProp.frequency, m_sampProp.top);
-
-        m_sampProp.mode = new CProperty("Mode", CProperty::Enum, m_sampProp.top);
-        QStringList samplingModes;
-        samplingModes << "Single" << "Continuous" << "Triggered";
-        m_sampProp.mode->setEnumList(samplingModes);
-        browser->addProperty(m_sampProp.mode, m_sampProp.top);
-
-        m_sampProp.N = new CProperty("N", CProperty::Int, m_sampProp.top);
-        browser->addProperty(m_sampProp.N, m_sampProp.top);
-
-        m_sampProp.triggerClock = new CProperty("Trigger clock", CProperty::Enum, m_sampProp.top);
-        QStringList triggerClocks;
-        triggerClocks << "1sec" << "10sec" << "1min" << "10min" << "1hour";
-
-        m_sampProp.triggerClock->setEnumList(triggerClocks);
-        browser->addProperty(m_sampProp.triggerClock, m_sampProp.top);
-
-        m_sampProp.triggerScaler = new CProperty("Trigger scaler", CProperty::Int, m_sampProp.top);
-        browser->addProperty(m_sampProp.triggerScaler, m_sampProp.top);
-
-        m_deviceProp.data = new CProperty("Data", CProperty::Label);
-        browser->addProperty(m_deviceProp.data);
-        m_deviceProp.data->item()->setExpanded(true);
-
-        m_deviceProp.dataList.clear();
-        foreach(QkDevice::Data data, device->data())
-        {
-            CProperty *dataProp = new CProperty(data.label(), CProperty::Label, m_deviceProp.data);
-            dataProp->setValue(data.value());
-            browser->addProperty(dataProp, m_deviceProp.data);
-            m_deviceProp.dataList.append(dataProp);
-        }
-
-        m_deviceProp.actions = new CProperty("Actions", CProperty::Label);
-        browser->addProperty(m_deviceProp.actions);
-        m_deviceProp.actions->item()->setExpanded(true);
-
-        m_deviceProp.events = new CProperty("Events", CProperty::Label);
-        browser->addProperty(m_deviceProp.events);
-        m_deviceProp.events->item()->setExpanded(true);
-
-        m_deviceProp.eventsList.clear();
-        foreach(QkDevice::Event event, device->events())
-        {
-            CProperty *eventProp = new CProperty(event.label(), CProperty::Label, m_deviceProp.events);
-            browser->addProperty(eventProp, m_deviceProp.events);
-            m_deviceProp.eventsList.append(eventProp);
-        }
-
-        connect(m_sampProp.mode, SIGNAL(valueChanged(CProperty*)), this, SLOT(_handleSamplingModeChanged()));
-        _handleSamplingModeChanged();
-    }
-
-    browser->verticalScrollBar()->setValue(prevScrollValue);
-}
-
-void QkExplorerWidget::explorerTree_refresh(ExplorerTreeID id, RefreshFlags flags)
-{
-    int i;
-    QkBoard *selBoard = 0;
-    QkDevice *selDevice = 0;
-    CPropertyBrowser *browser = 0;
-    ExplorerTreeSel treeSel;
-
-    if((id == etID_Device || id == etID_Module) && m_selNode == 0)
-        return;
-
-    browser = explorerTree_browser(id);
-    treeSel = explorerTree_select(id);
-
-    switch(id)
-    {
-    case etID_Gateway:
-        selBoard = m_conn->qk->gateway();
-        break;
-    case etID_Network:
-        selBoard = m_conn->qk->network();
-        break;
-    case etID_Module:
-        selBoard = m_selNode->module();
-        break;
-    case etID_Device:
-        selDevice = m_selNode->device();
-        selBoard = selDevice;
-        break;
-    default:
-        selBoard = 0;
-    }
-
-    if(selBoard == 0)
-        return;
-
-    //m_qkProp[treeSel].version->setValue(selBoard->qkInfo().versionString());
-    m_qkProp[treeSel].baudRate->setValue(selBoard->qkInfo().baudRate);
-    m_boardProp[treeSel].name->setValue(selBoard->name());
-    //m_boardProp[treeSel].fwVersion->setValue(QString().sprintf("%04X",selBoard->firmwareVersion()));
-
-
-    QVector<QkBoard::Config> configs = selBoard->configs();
-    for(i = 0; i < configs.count(); i++)
-    {
-        m_boardProp[treeSel].configsList[i]->setValue(configs[i].value());
-    }
-
-
-    if(id == etID_Device && selDevice != 0)
-    {
-        m_sampProp.frequency->setValue(selDevice->samplingInfo().frequency);
-        m_sampProp.mode->setValue(selDevice->samplingInfo().mode);
-        m_sampProp.triggerClock->setValue(selDevice->samplingInfo().triggerClock);
-        m_sampProp.triggerScaler->setValue(selDevice->samplingInfo().triggerScaler);
-        m_sampProp.N->setValue(selDevice->samplingInfo().N);
-
-        /*QVector<QkDevice::Data> data = selDevice->data();
-        for(i = 0; i < data.count(); i++)
-        {
-            m_deviceProp.dataList[i]->setValue(data[i].value());
-        }*/
-        explorerTree_refresh_data(selDevice);
-
-        /*browser->clearChildren(m_deviceProp.data);
-        foreach(QkDevice::Data data, selDevice->data())
-        {
-            CProperty *dataProp = new CProperty(data.label(), CProperty::Label, m_deviceProp.data);
-            dataProp->setValue(data.value());
-            browser->addProperty(dataProp, m_deviceProp.data);
-        }*/
-
-        /*browser->clearChildren(m_deviceProp.events);
-        foreach(QkDevice::Event event, selDevice->events())
-        {
-            CProperty *eventProp = new CProperty(event.label(), CProperty::Label, m_deviceProp.events);
-            browser->addProperty(eventProp, m_deviceProp.events);
-        }*/
-    }
-}
-
-void QkExplorerWidget::explorerTree_refresh_data(QkDevice *device)
-{
-    if(device == 0 || ui->stackedWidget->currentIndex() != 0 || ui->nodeTabWidget->currentIndex() != 1)
-        return;
-
-    int i;
-    QString valueStr;
-    QVector<QkDevice::Data> data = device->data();
-    for(i = 0; i < data.count(); i++)
-    {
-        if(device->dataType() == QkDevice::Data::dtInt)
-            valueStr = QString().sprintf("%-10d", (int)data[i].value());
-        else
-            valueStr = QString().sprintf("% .6f", data[i].value());
-        m_deviceProp.dataList[i]->setValue(valueStr);
-    }
-
-    /*QList<QObject*> childrenObjects = m_deviceProp.data->children();
-
-    return;
-
-    int i = 0;
-    foreach(QObject *childObject, childrenObjects)
-    {
-        QString valueStr;
-        if(device->dataType() == QkDevice::Data::dtInt)
-            valueStr = QString().sprintf("%-10d", (int)data[i].value());
-        else
-            valueStr = QString().sprintf("% .6f", data[i].value());
-
-        CProperty *prop = (CProperty*)childObject;
-        prop->setValue(valueStr);
-        i++;
-    }*/
-}
-
-CPropertyBrowser* QkExplorerWidget::explorerTree_browser(ExplorerTreeID id)
-{
-    switch(id)
-    {
-    case etID_Gateway:
-    case etID_Module:
-        //return ui->explorerTreeLeft;
-    case etID_Network:
-    case etID_Device:
-        return ui->explorerTreeRight;
-    }
-    return 0;
-}
-
-QkExplorerWidget::ExplorerTreeSel QkExplorerWidget::explorerTree_select(ExplorerTreeID id)
-{
-    switch(id)
-    {
-    case etID_Gateway:
-    case etID_Module:
-        return etSel_Left;
-    case etID_Network:
-    case etID_Device:
-        return etSel_Right;
-    }
-    return etSel_Right;
-}
-
-int QkExplorerWidget::explorerList_findNode(int address)
+int QkExplorerWidget::_explorerList_findNode(int address)
 {
     int row;
 
@@ -580,7 +237,9 @@ int QkExplorerWidget::explorerList_findNode(int address)
 
 void QkExplorerWidget::_slotSearch()
 {
+    int stackIdx = ui->stackedPanels->currentIndex();
     ui->explorerList->clear();
+    ui->stackedPanels->setCurrentIndex(stackIdx);
     m_conn->qk->search();
 }
 
@@ -594,48 +253,7 @@ void QkExplorerWidget::_slotStop()
     m_conn->qk->stop();
 }
 
-void QkExplorerWidget::_slotUpdate()
-{
-    int i, address = 0;
-    ExplorerTreeSel treeSel;
 
-    if(m_selBoardType == sbtModuleDevice)
-    {
-        QkModule *selModule = m_selNode->module();
-        QkDevice *selDevice = m_selNode->device();
-
-        if(selDevice != 0)
-        {
-            address = selDevice->address();
-            treeSel = explorerTree_select(etID_Device);
-
-            selDevice->_setName(m_boardProp[treeSel].name->value().toString());
-
-            for(i = 0; i < m_boardProp[treeSel].configsList.count(); i++)
-            {
-                CProperty *configProp = m_boardProp[treeSel].configsList.at(i);
-                selDevice->setConfigValue(i, configProp->value());
-            }
-
-            QkDevice::SamplingInfo sampInfo;
-            sampInfo.frequency = m_sampProp.frequency->value().toInt();
-            sampInfo.mode = (QkDevice::SamplingMode) m_sampProp.mode->value().toInt();
-            sampInfo.triggerClock = (QkDevice::TriggerClock) m_sampProp.triggerClock->value().toInt();
-            sampInfo.triggerScaler = m_sampProp.triggerScaler->value().toInt();
-            sampInfo.N = m_sampProp.N->value().toInt();
-            selDevice->_setSamplingInfo(sampInfo);
-
-            ui->statusBar->showMessage(tr("Updating..."));
-            selDevice->update();
-        }
-
-        if(selModule != 0 || selDevice != 0)
-        {
-            m_conn->qk->getNode(address);
-            ui->statusBar->showMessage(tr("Updated"), 2000);
-        }
-    }
-}
 
 void QkExplorerWidget::_slotClear()
 {
@@ -662,14 +280,19 @@ void QkExplorerWidget::updateInterface()
     ui->search_button->setEnabled(enableButtons);
     ui->start_button->setEnabled(enableButtons);
     ui->stop_button->setEnabled(enableButtons);
-    ui->update_button->setEnabled(enableButtons);
-    ui->save_button->setEnabled(enableButtons);
 
-    ui->clear_button->setEnabled(ui->explorerTabs->currentIndex() > 0);
+    /*bool logEnabled = ui->check_enableLogger->isChecked();
+    ui->logEventTable->setEnabled(logEnabled);
+
+    bool debugEnabled = ui->check_enableDebug->isChecked();
+    ui->debugText->setEnabled(debugEnabled);*/
 }
 
 void QkExplorerWidget::_slotDebug_log(int address, QString debugStr)
 {
+    if(!ui->check_enableDebug->isChecked())
+        return;
+
     QString str;
     if(m_debugPrintTime)
         str.append(QTime::currentTime().toString("hh:mm:ss") + " ");
@@ -687,6 +310,9 @@ void QkExplorerWidget::_slotDebug_updateOptions()
 
 void QkExplorerWidget::_slotLogger_append(int address, QkDevice::Event event)
 {
+    if(!ui->check_enableLogger->isChecked())
+        return;
+
     int r = ui->logEventTable->addRow();
 
     QString timeStr = QTime::currentTime().toString("hh:mm:ss");
@@ -711,10 +337,10 @@ void QkExplorerWidget::_slotLogger_append(int address, QkDevice::Event event)
 
     QList<float> argsList = event.args();
     QString argsStr;
-    argsStr.append("{ ");
+    argsStr.append("");
     foreach(float arg, argsList)
-        argsStr.append(QString::number(arg) + " ");
-    argsStr.append("}");
+        argsStr.append(QString::number(arg) + "  ");
+    argsStr.append("");
 
     msgStr = insertArgsOnMessage(msgStr, event.args());
 

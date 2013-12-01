@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include "gui_globals.h"
 #include "qkcore.h"
 #include "qkdaemon.h"
 #include "qkconnect.h"
@@ -8,7 +9,7 @@
 #include "qkdaemonwidget.h"
 #include "qkexplorerwidget.h"
 #include "qkrawwidget.h"
-
+#include "messagesdialog.h"
 #include "settingsdialog.h"
 
 #include <QDebug>
@@ -30,11 +31,14 @@ MainWindow::MainWindow(QWidget *parent) :
     m_tools = new QToolBar(tr("Tools"), this);
 
     m_trayIcon = new QSystemTrayIcon(QIcon(":/img/qk_24.png"));
-    //m_trayIconMenu = new QMenu();
-    //m_trayIconMenu->addAction("Option 1");
-    //m_trayIconMenu->addAction("Option 2");
-    //m_trayIcon->setContextMenu(m_trayIconMenu);
-    //m_trayIcon->show();
+//    m_trayIconMenu = new QMenu();
+//    m_trayIconMenu->addAction("Option 1");
+//    m_trayIconMenu->addAction("Option 2");
+//    m_trayIcon->setContextMenu(m_trayIconMenu);
+//    m_trayIcon->show();
+
+    m_messagesDialog = new MessagesDialog(this);
+    m_messagesDialog->hide();
 
     setupLayout();
     setupConnections();
@@ -59,6 +63,7 @@ void MainWindow::setupLayout()
 
     ui->log->hide();
 
+
     m_tools->setFloatable(false);
     m_tools->setMovable(false);
     m_tools->setIconSize(QSize(16,16));
@@ -68,15 +73,15 @@ void MainWindow::setupLayout()
     m_tools->addAction(QIcon(":icons/notepad_w_16.png"), "Info", this, SLOT(slotShowHideInfo()));
     addToolBar(Qt::BottomToolBarArea, m_tools);
 
-    setWindowTitle("QkDaemon");
+    setWindowTitle(GUI_MAINWINDOW_TITLE);
     setWindowIcon(QIcon(":img/qk_64.png"));
 
     QString info;
     info.append("QkDaemon " + QString().sprintf("%d.%d.%d ", QKDAEMON_VERSION_MAJOR,
                                                 QKDAEMON_VERSION_MINOR,
                                                 QKDAEMON_VERSION_PATCH));
-    info.append("using QkLib " + QkCore::version());
-    logMessage(info);
+    info.append("(QkCore " + QkCore::version() + ")");
+    log(info);
 }
 
 void MainWindow::setupConnections()
@@ -90,33 +95,20 @@ void MainWindow::setupConnections()
 
 void MainWindow::_handleDaemonStatusMessage(QString message)
 {
-    logMessage(message, lmtInfo);
+    log(message, MessagesDialog::mtInfo);
 }
 
-void MainWindow::logMessage(QString text, LogMessageType lmt)
+void MainWindow::log(const QString &message, MessagesDialog::MessageType type)
 {
-    qDebug() << "logMessage()" << text;
-    QColor textColor;
-    switch(lmt)
-    {
-    //case lmtInfo: textColor = Qt::blue; break;
-    //case lmtError: textColor = Qt::red; break;
-    default:
-        textColor = Qt::black;
-    }
-    ui->log->setTextColor(textColor);
+    qDebug() << "log()" << message;
 
-    QString msg;
-
-    if(lmt == lmtInfo || lmt == lmtError)
-        msg.append("[" + QTime::currentTime().toString("hh:mm:ss") + "] ");
-    msg.append(text);
-    ui->log->append(msg);
+    m_messagesDialog->log(message, type);
 }
 
 void MainWindow::slotShowHideInfo()
 {
-    ui->log->setVisible(!ui->log->isVisible());
+    //ui->log->setVisible(!ui->log->isVisible());
+    m_messagesDialog->setVisible(!m_messagesDialog->isVisible());
 }
 
 void MainWindow::slotShowHideSettings()

@@ -44,7 +44,8 @@ SOURCES += main.cpp\
     core/qkapihandler.cpp \
     core/qkconnect.cpp \
     core/qkconnectthread.cpp \
-    gui/boardpanel.cpp
+    gui/boardpanel.cpp \
+    gui/messagesdialog.cpp
 
 HEADERS  += gui/mainwindow.h \
     core/qkdaemon.h \
@@ -65,7 +66,9 @@ HEADERS  += gui/mainwindow.h \
     core/qkapihandler.h \
     core/qkconnect.h \
     core/qkconnectthread.h \
-    gui/boardpanel.h
+    gui/boardpanel.h \
+    gui/messagesdialog.h \
+    gui/gui_globals.h
 
 FORMS    += gui/mainwindow.ui \
     gui/qkexplorerwidget.ui \
@@ -73,7 +76,8 @@ FORMS    += gui/mainwindow.ui \
     gui/qkconnectwidget.ui \
     gui/qkrawwidget.ui \
     gui/settingsdialog.ui \
-    gui/boardpanel.ui
+    gui/boardpanel.ui \
+    gui/messagesdialog.ui
 
 RESOURCES += \
     resources/icons/icons.qrc \
