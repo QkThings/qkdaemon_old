@@ -1,6 +1,13 @@
 build/
-*Makefile*
+*
+Makefile*
+
 *.pro.user*
+
 *.*~
+
 *object_script*
+
 *.autosave
+*~
+*~
