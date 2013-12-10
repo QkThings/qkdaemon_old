@@ -61,6 +61,8 @@ void QkConnectWidget::setupLayout()
     table->setColumnWidth(ColumnParam1, 80);
     table->setColumnWidth(ColumnOpenClose, 100);
 
+    table->setColumnHidden(ColumnOpenClose, true);
+
     table->setAlternatingRowColors(true);
 
 //    table->hideColumn(ColumnOpenClose);
@@ -203,7 +205,7 @@ void QkConnectWidget::slotReloadAvailableSerialPorts()
     {
         //FIXME Show all virtual serial ports
 #ifdef Q_OS_UNIX
-        if(!sp.portName().contains("USB"))
+        if(!sp.portName().contains("USB") && !sp.portName().contains("ACM"))
             continue;
 #endif
 

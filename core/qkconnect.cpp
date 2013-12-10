@@ -209,9 +209,10 @@ void QkConnection::setup()
 }
 
 QkConnectionManager::QkConnectionManager(QObject *parent) :
-    QObject(parent)
+    QObject(parent),
+    m_searchOnConnect(false)
 {
-    m_searchOnConnect = true;
+
 }
 
 QkConnectionManager::~QkConnectionManager()
