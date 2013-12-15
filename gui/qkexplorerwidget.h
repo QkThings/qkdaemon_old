@@ -35,8 +35,10 @@ private slots:
     void _handleDataReceived(int address);
     void _handleNodeUpdated(int address);
     void _slotLogger_append(int address, QkDevice::Event event);
+    void _slotLogger_setEnabled(bool enabled);
     void _slotDebug_log(int address, QString debugStr);
     void _slotDebug_updateOptions();
+    void _slotDebug_setEnabled(bool enabled);
     void showError(int code, int arg);
     void showError(const QString &message);
     void updateInterface();

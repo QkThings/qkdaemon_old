@@ -4,11 +4,14 @@
 #include "qkcore.h"
 #include "cproperty.h"
 #include "cpropertybrowser.h"
+#include "eventwidget.h"
 
 #include <QDebug>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QTableWidgetItem>
+#include <QListWidget>
+#include <QListWidgetItem>
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QTime>
@@ -38,22 +41,26 @@ void QkExplorerWidget::_setupLayout()
     ui->menubar->hide();
     ui->statusBar->hide();
 
-    QHeaderView *header;
+//    QListWidgetItem *item = new QListWidgetItem();
+//    EventWidget *eventWidget = new EventWidget();
+//    ui->eventList->addItem(item);
+//    ui->eventList->setItemWidget(item, eventWidget);
+//    QHeaderView *header;
 
-    header = ui->logEventTable->horizontalHeader();
-    header->setSectionResizeMode(LoggerColumnEventTimestamp, QHeaderView::Fixed);
-    header->setSectionResizeMode(LoggerColumnEventSource, QHeaderView::Fixed);
-    header->setSectionResizeMode(LoggerColumnEventLabel, QHeaderView::Fixed);
-    header->setSectionResizeMode(LoggerColumnEventMessage, QHeaderView::Interactive);
-    header->setSectionResizeMode(LoggerColumnEventArguments, QHeaderView::Stretch);
+//    header = ui->logEventTable->horizontalHeader();
+//    header->setSectionResizeMode(LoggerColumnEventTimestamp, QHeaderView::Fixed);
+//    header->setSectionResizeMode(LoggerColumnEventSource, QHeaderView::Fixed);
+//    header->setSectionResizeMode(LoggerColumnEventLabel, QHeaderView::Fixed);
+//    header->setSectionResizeMode(LoggerColumnEventMessage, QHeaderView::Interactive);
+//    header->setSectionResizeMode(LoggerColumnEventArguments, QHeaderView::Stretch);
 
-    ui->logEventTable->setColumnWidth(LoggerColumnEventTimestamp, 70);
-    ui->logEventTable->setColumnWidth(LoggerColumnEventSource, 65);
-    ui->logEventTable->setColumnWidth(LoggerColumnEventLabel, 80);
-    ui->logEventTable->setColumnWidth(LoggerColumnEventMessage, 250);
+//    ui->logEventTable->setColumnWidth(LoggerColumnEventTimestamp, 70);
+//    ui->logEventTable->setColumnWidth(LoggerColumnEventSource, 65);
+//    ui->logEventTable->setColumnWidth(LoggerColumnEventLabel, 80);
+//    ui->logEventTable->setColumnWidth(LoggerColumnEventMessage, 250);
 
-    ui->logEventTable->setFrameStyle(QFrame::StyledPanel);
-    ui->logEventTable->setSortingEnabled(false);
+//    ui->logEventTable->setFrameStyle(QFrame::StyledPanel);
+//    ui->logEventTable->setSortingEnabled(false);
 
 #ifdef Q_OS_WIN
     ui->debugText->setFont(QFont("Consolas",9));
@@ -74,17 +81,18 @@ void QkExplorerWidget::_setupConnections()
     connect(ui->stop_button, SIGNAL(clicked()),
             this, SLOT(_slotStop()));
     connect(ui->button_clearLogger, SIGNAL(clicked()),
-            ui->logEventTable, SLOT(removeAll()));
+            ui->eventTable, SLOT(removeAll()));
+    connect(ui->check_enableLogger, SIGNAL(clicked(bool)),
+            this, SLOT(_slotLogger_setEnabled(bool)));
     connect(ui->button_clearDebug, SIGNAL(clicked()),
             ui->debugText, SLOT(clear()));
+    connect(ui->check_enableDebug, SIGNAL(clicked(bool)),
+            this, SLOT(_slotDebug_setEnabled(bool)));
 
     connect(ui->explorerList, SIGNAL(currentRowChanged(int)),
             this, SLOT(_handleExplorerListRowChanged(int)));
     connect(ui->explorerList, SIGNAL(currentRowChanged(int)),
             this, SLOT(_slotBoardPanels_reload()));
-
-//    connect(ui->nodeTabWidget, SIGNAL(currentChanged(int)),
-//            this, SLOT(_slotExplorerTrees_reload()));
 
     connect(ui->check_enableLogger, SIGNAL(clicked()),
             this, SLOT(updateInterface()));
@@ -257,7 +265,7 @@ void QkExplorerWidget::_slotStop()
 
 void QkExplorerWidget::_slotClear()
 {
-    ui->logEventTable->removeAll();
+    //ui->logEventTable->removeAll();
     ui->debugText->clear();
 }
 
@@ -308,53 +316,38 @@ void QkExplorerWidget::_slotDebug_updateOptions()
     m_debugPrintSource = ui->debugPrintSource_check->isChecked();
 }
 
+void QkExplorerWidget::_slotDebug_setEnabled(bool enabled)
+{
+    if(enabled)
+        ui->label_debugEnabled->setPixmap(QPixmap(":/icons/on_16.png"));
+    else
+        ui->label_debugEnabled->setPixmap(QPixmap(":/icons/off_16.png"));
+//    ui->debugText->setEnabled(enabled);
+}
+
 void QkExplorerWidget::_slotLogger_append(int address, QkDevice::Event event)
 {
     if(!ui->check_enableLogger->isChecked())
         return;
 
-    int r = ui->logEventTable->addRow();
+    int r = ui->eventTable->addRow();
 
-    QString timeStr = QTime::currentTime().toString("hh:mm:ss");
-    QTableWidgetItem *time = new QTableWidgetItem();
-    time->setText(timeStr);
-    time->setTextAlignment(Qt::AlignCenter);
-    ui->logEventTable->setItem(r, LoggerColumnEventTimestamp, time);
+    QTableWidgetItem *item = new QTableWidgetItem();
+    EventWidget *eventWidget = new EventWidget();
+    eventWidget->setEvent(&event, address);
+    ui->eventTable->setItem(r, 0, item);
+    ui->eventTable->setCellWidget(r, 0, eventWidget);
 
-    QString srcStr = QString().sprintf("%04X", address);
-    QTableWidgetItem *src = new QTableWidgetItem();
-    src->setText(srcStr);
-    src->setTextAlignment(Qt::AlignCenter);
-    ui->logEventTable->setItem(r, LoggerColumnEventSource, src);
+    ui->eventTable->scrollToBottom();
+}
 
-    QString labelStr = event.label();
-    QTableWidgetItem *label = new QTableWidgetItem();
-    label->setText(labelStr);
-    label->setTextAlignment(Qt::AlignCenter);
-    ui->logEventTable->setItem(r, LoggerColumnEventLabel, label);
-
-    QString msgStr = event.message();
-
-    QList<float> argsList = event.args();
-    QString argsStr;
-    argsStr.append("");
-    foreach(float arg, argsList)
-        argsStr.append(QString::number(arg) + "  ");
-    argsStr.append("");
-
-    msgStr = insertArgsOnMessage(msgStr, event.args());
-
-    QTableWidgetItem *msg = new QTableWidgetItem();
-    msg->setText(msgStr);
-    msg->setTextAlignment(Qt::AlignLeft);
-    ui->logEventTable->setItem(r, LoggerColumnEventMessage, msg);
-
-    QTableWidgetItem *args = new QTableWidgetItem();
-    args->setText(argsStr);
-    args->setTextAlignment(Qt::AlignLeft);
-    ui->logEventTable->setItem(r, LoggerColumnEventArguments, args);
-
-    ui->logEventTable->scrollToBottom();
+void QkExplorerWidget::_slotLogger_setEnabled(bool enabled)
+{
+    if(enabled)
+        ui->label_loggerEnabled->setPixmap(QPixmap(":/icons/on_16.png"));
+    else
+        ui->label_loggerEnabled->setPixmap(QPixmap(":/icons/off_16.png"));
+//    ui->eventTable->setEnabled(enabled);
 }
 
 void QkExplorerWidget::showError(int code, int arg)

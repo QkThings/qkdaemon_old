@@ -1,13 +1,10 @@
 build/
-*
 Makefile*
-
 *.pro.user*
-
 *.*~
-
 *object_script*
-
 *.autosave
 *~
 *~
+release/
+debug/

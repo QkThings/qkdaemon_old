@@ -14,6 +14,7 @@ MessagesDialog::MessagesDialog(QWidget *parent) :
     ui->text_log->setFont(GUI_MONOFONT);
 
     setWindowTitle(GUI_MAINWINDOW_TITLE + " - Messages");
+    setWindowFlags(Qt::Tool);
 }
 
 MessagesDialog::~MessagesDialog()
