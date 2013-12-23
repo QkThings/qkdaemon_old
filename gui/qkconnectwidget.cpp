@@ -49,6 +49,7 @@ void QkConnectWidget::setupLayout()
 
     QTableWidget *table = ui->connectionsTable;
     table->setColumnCount(4);
+    table->setFrameStyle(QFrame::NoFrame);
     QHeaderView *header = table->horizontalHeader();
     header->setSectionResizeMode(ColumnOpenClose , QHeaderView::Fixed);
     header->setSectionResizeMode(ColumnConnType  , QHeaderView::Fixed);

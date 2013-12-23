@@ -32,7 +32,7 @@ pTableWidget::pTableWidget(QWidget *parent) :
     header->hide();
 
     // Frame
-    setFrameStyle(QFrame::NoFrame);
+    //setFrameStyle(QFrame::NoFrame);
 
     setSelectionMode(QAbstractItemView::SingleSelection);
     setSelectionBehavior(QAbstractItemView::SelectRows);

@@ -139,7 +139,6 @@ void QkExplorerWidget::_handleExplorerListRowChanged(int row)
         ui->stackedPanels->setCurrentIndex(spiNone);
         return;
     }
-
     QString itemText = ui->explorerList->item(row)->text();
     if(itemText.contains(tr("Node")))
     {
@@ -155,6 +154,7 @@ void QkExplorerWidget::_handleExplorerListRowChanged(int row)
         m_selBoardType = sbtGatewayNetwork;
         m_selNode = 0;
     }
+    updateInterface();
 }
 
 
@@ -288,6 +288,16 @@ void QkExplorerWidget::updateInterface()
     ui->search_button->setEnabled(enableButtons);
     ui->start_button->setEnabled(enableButtons);
     ui->stop_button->setEnabled(enableButtons);
+
+
+    bool nothingToShow;
+    if(ui->explorerList->count() == 0)
+        nothingToShow = true;
+    else
+        nothingToShow = false;
+
+    ui->label->setHidden(nothingToShow);
+    ui->explorerList->setHidden(nothingToShow);
 
     /*bool logEnabled = ui->check_enableLogger->isChecked();
     ui->logEventTable->setEnabled(logEnabled);
