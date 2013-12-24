@@ -41,6 +41,7 @@ private slots:
     void slotDebug_updateOptions();
     void slotDebug_setEnabled(bool enabled);
     void slotViewer_addPlot();
+    void slotViewer_nodeChanged(QString addrStr);
     RTPlotDock* createPlot();
     void showError(int code, int arg);
     void showError(const QString &message);

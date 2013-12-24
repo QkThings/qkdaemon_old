@@ -46,7 +46,7 @@ void QkExplorerWidget::setup()
     QLayout *layout = ui->plottingWidget->layout();
     layout->setMargin(0);
     layout->setSpacing(0);
-    layout->addWidget(createPlot());
+    slotViewer_addPlot();
 }
 
 void QkExplorerWidget::setupLayout()
@@ -102,6 +102,9 @@ void QkExplorerWidget::setupConnections()
 
     connect(ui->button_addPlot, SIGNAL(clicked()),
             this, SLOT(slotViewer_addPlot()));
+
+    connect(ui->viewer_comboNode, SIGNAL(currentIndexChanged(QString)),
+            this, SLOT(slotViewer_nodeChanged(QString)));
 }
 
 void QkExplorerWidget::setCurrentConnection(QkConnection *conn)
@@ -163,6 +166,23 @@ void QkExplorerWidget::slotDataReceived(int address)
     }
 }
 
+void QkExplorerWidget::slotNodeFound(int address)
+{
+    qDebug() << "slotNodeFound()";
+
+    QString addrStr = QString().sprintf("%04X", address);
+
+    if(explorerList_findNode(address) < 0)
+    {
+        ui->explorerList->addItem(tr("Node ") + addrStr);
+        if(ui->explorerList->count() == 1)
+            ui->explorerList->setCurrentRow(0);
+    }
+
+    ui->viewer_comboNode->addItem(addrStr);
+}
+
+
 void QkExplorerWidget::slotNodeUpdated(int address)
 {
     if(m_selBoardType == sbtModuleDevice)
@@ -181,17 +201,6 @@ void QkExplorerWidget::slotExplorerList_reload() //FIXME is it really needed?
         slotNodeFound(address);
     }
 }
-
-void QkExplorerWidget::slotNodeFound(int address)
-{
-    if(explorerList_findNode(address) == 0)
-    {
-        ui->explorerList->addItem(tr("Node") + QString().sprintf(" %04X", address));
-        if(ui->explorerList->count() == 1)
-            ui->explorerList->setCurrentRow(0);
-    }
-}
-
 
 void QkExplorerWidget::slotBoardPanels_reload()
 {    
@@ -350,7 +359,18 @@ void QkExplorerWidget::slotLogger_setEnabled(bool enabled)
 void QkExplorerWidget::slotViewer_addPlot()
 {
     QLayout *layout = ui->plottingWidget->layout();
-    layout->addWidget(createPlot());
+    RTPlotDock *plot = createPlot();
+    layout->addWidget(plot);
+    ui->viewer_comboPlot->addItem(plot->windowTitle());
+}
+
+void QkExplorerWidget::slotViewer_nodeChanged(QString addrStr)
+{
+    bool ok;
+    int addr = addrStr.toInt(&ok, 16);
+    QkNode *node = m_conn->qk->node(addr);
+    foreach(QkDevice::Data data, node->device()->data())
+        ui->viewer_comboData->addItem(data.label());
 }
 
 RTPlotDock *QkExplorerWidget::createPlot()
