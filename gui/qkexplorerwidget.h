@@ -11,6 +11,7 @@ class QkExplorerWidget;
 
 class CProperty;
 class CPropertyBrowser;
+class RTPlotDock;
 
 class QkExplorerWidget : public QMainWindow
 {
@@ -24,21 +25,23 @@ public slots:
     void setCurrentConnection(QkConnection *conn);
 
 private slots:
-    void _slotSearch();
-    void _slotStart();
-    void _slotStop();
-    void _slotClear();
-    void _slotBoardPanels_reload();
-    void _slotExplorerList_reload();
-    void _slotExplorerList_addNode(int address);
-    void _handleExplorerListRowChanged(int row);
-    void _handleDataReceived(int address);
-    void _handleNodeUpdated(int address);
-    void _slotLogger_append(int address, QkDevice::Event event);
-    void _slotLogger_setEnabled(bool enabled);
-    void _slotDebug_log(int address, QString debugStr);
-    void _slotDebug_updateOptions();
-    void _slotDebug_setEnabled(bool enabled);
+    void slotSearch();
+    void slotStart();
+    void slotStop();
+    void slotClear();
+    void slotBoardPanels_reload();
+    void slotExplorerList_reload();
+    void slotNodeFound(int address);
+    void slotExplorerListRowChanged(int row);
+    void slotDataReceived(int address);
+    void slotNodeUpdated(int address);
+    void slotLogger_append(int address, QkDevice::Event event);
+    void slotLogger_setEnabled(bool enabled);
+    void slotDebug_log(int address, QString debugStr);
+    void slotDebug_updateOptions();
+    void slotDebug_setEnabled(bool enabled);
+    void slotViewer_addPlot();
+    RTPlotDock* createPlot();
     void showError(int code, int arg);
     void showError(const QString &message);
     void updateInterface();
@@ -70,9 +73,10 @@ private:
         LoggerColumnNotificationArguments
     };
 
-    void _setupLayout();
-    void _setupConnections();
-    int _explorerList_findNode(int address);
+    void setup();
+    void setupLayout();
+    void setupConnections();
+    int explorerList_findNode(int address);
 
     QString insertArgsOnMessage(QString msg, QList<float> args);
 
@@ -80,6 +84,9 @@ private:
     QkConnection *m_conn;
     SelectedBoardType m_selBoardType;
     QkNode *m_selNode;
+
+    QMap<RTPlotDock*,int> m_plotMapper;
+    int m_nextPlotID;
 
     bool m_debugPrintTime;
     bool m_debugPrintSource;
