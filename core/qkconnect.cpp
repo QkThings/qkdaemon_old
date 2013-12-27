@@ -35,8 +35,7 @@ bool QkSerialConnection::tryOpen()
         m_sp->setFlowControl(QSerialPort::NoFlowControl);
         //m_sp->setFlowControl(QSerialPort::HardwareControl);
         m_sp->setDataBits(QSerialPort::Data8);
-        //m_sp->close();
-        //m_sp->readAll();
+        qDebug() << "connected to" << m_portName << m_baudRate;
         return true;
     }
     else
