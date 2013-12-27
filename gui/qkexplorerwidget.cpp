@@ -6,6 +6,8 @@
 #include "cpropertybrowser.h"
 #include "eventwidget.h"
 #include "rtplot.h"
+#include "plotsettings.h"
+#include "ui_plotsettings.h"
 
 #include <QDebug>
 #include <QTreeWidget>
@@ -27,7 +29,6 @@ QkExplorerWidget::QkExplorerWidget(QWidget *parent) :
 {
     m_debugPrintTime = false;
     m_debugPrintSource = false;
-    m_nextPlotID = 0;
 
     setupLayout();
     setupConnections();
@@ -100,11 +101,21 @@ void QkExplorerWidget::setupConnections()
     connect(ui->explorerTabs, SIGNAL(currentChanged(int)),
             this, SLOT(updateInterface()));
 
-    connect(ui->button_addPlot, SIGNAL(clicked()),
+    connect(ui->viewer_buttonAddPlot, SIGNAL(clicked()),
             this, SLOT(slotViewer_addPlot()));
 
-    connect(ui->viewer_comboNode, SIGNAL(currentIndexChanged(QString)),
+    connect(ui->viewer_buttonPlotSettings, SIGNAL(clicked()),
+            this, SLOT(slotViewer_showHideSettings()));
+
+    connect(ui->viewer_comboPlot, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(slotViewer_currentPlotChanged(int)));
+
+    PlotSettings *plotSettings = ui->plotSettings;
+    connect(plotSettings->ui->comboNode, SIGNAL(currentIndexChanged(QString)),
             this, SLOT(slotViewer_nodeChanged(QString)));
+
+    connect(plotSettings->ui->buttonAddWaveform, SIGNAL(clicked()),
+            this, SLOT(slotViewer_addWaveform()));
 }
 
 void QkExplorerWidget::setCurrentConnection(QkConnection *conn)
@@ -159,10 +170,21 @@ void QkExplorerWidget::slotExplorerListRowChanged(int row)
 
 void QkExplorerWidget::slotDataReceived(int address)
 {
+    qDebug() << "slotDataReceived()";
     if(m_selNode != 0 && m_selNode->address() == address)
     {
-        //_boardPanel_device_refreshData(m_selNode->device());
         ui->deviceBoardPanel->refreshData();
+    }
+
+    foreach(AddressDataPair *addrDataPair, m_waveformMapper.keys())
+    {
+        if(addrDataPair->address == address)
+        {
+            Waveform *wf = m_waveformMapper.value(addrDataPair);
+            RTPlot *plot = m_plotMapper.value(wf);
+            QVector<QkDevice::Data> data = m_conn->qk->node(address)->device()->data();
+            plot->addData(data[addrDataPair->dataIdx].value(), wf);
+        }
     }
 }
 
@@ -179,7 +201,8 @@ void QkExplorerWidget::slotNodeFound(int address)
             ui->explorerList->setCurrentRow(0);
     }
 
-    ui->viewer_comboNode->addItem(addrStr);
+    PlotSettings *plotSettings = ui->plotSettings;
+    plotSettings->ui->comboNode->addItem(addrStr);
 }
 
 
@@ -252,18 +275,25 @@ void QkExplorerWidget::slotSearch()
     int stackIdx = ui->stackedPanels->currentIndex();
     ui->stackedPanels->setCurrentIndex(stackIdx);
     ui->explorerList->clear();
-    ui->viewer_comboNode->clear();
+
+    PlotSettings *plotSettings = ui->plotSettings;
+    plotSettings->ui->comboNode->clear();
+
     m_conn->qk->search();
 }
 
 void QkExplorerWidget::slotStart()
 {
     m_conn->qk->start();
+    foreach(RTPlotDock *plotDock, m_plotDockMapper.values())
+        plotDock->plot()->start();
 }
 
 void QkExplorerWidget::slotStop()
 {
     m_conn->qk->stop();
+    foreach(RTPlotDock *plotDock, m_plotDockMapper.values())
+        plotDock->plot()->stop();
 }
 
 void QkExplorerWidget::slotClear()
@@ -290,7 +320,6 @@ void QkExplorerWidget::updateInterface()
     ui->search_button->setEnabled(enableButtons);
     ui->start_button->setEnabled(enableButtons);
     ui->stop_button->setEnabled(enableButtons);
-
 
     bool nothingToShow;
     if(ui->explorerList->count() == 0)
@@ -328,7 +357,6 @@ void QkExplorerWidget::slotDebug_setEnabled(bool enabled)
         ui->label_debugEnabled->setPixmap(QPixmap(":/icons/on_16.png"));
     else
         ui->label_debugEnabled->setPixmap(QPixmap(":/icons/off_16.png"));
-//    ui->debugText->setEnabled(enabled);
 }
 
 void QkExplorerWidget::slotLogger_append(int address, QkDevice::Event event)
@@ -353,31 +381,103 @@ void QkExplorerWidget::slotLogger_setEnabled(bool enabled)
         ui->label_loggerEnabled->setPixmap(QPixmap(":/icons/on_16.png"));
     else
         ui->label_loggerEnabled->setPixmap(QPixmap(":/icons/off_16.png"));
-//    ui->eventTable->setEnabled(enabled);
 }
 
 void QkExplorerWidget::slotViewer_addPlot()
 {
     QLayout *layout = ui->plottingWidget->layout();
-    RTPlotDock *plot = createPlot();
-    layout->addWidget(plot);
-    ui->viewer_comboPlot->addItem(plot->windowTitle());
+    RTPlotDock *plotDock = createPlotDock();
+    layout->addWidget(plotDock);
+    ui->viewer_comboPlot->addItem(plotDock->windowTitle(), plotDock->id());
+    ui->viewer_comboPlot->setCurrentIndex(ui->viewer_comboPlot->count()-1);
+}
+
+void QkExplorerWidget::slotViewer_addWaveform()
+{   
+    qDebug() << "slotViewer_addWaveform()";
+    int currentPlotIdx = ui->viewer_comboPlot->currentIndex();
+    int plotDockID = ui->viewer_comboPlot->itemData(currentPlotIdx).toInt();
+    RTPlotDock *plotDock = m_plotDockMapper.value(plotDockID);
+    RTPlot *plot = plotDock->plot();
+
+    PlotSettings *plotSettings = ui->plotSettings;
+    QString addrStr = plotSettings->ui->comboNode->currentText();
+    bool ok;
+    int addr = addrStr.toInt(&ok, 16);
+
+    int dataIdx = plotSettings->ui->comboData->currentIndex();
+    if(dataIdx >= 0)
+    {
+        AddressDataPair *addrDataPair = new AddressDataPair;
+        addrDataPair->address = addr;
+        addrDataPair->dataIdx = dataIdx;
+
+        QkNode *node = m_conn->qk->node(addr);
+        QkDevice::Data data = node->device()->data().at(dataIdx);
+
+        Waveform *wf = plot->addWaveform(data.label());
+        m_waveformMapper.insert(addrDataPair, wf);
+        m_plotMapper.insert(wf, plot);
+    }
+
+    plotSettings->setCurrentPlotDock(plotDock);
 }
 
 void QkExplorerWidget::slotViewer_nodeChanged(QString addrStr)
 {
+    PlotSettings *plotSettings = ui->plotSettings;
     bool ok;
     int addr = addrStr.toInt(&ok, 16);
     QkNode *node = m_conn->qk->node(addr);
     foreach(QkDevice::Data data, node->device()->data())
-        ui->viewer_comboData->addItem(data.label());
+        plotSettings->ui->comboData->addItem(data.label());
 }
 
-RTPlotDock *QkExplorerWidget::createPlot()
+void QkExplorerWidget::slotViewer_dockSelected(int  id)
 {
-    RTPlotDock *plotDock = new RTPlotDock(new RTPlot(m_nextPlotID), this);
-    plotDock->setTitle("Plot" + QString::number(m_nextPlotID));
-    m_plotMapper.insert(plotDock, m_nextPlotID++);
+    int i;
+    for(i=0; i < ui->viewer_comboPlot->count(); i++)
+    {
+        int plotDockID = ui->viewer_comboPlot->itemData(i).toInt();
+        if(plotDockID == id)
+            ui->viewer_comboPlot->setCurrentIndex(i);
+    }
+
+}
+
+void QkExplorerWidget::slotViewer_currentPlotChanged(int idx)
+{
+    m_currentPlotDock = 0;
+
+    if(ui->viewer_comboPlot->count() > 0)
+    {
+        int plotDockID = ui->viewer_comboPlot->itemData(idx).toInt();
+        m_currentPlotDock = m_plotDockMapper.value(plotDockID);
+    }
+
+    if(m_currentPlotDock != 0)
+        ui->plotSettings->setCurrentPlotDock(m_currentPlotDock);
+}
+
+void QkExplorerWidget::slotViewer_showHideSettings()
+{
+    if(ui->plotSettings->isVisible())
+    {
+        ui->plotSettings->hide();
+        ui->viewer_checkGlobal->hide();
+    }
+    else
+    {
+        ui->plotSettings->show();
+        ui->viewer_checkGlobal->show();
+    }
+}
+
+RTPlotDock *QkExplorerWidget::createPlotDock()
+{
+    RTPlotDock *plotDock = new RTPlotDock(new RTPlot, this);
+    connect(plotDock, SIGNAL(dockSelected(int)), this, SLOT(slotViewer_dockSelected(int)));
+    m_plotDockMapper.insert(plotDock->id(), plotDock);
     return plotDock;
 }
 

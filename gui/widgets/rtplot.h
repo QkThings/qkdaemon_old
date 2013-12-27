@@ -12,12 +12,18 @@ class Waveform : public QObject
 {
     Q_OBJECT
 public:
-    explicit Waveform(QObject *parent = 0);
-    int id() { return m_id; }
+    explicit Waveform(const QString &name = QString(), QObject *parent = 0);
+    int id();
+
+    void setName(const QString &name);
+    QString name();
+    void setColor(const QColor &color);
+    QColor color();
 
     QCPGraph *graph;
 private:
     int m_id;
+    QString m_name;
     static int m_nextID;
 };
 
@@ -25,9 +31,10 @@ class RTPlot : public QCustomPlot
 {
     Q_OBJECT
 public:
-    explicit RTPlot(int id, QWidget *parent = 0);
-    Waveform* addWaveform(const QString &name = QString());
+    explicit RTPlot(QWidget *parent = 0);
+    Waveform* addWaveform(const QString &name = QString(), const QColor &color = QColor());
     Waveform* waveform(int id);
+    QList<Waveform*> waveforms();
     void setTimeWindow(int sec);
     int timeWindow();
 
@@ -55,7 +62,7 @@ private:
     QVector<QColor> m_defaultColors;
     QElapsedTimer m_clock;
     QMap<int, Waveform*> m_waveforms;
-    bool m_replotAfterAdding;
+    bool m_replotAfterAdd;
 };
 
 class WaveformMapper
@@ -71,10 +78,18 @@ class RTPlotDock : public QDockWidget
     Q_OBJECT
 public:
     explicit RTPlotDock(RTPlot *plot, QWidget *parent= 0);
-    void setTitle(const QString &title);
+    void setWindowTitle(const QString &title);
     RTPlot *plot();
+    int id();
+    void mousePressEvent(QMouseEvent *e);
+
+signals:
+    void dockSelected(int);
+
 private:
     RTPlot *m_plot;
+    int m_id;
+    static int nextID;
 
 };
 

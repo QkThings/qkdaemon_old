@@ -12,6 +12,8 @@ class QkExplorerWidget;
 class CProperty;
 class CPropertyBrowser;
 class RTPlotDock;
+class RTPlot;
+class Waveform;
 
 class QkExplorerWidget : public QMainWindow
 {
@@ -41,8 +43,12 @@ private slots:
     void slotDebug_updateOptions();
     void slotDebug_setEnabled(bool enabled);
     void slotViewer_addPlot();
+    void slotViewer_addWaveform();
     void slotViewer_nodeChanged(QString addrStr);
-    RTPlotDock* createPlot();
+    void slotViewer_dockSelected(int id);
+    void slotViewer_currentPlotChanged(int idx);
+    void slotViewer_showHideSettings();
+    RTPlotDock* createPlotDock();
     void showError(int code, int arg);
     void showError(const QString &message);
     void updateInterface();
@@ -74,6 +80,12 @@ private:
         LoggerColumnNotificationArguments
     };
 
+    class AddressDataPair {
+    public:
+        int address;
+        int dataIdx;
+    };
+
     void setup();
     void setupLayout();
     void setupConnections();
@@ -86,8 +98,12 @@ private:
     SelectedBoardType m_selBoardType;
     QkNode *m_selNode;
 
-    QMap<RTPlotDock*,int> m_plotMapper;
-    int m_nextPlotID;
+    QMap<int,RTPlotDock*> m_plotDockMapper;
+    QMap<Waveform*,RTPlot*> m_plotMapper;
+    QMap<AddressDataPair*, Waveform*> m_waveformMapper;
+
+    RTPlotDock *m_currentPlotDock;
+
 
     bool m_debugPrintTime;
     bool m_debugPrintSource;

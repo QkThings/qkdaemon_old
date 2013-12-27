@@ -218,14 +218,20 @@ p, li { white-space: pre-wrap; }
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_9">
           <item>
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>Plot</string>
+           <widget class="QComboBox" name="viewer_comboPlot">
+            <property name="minimumSize">
+             <size>
+              <width>220</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>220</width>
+              <height>16777215</height>
+             </size>
             </property>
            </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="viewer_comboPlot"/>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -233,7 +239,7 @@ p, li { white-space: pre-wrap; }
              <number>0</number>
             </property>
             <item>
-             <widget class="QToolButton" name="button_addPlot">
+             <widget class="QToolButton" name="viewer_buttonAddPlot">
               <property name="text">
                <string>...</string>
               </property>
@@ -247,27 +253,13 @@ p, li { white-space: pre-wrap; }
              </widget>
             </item>
             <item>
-             <widget class="QToolButton" name="button_removePlot">
+             <widget class="QToolButton" name="viewer_buttonRemovePlot">
               <property name="text">
                <string>...</string>
               </property>
               <property name="icon">
                <iconset resource="../resources/icons/icons.qrc">
                 <normaloff>:/icons/minus_16.png</normaloff>:/icons/minus_16.png</iconset>
-              </property>
-              <property name="autoRaise">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QToolButton" name="toolButton">
-              <property name="text">
-               <string>...</string>
-              </property>
-              <property name="icon">
-               <iconset resource="../resources/icons/icons.qrc">
-                <normaloff>:/icons/settings_16.png</normaloff>:/icons/settings_16.png</iconset>
               </property>
               <property name="autoRaise">
                <bool>true</bool>
@@ -290,95 +282,94 @@ p, li { white-space: pre-wrap; }
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="label_3">
+           <widget class="QCheckBox" name="viewer_checkGlobal">
             <property name="text">
-             <string>Node</string>
+             <string>Global</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="viewer_comboNode"/>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_4">
+           <widget class="QToolButton" name="viewer_buttonPlotSettings">
             <property name="text">
-             <string>Data</string>
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../resources/icons/icons.qrc">
+              <normaloff>:/icons/settings_16.png</normaloff>:/icons/settings_16.png</iconset>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
             </property>
            </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="viewer_comboData"/>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_8">
             <property name="spacing">
              <number>0</number>
             </property>
-            <item>
-             <widget class="QToolButton" name="button_addWaveform">
-              <property name="text">
-               <string>...</string>
-              </property>
-              <property name="icon">
-               <iconset resource="../resources/icons/icons.qrc">
-                <normaloff>:/icons/plus_16.png</normaloff>:/icons/plus_16.png</iconset>
-              </property>
-              <property name="autoRaise">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QToolButton" name="button_removeWaveform">
-              <property name="text">
-               <string>...</string>
-              </property>
-              <property name="icon">
-               <iconset resource="../resources/icons/icons.qrc">
-                <normaloff>:/icons/minus_16.png</normaloff>:/icons/minus_16.png</iconset>
-              </property>
-              <property name="autoRaise">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
            </layout>
           </item>
          </layout>
         </item>
         <item>
-         <widget class="QScrollArea" name="plottingArea">
-          <property name="widgetResizable">
-           <bool>true</bool>
-          </property>
-          <widget class="QWidget" name="scrollAreaWidgetContents">
-           <property name="geometry">
-            <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>656</width>
-             <height>199</height>
-            </rect>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_12">
-            <property name="leftMargin">
-             <number>0</number>
+         <layout class="QHBoxLayout" name="horizontalLayout_10">
+          <item>
+           <widget class="QScrollArea" name="plottingArea">
+            <property name="widgetResizable">
+             <bool>true</bool>
             </property>
-            <property name="topMargin">
-             <number>0</number>
+            <widget class="QWidget" name="scrollAreaWidgetContents">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>448</width>
+               <height>197</height>
+              </rect>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_12">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QWidget" name="plottingWidget" native="true"/>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+          <item>
+           <widget class="PlotSettings" name="plotSettings" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>200</width>
+              <height>0</height>
+             </size>
             </property>
-            <property name="rightMargin">
-             <number>0</number>
+            <property name="maximumSize">
+             <size>
+              <width>250</width>
+              <height>16777215</height>
+             </size>
             </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <item>
-             <widget class="QWidget" name="plottingWidget" native="true"/>
-            </item>
-           </layout>
-          </widget>
-         </widget>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -1124,6 +1115,12 @@ p, li { white-space: pre-wrap; }
    <class>BoardPanel</class>
    <extends>QWidget</extends>
    <header>boardpanel.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PlotSettings</class>
+   <extends>QWidget</extends>
+   <header>plotsettings.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

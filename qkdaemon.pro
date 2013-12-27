@@ -48,7 +48,8 @@ SOURCES += main.cpp\
     gui/messagesdialog.cpp \
     gui/eventwidget.cpp \
     gui/widgets/rtplot.cpp \
-    gui/widgets/qcustomplot.cpp
+    gui/widgets/qcustomplot.cpp \
+    gui/plotsettings.cpp
 
 HEADERS  += gui/mainwindow.h \
     core/qkdaemon.h \
@@ -74,7 +75,8 @@ HEADERS  += gui/mainwindow.h \
     gui/gui_globals.h \
     gui/eventwidget.h \
     gui/widgets/rtplot.h \
-    gui/widgets/qcustomplot.h
+    gui/widgets/qcustomplot.h \
+    gui/plotsettings.h
 
 FORMS    += gui/mainwindow.ui \
     gui/qkexplorerwidget.ui \
@@ -84,7 +86,8 @@ FORMS    += gui/mainwindow.ui \
     gui/settingsdialog.ui \
     gui/boardpanel.ui \
     gui/messagesdialog.ui \
-    gui/eventwidget.ui
+    gui/eventwidget.ui \
+    gui/plotsettings.ui
 
 RESOURCES += \
     resources/icons/icons.qrc \

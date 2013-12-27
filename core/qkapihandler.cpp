@@ -939,13 +939,13 @@ void QkAPIHandler::setupConnections()
     connect(m_connManager, SIGNAL(connectionRemoved(QkConnection*)),
             this, SLOT(_handleConnectionRemoved(QkConnection*)));
 
-    int connID;
+    int id;
     QList<QkConnection*> conns = m_connManager->connections();
-    for(connID = 0; connID < conns.count(); connID++)
+    for(id = 0; id < conns.count(); id++)
     {
-        connect(conns[connID]->qk, SIGNAL(dataReceived(int)), this, SLOT(_handleDataReceived(int)));
-        connect(conns[connID]->qk, SIGNAL(eventReceived(int,QkDevice::Event)), this, SLOT(_handleEventReceived(int,QkDevice::Event)));
-        connect(conns[connID]->qk, SIGNAL(debugString(int,QString)), this, SLOT(_handleDebugStringReceived(int,QString)));
+        connect(conns[id]->qk, SIGNAL(dataReceived(int)), this, SLOT(_handleDataReceived(int)));
+        connect(conns[id]->qk, SIGNAL(eventReceived(int,QkDevice::Event)), this, SLOT(_handleEventReceived(int,QkDevice::Event)));
+        connect(conns[id]->qk, SIGNAL(debugString(int,QString)), this, SLOT(_handleDebugStringReceived(int,QString)));
     }
 }
 
