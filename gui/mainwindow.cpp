@@ -16,6 +16,7 @@
 #include <QToolBar>
 #include <QTime>
 #include <QSystemTrayIcon>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -63,15 +64,16 @@ void MainWindow::setupLayout()
 
     ui->log->hide();
 
-
     m_tools->setFloatable(false);
     m_tools->setMovable(false);
     m_tools->setIconSize(QSize(16,16));
+
     m_tools->addAction(QIcon(":icons/settings_16.png"), "Settings", this, SLOT(slotShowHideSettings()));
-    m_tools->addAction(QIcon(":icons/explorer.png"), "QkExplorer", this, SLOT(slotShowHideExplorer()));
-    m_tools->addAction(QIcon(":icons/raw.png"), "QkRaw", this, SLOT(slotShowHideRaw()));
-    m_tools->addAction(QIcon(":icons/notepad_w_16.png"), "Info", this, SLOT(slotShowHideInfo()));
+    m_tools->addAction(QIcon(":icons/raw.png"), "QkExplorer", this, SLOT(slotShowHideExplorer()));
+    /*m_tools->addAction(QIcon(":icons/raw.png"), "QkRaw", this, SLOT(slotShowHideRaw()));*/
+    m_tools->addAction(QIcon(":icons/message_16.png"), "Info", this, SLOT(slotShowHideInfo()));
     addToolBar(Qt::BottomToolBarArea, m_tools);
+
 
     setWindowTitle(GUI_MAINWINDOW_TITLE);
     setWindowIcon(QIcon(":img/qk_64.png"));
@@ -120,24 +122,15 @@ void MainWindow::slotShowHideSettings()
 void MainWindow::slotShowHideExplorer()
 {
     if(m_explorerWidget->isHidden())
-    {
         m_explorerWidget->show();
-    }
     else
-    {
         m_explorerWidget->hide();
-    }
 }
 
 void MainWindow::slotShowHideRaw()
 {
     if(m_rawWidget->isHidden())
-    {
         m_rawWidget->show();
-    }
     else
-    {
         m_rawWidget->hide();
-    }
 }
-

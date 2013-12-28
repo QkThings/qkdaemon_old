@@ -13,5 +13,8 @@
         <file>export_16.png</file>
         <file>plus_16.png</file>
         <file>plots_16.png</file>
+        <file>logger_16.png</file>
+        <file>message_16.png</file>
+        <file>debug_16.png</file>
     </qresource>
 </RCC>

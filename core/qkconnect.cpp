@@ -279,7 +279,6 @@ QkConnection* QkConnectionManager::addConnection(const QkConnection::Descriptor 
         int baudRate = connDesc.params.at(1).toInt();
         qDebug() << portName << baudRate;
         conn = new QkSerialConnection(portName, baudRate);
-        //connect(conn, SIGNAL(error(QString)), this, SIGNAL(error(QString)));
     }
     else if(connDesc.type == QkConnection::ctTCP)
     {
@@ -290,6 +289,7 @@ QkConnection* QkConnectionManager::addConnection(const QkConnection::Descriptor 
         return 0;
     }
 
+    connect(conn, SIGNAL(error(QString)), this, SIGNAL(error(QString)));
     if(!conn->tryOpen())
     {
         delete conn;

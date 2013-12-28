@@ -21,6 +21,7 @@ public:
     void setCurrentPlotDock(RTPlotDock *plotDock);
 
 public slots:
+    void setGlobal(bool enabled);
     void slotSetTitle(const QString &title);
     void slotSetTimeWindow(int timeWindow);
     void slotShowHideTitle(bool show);

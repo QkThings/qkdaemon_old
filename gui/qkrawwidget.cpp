@@ -84,6 +84,8 @@ void QkRawWidget::setCurrentConnection(QkConnection *conn)
 }
 void QkRawWidget::slotIncomingFrame(QByteArray frame)
 {
+    return;
+
     int i;
     QStringList sl;
 

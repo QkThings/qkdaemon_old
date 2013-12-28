@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>444</width>
-    <height>73</height>
+    <width>508</width>
+    <height>75</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -285,6 +285,9 @@
    <class>pTableWidget</class>
    <extends>QTableWidget</extends>
    <header>ptablewidget.h</header>
+   <slots>
+    <slot>removeAll()</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources>

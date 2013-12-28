@@ -63,11 +63,9 @@ void QkConnectWidget::setupLayout()
     table->setColumnWidth(ColumnParam1, 80);
     table->setColumnWidth(ColumnOpenClose, 100);
 
-    table->setColumnHidden(ColumnOpenClose, true);
+    //table->setColumnHidden(ColumnOpenClose, true);
 
     table->setAlternatingRowColors(true);
-
-//    table->hideColumn(ColumnOpenClose);
 }
 
 void QkConnectWidget::setupConnections()
@@ -129,11 +127,6 @@ void QkConnectWidget::slotOpenCloseConnection()
     connDesc.params.append(table->item(r, ColumnParam2)->text());
 
     QkConnection *conn = m_connManager->connection(connDesc);
-
-    if(conn == 0) {
-        return;
-    }
-
     QSerialPort *sp;
 
     switch(conn->descriptor.type)

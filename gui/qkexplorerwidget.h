@@ -37,18 +37,22 @@ private slots:
     void slotExplorerListRowChanged(int row);
     void slotDataReceived(int address);
     void slotNodeUpdated(int address);
+
     void slotLogger_append(int address, QkDevice::Event event);
     void slotLogger_setEnabled(bool enabled);
+
     void slotDebug_log(int address, QString debugStr);
     void slotDebug_updateOptions();
     void slotDebug_setEnabled(bool enabled);
+
     void slotViewer_addPlot();
     void slotViewer_addWaveform();
     void slotViewer_nodeChanged(QString addrStr);
     void slotViewer_dockSelected(int id);
     void slotViewer_currentPlotChanged(int idx);
-    void slotViewer_showHideSettings();
+    void slotViewer_plotTitleChanged(int id, QString title);
     RTPlotDock* createPlotDock();
+
     void showError(int code, int arg);
     void showError(const QString &message);
     void updateInterface();

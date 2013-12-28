@@ -1,13 +1,22 @@
 #include "qkexplorerwidget.h"
 #include "ui_qkexplorerwidget.h"
 
+#include "gui_globals.h"
+
 #include "qkcore.h"
 #include "cproperty.h"
 #include "cpropertybrowser.h"
 #include "eventwidget.h"
 #include "rtplot.h"
+
 #include "plotsettings.h"
 #include "ui_plotsettings.h"
+
+#include "loggersettingswidget.h"
+#include "ui_loggersettingswidget.h"
+
+#include "debugsettingswidget.h"
+#include "ui_debugsettingswidget.h"
 
 #include <QDebug>
 #include <QTreeWidget>
@@ -56,11 +65,13 @@ void QkExplorerWidget::setupLayout()
     ui->menubar->hide();
     ui->statusBar->hide();
 
-#ifdef Q_OS_WIN
-    ui->debugText->setFont(QFont("Consolas",9));
-#else
-    ui->debugText->setFont(QFont("Monospace",9));
-#endif
+    ui->debugText->setFont(GUI_MONOFONT);
+
+    ui->explorerTabs->setCurrentIndex(0);
+    ui->viewer_checkGlobal->hide();
+    ui->plotSettings->hide();
+    ui->loggerSettings->hide();
+    ui->debugSettings->hide();
 
     setWindowTitle("QkExplorer");
     updateInterface();
@@ -74,41 +85,40 @@ void QkExplorerWidget::setupConnections()
             this, SLOT(slotStart()));
     connect(ui->stop_button, SIGNAL(clicked()),
             this, SLOT(slotStop()));
-    connect(ui->button_clearLogger, SIGNAL(clicked()),
-            ui->eventTable, SLOT(removeAll()));
-    connect(ui->check_enableLogger, SIGNAL(clicked(bool)),
-            this, SLOT(slotLogger_setEnabled(bool)));
-    connect(ui->button_clearDebug, SIGNAL(clicked()),
-            ui->debugText, SLOT(clear()));
-    connect(ui->check_enableDebug, SIGNAL(clicked(bool)),
-            this, SLOT(slotDebug_setEnabled(bool)));
+
+    connect(ui->explorerTabs, SIGNAL(currentChanged(int)),
+            this, SLOT(updateInterface()));
 
     connect(ui->explorerList, SIGNAL(currentRowChanged(int)),
             this, SLOT(slotExplorerListRowChanged(int)));
     connect(ui->explorerList, SIGNAL(currentRowChanged(int)),
             this, SLOT(slotBoardPanels_reload()));
 
-    connect(ui->check_enableLogger, SIGNAL(clicked()),
-            this, SLOT(updateInterface()));
-    connect(ui->check_enableDebug, SIGNAL(clicked()),
+    connect(ui->logger_buttonSettings, SIGNAL(clicked(bool)), ui->loggerSettings, SLOT(setVisible(bool)));
+    connect(ui->loggerSettings->ui->buttonClear, SIGNAL(clicked()),
+            ui->eventTable, SLOT(removeAll()));
+    connect(ui->loggerSettings->ui->buttonEnable, SIGNAL(clicked(bool)),
+            this, SLOT(slotLogger_setEnabled(bool)));
+    connect(ui->loggerSettings->ui->buttonEnable, SIGNAL(clicked()),
             this, SLOT(updateInterface()));
 
-    connect(ui->debugPrintTime_check, SIGNAL(clicked()),
+    connect(ui->debug_buttonSettings, SIGNAL(clicked(bool)), ui->debugSettings, SLOT(setVisible(bool)));
+    connect(ui->debugSettings->ui->buttonClear, SIGNAL(clicked()),
+            ui->debugText, SLOT(clear()));
+    connect(ui->debugSettings->ui->buttonEnable, SIGNAL(clicked(bool)),
+            this, SLOT(slotDebug_setEnabled(bool)));
+    connect(ui->debugSettings->ui->buttonEnable, SIGNAL(clicked()),
+            this, SLOT(updateInterface()));
+    connect(ui->debugSettings->ui->checkTimestamp, SIGNAL(clicked()),
             this, SLOT(slotDebug_updateOptions()));
-    connect(ui->debugPrintSource_check, SIGNAL(clicked()),
+    connect(ui->debugSettings->ui->checkSource, SIGNAL(clicked()),
             this, SLOT(slotDebug_updateOptions()));
 
-    connect(ui->explorerTabs, SIGNAL(currentChanged(int)),
-            this, SLOT(updateInterface()));
-
-    connect(ui->viewer_buttonAddPlot, SIGNAL(clicked()),
-            this, SLOT(slotViewer_addPlot()));
-
-    connect(ui->viewer_buttonPlotSettings, SIGNAL(clicked()),
-            this, SLOT(slotViewer_showHideSettings()));
-
-    connect(ui->viewer_comboPlot, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(slotViewer_currentPlotChanged(int)));
+    connect(ui->viewer_checkGlobal, SIGNAL(clicked(bool)), ui->plotSettings, SLOT(setGlobal(bool)));
+    connect(ui->viewer_buttonSettings, SIGNAL(clicked(bool)), ui->plotSettings, SLOT(setVisible(bool)));
+    connect(ui->viewer_buttonSettings, SIGNAL(clicked(bool)), ui->viewer_checkGlobal, SLOT(setVisible(bool)));
+    connect(ui->viewer_buttonAddPlot, SIGNAL(clicked()),this, SLOT(slotViewer_addPlot()));
+    connect(ui->viewer_comboPlot, SIGNAL(currentIndexChanged(int)),this, SLOT(slotViewer_currentPlotChanged(int)));
 
     PlotSettings *plotSettings = ui->plotSettings;
     connect(plotSettings->ui->comboNode, SIGNAL(currentIndexChanged(QString)),
@@ -333,7 +343,7 @@ void QkExplorerWidget::updateInterface()
 
 void QkExplorerWidget::slotDebug_log(int address, QString debugStr)
 {
-    if(!ui->check_enableDebug->isChecked())
+    if(!ui->debugSettings->ui->buttonEnable->isChecked())
         return;
 
     QString str;
@@ -347,8 +357,8 @@ void QkExplorerWidget::slotDebug_log(int address, QString debugStr)
 
 void QkExplorerWidget::slotDebug_updateOptions()
 {
-    m_debugPrintTime = ui->debugPrintTime_check->isChecked();
-    m_debugPrintSource = ui->debugPrintSource_check->isChecked();
+    m_debugPrintTime = ui->debugSettings->ui->checkTimestamp;
+    m_debugPrintSource = ui->debugSettings->ui->checkSource;
 }
 
 void QkExplorerWidget::slotDebug_setEnabled(bool enabled)
@@ -361,7 +371,7 @@ void QkExplorerWidget::slotDebug_setEnabled(bool enabled)
 
 void QkExplorerWidget::slotLogger_append(int address, QkDevice::Event event)
 {
-    if(!ui->check_enableLogger->isChecked())
+    if(!ui->loggerSettings->ui->buttonEnable->isChecked())
         return;
 
     int r = ui->eventTable->addRow();
@@ -429,6 +439,7 @@ void QkExplorerWidget::slotViewer_nodeChanged(QString addrStr)
     bool ok;
     int addr = addrStr.toInt(&ok, 16);
     QkNode *node = m_conn->qk->node(addr);
+    plotSettings->ui->comboData->clear();
     foreach(QkDevice::Data data, node->device()->data())
         plotSettings->ui->comboData->addItem(data.label());
 }
@@ -459,24 +470,18 @@ void QkExplorerWidget::slotViewer_currentPlotChanged(int idx)
         ui->plotSettings->setCurrentPlotDock(m_currentPlotDock);
 }
 
-void QkExplorerWidget::slotViewer_showHideSettings()
+void QkExplorerWidget::slotViewer_plotTitleChanged(int id, QString title)
 {
-    if(ui->plotSettings->isVisible())
-    {
-        ui->plotSettings->hide();
-        ui->viewer_checkGlobal->hide();
-    }
-    else
-    {
-        ui->plotSettings->show();
-        ui->viewer_checkGlobal->show();
-    }
+    for(int i=0; i < ui->viewer_comboPlot->count(); i++)
+        if(ui->viewer_comboPlot->itemData(i) == id)
+            ui->viewer_comboPlot->setItemText(i, title);
 }
 
 RTPlotDock *QkExplorerWidget::createPlotDock()
 {
     RTPlotDock *plotDock = new RTPlotDock(new RTPlot, this);
     connect(plotDock, SIGNAL(dockSelected(int)), this, SLOT(slotViewer_dockSelected(int)));
+    connect(plotDock, SIGNAL(titleChanged(int,QString)), this, SLOT(slotViewer_plotTitleChanged(int,QString)));
     m_plotDockMapper.insert(plotDock->id(), plotDock);
     return plotDock;
 }

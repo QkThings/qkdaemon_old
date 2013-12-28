@@ -61,6 +61,14 @@ void PlotSettings::addWaveformToTable(Waveform *wf)
     ui->tableWaveforms->setItem(row, ColumnWaveformColor, color);
 }
 
+void PlotSettings::setGlobal(bool enabled)
+{
+    bool global = enabled;
+    ui->groupWaveforms->setHidden(global);
+    ui->labelTitle->setHidden(global);
+    ui->lineTitle->setHidden(global);
+}
+
 void PlotSettings::slotSetTitle(const QString &title)
 {
     m_currentPlotDock->setWindowTitle(title);

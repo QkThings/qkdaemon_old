@@ -85,6 +85,7 @@ public:
 
 signals:
     void dockSelected(int);
+    void titleChanged(int,QString);
 
 private:
     RTPlot *m_plot;

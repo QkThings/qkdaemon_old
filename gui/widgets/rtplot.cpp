@@ -50,6 +50,7 @@ RTPlot::RTPlot(QWidget *parent) :
     m_clock.restart();
     m_replotAfterAdd = true;
 
+    m_nextColorIdx = 0;
     m_defaultColors.append(Qt::blue);
     m_defaultColors.append(Qt::red);
     m_defaultColors.append(Qt::black);
@@ -193,6 +194,7 @@ RTPlotDock::RTPlotDock(RTPlot *plot, QWidget *parent) :
 void RTPlotDock::setWindowTitle(const QString &title)
 {
     QDockWidget::setWindowTitle(title);
+    emit titleChanged(m_id, title);
 }
 
 RTPlot* RTPlotDock::plot()
