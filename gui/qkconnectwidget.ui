@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>444</width>
-    <height>73</height>
+    <width>508</width>
+    <height>98</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -49,6 +49,19 @@
      <property name="bottomMargin">
       <number>0</number>
      </property>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>66</width>
+         <height>0</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
      <item>
       <widget class="QComboBox" name="connType_combo">
        <item>
@@ -121,19 +134,6 @@
          </item>
          <item>
           <widget class="QComboBox" name="serialPort_baudRate_combo"/>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>66</width>
-             <height>0</height>
-            </size>
-           </property>
-          </spacer>
          </item>
         </layout>
        </widget>
@@ -285,6 +285,9 @@
    <class>pTableWidget</class>
    <extends>QTableWidget</extends>
    <header>ptablewidget.h</header>
+   <slots>
+    <slot>removeAll()</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources>

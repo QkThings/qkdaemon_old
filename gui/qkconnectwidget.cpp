@@ -37,6 +37,7 @@ void QkConnectWidget::setupLayout()
     QStringList defaultBaudRates;
     defaultBaudRates.append("9600");
     defaultBaudRates.append("38400");
+    defaultBaudRates.append("54700");
     defaultBaudRates.append("115200");
     /*foreach(qint32 baud, QSerialPortInfo::standardBaudRates())
     {
@@ -62,11 +63,9 @@ void QkConnectWidget::setupLayout()
     table->setColumnWidth(ColumnParam1, 80);
     table->setColumnWidth(ColumnOpenClose, 100);
 
-    table->setColumnHidden(ColumnOpenClose, true);
+    //table->setColumnHidden(ColumnOpenClose, true);
 
     table->setAlternatingRowColors(true);
-
-//    table->hideColumn(ColumnOpenClose);
 }
 
 void QkConnectWidget::setupConnections()
@@ -115,7 +114,7 @@ void QkConnectWidget::fillRow(int row, QkConnection *conn)
 }
 
 void QkConnectWidget::slotOpenCloseConnection()
-{
+{   
     pToolButton *button = reinterpret_cast<pToolButton*>(sender());
 
     pTableWidget *table = ui->connectionsTable;
@@ -128,11 +127,6 @@ void QkConnectWidget::slotOpenCloseConnection()
     connDesc.params.append(table->item(r, ColumnParam2)->text());
 
     QkConnection *conn = m_connManager->connection(connDesc);
-
-    if(conn == 0) {
-        return;
-    }
-
     QSerialPort *sp;
 
     switch(conn->descriptor.type)
@@ -147,9 +141,20 @@ void QkConnectWidget::slotOpenCloseConnection()
         else
         {
             sp->setPortName(connDesc.params.at(0));
-            sp->setBaudRate(QSerialPort::Baud38400);
-            if(sp->open(QIODevice::ReadWrite))
+            QSerialPort::BaudRate baudRate;
+            switch(connDesc.params.at(1).toInt())
+            {
+            case 9600: baudRate = QSerialPort::Baud9600; break;
+            case 38400: baudRate = QSerialPort::Baud38400; break;
+            case 115200: baudRate = QSerialPort::Baud115200; break;
+            default:
+                qDebug() << "Unable to set desired baud rate:" << connDesc.params.at(1);
+            }
+
+            sp->setBaudRate(baudRate);
+            if(sp->open(QIODevice::ReadWrite)) {
                 button->setText(tr("Connected"));
+            }
             else
                 qDebug() << sp->errorString() << sp->portName() << sp->baudRate();
         }

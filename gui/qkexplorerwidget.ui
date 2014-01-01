@@ -198,9 +198,7 @@ p, li { white-space: pre-wrap; }
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="BoardPanel" name="deviceBoardPanel" native="true">
-                  <zorder></zorder>
-                 </widget>
+                 <widget class="BoardPanel" name="deviceBoardPanel" native="true"/>
                 </item>
                </layout>
               </widget>
@@ -212,6 +210,143 @@ p, li { white-space: pre-wrap; }
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Viewer</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_4">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_9">
+          <item>
+           <widget class="QComboBox" name="viewer_comboPlot">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QToolButton" name="viewer_buttonAddPlot">
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="../resources/icons/icons.qrc">
+                <normaloff>:/icons/plus_16.png</normaloff>:/icons/plus_16.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="viewer_buttonRemovePlot">
+              <property name="text">
+               <string>...</string>
+              </property>
+              <property name="icon">
+               <iconset resource="../resources/icons/icons.qrc">
+                <normaloff>:/icons/minus_16.png</normaloff>:/icons/minus_16.png</iconset>
+              </property>
+              <property name="autoRaise">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="viewer_checkGlobal">
+            <property name="text">
+             <string>Global</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="viewer_buttonSettings">
+            <property name="text">
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../resources/icons/icons.qrc">
+              <normaloff>:/icons/settings_16.png</normaloff>:/icons/settings_16.png</iconset>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_10">
+          <item>
+           <widget class="QScrollArea" name="plottingArea">
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <widget class="QWidget" name="scrollAreaWidgetContents">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>448</width>
+               <height>197</height>
+              </rect>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_12">
+              <property name="leftMargin">
+               <number>0</number>
+              </property>
+              <property name="topMargin">
+               <number>0</number>
+              </property>
+              <property name="rightMargin">
+               <number>0</number>
+              </property>
+              <property name="bottomMargin">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QWidget" name="plottingWidget" native="true"/>
+              </item>
+             </layout>
+            </widget>
+           </widget>
+          </item>
+          <item>
+           <widget class="PlotSettings" name="plotSettings" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>200</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>250</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
       <widget class="QWidget" name="loggerTab">
        <attribute name="title">
         <string>Logger</string>
@@ -219,22 +354,6 @@ p, li { white-space: pre-wrap; }
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_5">
-          <item>
-           <widget class="QPushButton" name="button_clearLogger">
-            <property name="text">
-             <string>Clear</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QComboBox" name="comboBox">
-            <item>
-             <property name="text">
-              <string>Events</string>
-             </property>
-            </item>
-           </widget>
-          </item>
           <item>
            <spacer name="horizontalSpacer_6">
             <property name="orientation">
@@ -262,112 +381,69 @@ p, li { white-space: pre-wrap; }
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="check_enableLogger">
-            <property name="layoutDirection">
-             <enum>Qt::RightToLeft</enum>
-            </property>
+           <widget class="QToolButton" name="logger_buttonSettings">
             <property name="text">
-             <string/>
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../resources/icons/icons.qrc">
+              <normaloff>:/icons/settings_16.png</normaloff>:/icons/settings_16.png</iconset>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
          </layout>
         </item>
         <item>
-         <widget class="QStackedWidget" name="stackedWidget">
-          <property name="currentIndex">
-           <number>0</number>
-          </property>
-          <widget class="QWidget" name="page_3">
-           <layout class="QVBoxLayout" name="verticalLayout_3">
-            <property name="leftMargin">
-             <number>0</number>
+         <layout class="QHBoxLayout" name="horizontalLayout_12">
+          <item>
+           <widget class="pTableWidget" name="eventTable">
+            <property name="selectionMode">
+             <enum>QAbstractItemView::NoSelection</enum>
             </property>
-            <property name="topMargin">
-             <number>0</number>
+            <property name="selectionBehavior">
+             <enum>QAbstractItemView::SelectRows</enum>
             </property>
-            <property name="rightMargin">
-             <number>0</number>
+            <property name="gridStyle">
+             <enum>Qt::NoPen</enum>
             </property>
-            <property name="bottomMargin">
-             <number>0</number>
+            <property name="columnCount">
+             <number>1</number>
             </property>
-            <item>
-             <widget class="pTableWidget" name="eventTable">
-              <property name="selectionMode">
-               <enum>QAbstractItemView::NoSelection</enum>
-              </property>
-              <property name="selectionBehavior">
-               <enum>QAbstractItemView::SelectRows</enum>
-              </property>
-              <property name="gridStyle">
-               <enum>Qt::NoPen</enum>
-              </property>
-              <property name="columnCount">
-               <number>1</number>
-              </property>
-              <attribute name="horizontalHeaderVisible">
-               <bool>false</bool>
-              </attribute>
-              <attribute name="horizontalHeaderStretchLastSection">
-               <bool>true</bool>
-              </attribute>
-              <column/>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="page_4">
-           <layout class="QVBoxLayout" name="verticalLayout_9">
-            <property name="leftMargin">
-             <number>0</number>
+            <attribute name="horizontalHeaderVisible">
+             <bool>false</bool>
+            </attribute>
+            <attribute name="horizontalHeaderStretchLastSection">
+             <bool>true</bool>
+            </attribute>
+            <column/>
+           </widget>
+          </item>
+          <item>
+           <widget class="LoggerSettingsWidget" name="loggerSettings" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>200</width>
+              <height>0</height>
+             </size>
             </property>
-            <property name="topMargin">
-             <number>0</number>
+            <property name="maximumSize">
+             <size>
+              <width>250</width>
+              <height>16777215</height>
+             </size>
             </property>
-            <property name="rightMargin">
-             <number>0</number>
-            </property>
-            <property name="bottomMargin">
-             <number>0</number>
-            </property>
-            <item>
-             <widget class="pTableWidget" name="logNotificationTable">
-              <property name="editTriggers">
-               <set>QAbstractItemView::NoEditTriggers</set>
-              </property>
-              <property name="horizontalScrollMode">
-               <enum>QAbstractItemView::ScrollPerPixel</enum>
-              </property>
-              <attribute name="horizontalHeaderStretchLastSection">
-               <bool>false</bool>
-              </attribute>
-              <attribute name="verticalHeaderDefaultSectionSize">
-               <number>16</number>
-              </attribute>
-              <attribute name="verticalHeaderMinimumSectionSize">
-               <number>16</number>
-              </attribute>
-              <column>
-               <property name="text">
-                <string>Time</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Source</string>
-               </property>
-              </column>
-              <column>
-               <property name="text">
-                <string>Content</string>
-               </property>
-              </column>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </widget>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -378,27 +454,6 @@ p, li { white-space: pre-wrap; }
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <item>
-           <widget class="QPushButton" name="button_clearDebug">
-            <property name="text">
-             <string>Clear</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="debugPrintTime_check">
-            <property name="text">
-             <string>Timestamp</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="debugPrintSource_check">
-            <property name="text">
-             <string>Source</string>
-            </property>
-           </widget>
-          </item>
           <item>
            <spacer name="horizontalSpacer_2">
             <property name="orientation">
@@ -423,20 +478,50 @@ p, li { white-space: pre-wrap; }
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="check_enableDebug">
+           <widget class="QToolButton" name="debug_buttonSettings">
             <property name="text">
-             <string/>
+             <string>...</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../resources/icons/icons.qrc">
+              <normaloff>:/icons/settings_16.png</normaloff>:/icons/settings_16.png</iconset>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="autoRaise">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
          </layout>
         </item>
         <item>
-         <widget class="QTextEdit" name="debugText">
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <item>
+           <widget class="QTextEdit" name="debugText">
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="DebugSettingsWidget" name="debugSettings" native="true">
+            <property name="minimumSize">
+             <size>
+              <width>200</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>250</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -935,7 +1020,7 @@ p, li { white-space: pre-wrap; }
      <x>0</x>
      <y>0</y>
      <width>680</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
    </property>
   </widget>
@@ -956,26 +1041,27 @@ p, li { white-space: pre-wrap; }
    <header>boardpanel.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>PlotSettings</class>
+   <extends>QWidget</extends>
+   <header>plotsettings.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>DebugSettingsWidget</class>
+   <extends>QWidget</extends>
+   <header>debugsettingswidget.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>LoggerSettingsWidget</class>
+   <extends>QWidget</extends>
+   <header>loggersettingswidget.h</header>
+   <container>1</container>
+  </customwidget>
  </customwidgets>
  <resources>
   <include location="../resources/icons/icons.qrc"/>
  </resources>
- <connections>
-  <connection>
-   <sender>comboBox</sender>
-   <signal>currentIndexChanged(int)</signal>
-   <receiver>stackedWidget</receiver>
-   <slot>setCurrentIndex(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>47</x>
-     <y>60</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>626</x>
-     <y>93</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

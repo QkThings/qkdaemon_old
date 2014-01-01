@@ -6,14 +6,14 @@
 
 QT       += core gui network
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets serialport
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets serialport printsupport
 
 TARGET = QkDaemon
 TEMPLATE = app
 
 INCLUDEPATH += core
 INCLUDEPATH += gui
-INCLUDEPATH += gui/utils
+INCLUDEPATH += gui/widgets
 INCLUDEPATH += ../qkcore
 INCLUDEPATH += ../qkapi/qt/qkapi
 
@@ -30,13 +30,13 @@ SOURCES += main.cpp\
     gui/qkexplorerwidget.cpp \
     gui/qkdaemonwidget.cpp \
     gui/qkconnectwidget.cpp \
-    gui/utils/ptablewidget.cpp \
-    gui/utils/ptoolbutton.cpp \
+    gui/widgets/ptablewidget.cpp \
+    gui/widgets/ptoolbutton.cpp \
     gui/qkrawwidget.cpp \
-    gui/utils/qhexspinbox.cpp \
-    gui/utils/cpropertybrowser.cpp \
-    gui/utils/cproperty.cpp \
-    gui/utils/ptreeitemproperty.cpp \
+    gui/widgets/qhexspinbox.cpp \
+    gui/widgets/cpropertybrowser.cpp \
+    gui/widgets/cproperty.cpp \
+    gui/widgets/ptreeitemproperty.cpp \
     gui/settingsdialog.cpp \
     core/qkdaemonthread.cpp \
     core/qkdaemonserver.cpp \
@@ -46,20 +46,25 @@ SOURCES += main.cpp\
     core/qkconnectthread.cpp \
     gui/boardpanel.cpp \
     gui/messagesdialog.cpp \
-    gui/eventwidget.cpp
+    gui/eventwidget.cpp \
+    gui/widgets/rtplot.cpp \
+    gui/widgets/qcustomplot.cpp \
+    gui/plotsettings.cpp \
+    gui/loggersettingswidget.cpp \
+    gui/debugsettingswidget.cpp
 
 HEADERS  += gui/mainwindow.h \
     core/qkdaemon.h \
     gui/qkexplorerwidget.h \
     gui/qkdaemonwidget.h \
     gui/qkconnectwidget.h \
-    gui/utils/ptablewidget.h \
-    gui/utils/ptoolbutton.h \
     gui/qkrawwidget.h \
-    gui/utils/qhexspinbox.h \
-    gui/utils/cpropertybrowser.h \
-    gui/utils/cproperty.h \
-    gui/utils/ptreeitemproperty.h \
+    gui/widgets/ptablewidget.h \
+    gui/widgets/ptoolbutton.h \
+    gui/widgets/qhexspinbox.h \
+    gui/widgets/cpropertybrowser.h \
+    gui/widgets/cproperty.h \
+    gui/widgets/ptreeitemproperty.h \
     gui/settingsdialog.h \
     core/qkdaemonthread.h \
     core/qkdaemonserver.h \
@@ -70,7 +75,12 @@ HEADERS  += gui/mainwindow.h \
     gui/boardpanel.h \
     gui/messagesdialog.h \
     gui/gui_globals.h \
-    gui/eventwidget.h
+    gui/eventwidget.h \
+    gui/widgets/rtplot.h \
+    gui/widgets/qcustomplot.h \
+    gui/plotsettings.h \
+    gui/loggersettingswidget.h \
+    gui/debugsettingswidget.h
 
 FORMS    += gui/mainwindow.ui \
     gui/qkexplorerwidget.ui \
@@ -80,7 +90,10 @@ FORMS    += gui/mainwindow.ui \
     gui/settingsdialog.ui \
     gui/boardpanel.ui \
     gui/messagesdialog.ui \
-    gui/eventwidget.ui
+    gui/eventwidget.ui \
+    gui/plotsettings.ui \
+    gui/loggersettingswidget.ui \
+    gui/debugsettingswidget.ui
 
 RESOURCES += \
     resources/icons/icons.qrc \

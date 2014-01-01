@@ -1,5 +1,6 @@
 #include "eventwidget.h"
 #include "ui_eventwidget.h"
+#include "gui_globals.h"
 #include <QTime>
 
 EventWidget::EventWidget(QWidget *parent) :
@@ -7,6 +8,10 @@ EventWidget::EventWidget(QWidget *parent) :
     ui(new Ui::EventWidget)
 {
     ui->setupUi(this);
+    ui->timestamp->setFont(GUI_MONOFONT);
+    ui->label->setFont(GUI_MONOFONT);
+    ui->source->setFont(GUI_MONOFONT);
+    ui->message->setFont(GUI_MONOFONT);
 }
 
 EventWidget::~EventWidget()

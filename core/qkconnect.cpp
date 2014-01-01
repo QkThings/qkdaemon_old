@@ -35,8 +35,7 @@ bool QkSerialConnection::tryOpen()
         m_sp->setFlowControl(QSerialPort::NoFlowControl);
         //m_sp->setFlowControl(QSerialPort::HardwareControl);
         m_sp->setDataBits(QSerialPort::Data8);
-        //m_sp->close();
-        //m_sp->readAll();
+        qDebug() << "connected to" << m_portName << m_baudRate;
         return true;
     }
     else
@@ -280,7 +279,6 @@ QkConnection* QkConnectionManager::addConnection(const QkConnection::Descriptor 
         int baudRate = connDesc.params.at(1).toInt();
         qDebug() << portName << baudRate;
         conn = new QkSerialConnection(portName, baudRate);
-        //connect(conn, SIGNAL(error(QString)), this, SIGNAL(error(QString)));
     }
     else if(connDesc.type == QkConnection::ctTCP)
     {
@@ -291,6 +289,7 @@ QkConnection* QkConnectionManager::addConnection(const QkConnection::Descriptor 
         return 0;
     }
 
+    connect(conn, SIGNAL(error(QString)), this, SIGNAL(error(QString)));
     if(!conn->tryOpen())
     {
         delete conn;

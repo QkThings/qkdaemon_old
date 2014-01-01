@@ -5,6 +5,8 @@ Makefile*
 *object_script*
 *.autosave
 *~
-*~
+*.exe
+*.a
+*.so
 release/
 debug/
