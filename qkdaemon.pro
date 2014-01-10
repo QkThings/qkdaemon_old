@@ -17,10 +17,11 @@ INCLUDEPATH += gui/widgets
 INCLUDEPATH += ../qkcore
 INCLUDEPATH += ../qkapi/qt/qkapi
 
-QMAKE_LIBDIR += ../qkcore/release
-QMAKE_LIBDIR += ../qkapi/qt/qkapi/release
 LIBS += -lqkcore
+QMAKE_LIBDIR += ../qkcore/release
+
 LIBS += -lqkapi
+QMAKE_LIBDIR += ../qkapi/qt/qkapi/release
 
 #CONFIG += extserialport
 
