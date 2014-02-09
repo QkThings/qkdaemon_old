@@ -157,7 +157,7 @@ void QkRawWidget::slotIncomingFrame(QByteArray frame)
 
 void QkRawWidget::slotSendSearch()
 {
-    m_conn->qk->search();
+    m_conn->qk()->search();
 }
 
 void QkRawWidget::slotPrintASCII(bool enabled)

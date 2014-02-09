@@ -250,7 +250,7 @@ QJsonObject QkAPIHandler::create_object_conn(int connID)
         return mainObj;
 
     QJsonArray paramsArray;
-    QkConnection::Descriptor desc = conn->descriptor;
+    QkConnection::Descriptor desc = conn->descriptor();
     mainObj.insert("type", QJsonValue(QkConnection::typeToString(desc.type)));
 
     for(i = 0; i < desc.params.count(); i++)
@@ -263,7 +263,7 @@ QJsonObject QkAPIHandler::create_object_conn(int connID)
 QJsonObject QkAPIHandler::create_object_node(int address, bool insertAddress)
 {
     QkConnection *conn = m_connManager->defaultConnection();
-    QkNode *node = conn->qk->node(address);
+    QkNode *node = conn->qk()->node(address);
 
     QJsonObject mainObj, commObj, deviceObj;
 
@@ -287,7 +287,7 @@ QJsonObject QkAPIHandler::create_object_node(int address, bool insertAddress)
 QJsonObject QkAPIHandler::create_object_samplingInfo(int address)
 {
     QkConnection *conn = m_connManager->defaultConnection();
-    QkDevice *device = conn->qk->node(address)->device();
+    QkDevice *device = conn->qk()->node(address)->device();
 
     QJsonObject mainObj, sampObj;
 
@@ -394,7 +394,7 @@ QJsonObject QkAPIHandler::rpc_listNodes(RPCArgs *args)
     QJsonObject nodesObj;
     QJsonObject nodeObj;
 
-    QList<int> addressList = conn->qk->nodes().keys();
+    QList<int> addressList = conn->qk()->nodes().keys();
 
     foreach(int address, addressList)
     {
@@ -501,7 +501,7 @@ QJsonObject QkAPIHandler::rpc_samplingFrequency(RPCArgs *args)
         return rpc_error(RPCError_Qk, tr("Invalid sampling frequency: ") + sampFreqStr);
 
     QkConnection *conn = m_connManager->defaultConnection();
-    conn->qk->node(addr)->device()->setSamplingFrequency(sampFreq);
+    conn->qk()->node(addr)->device()->setSamplingFrequency(sampFreq);
 
     return rpc_result(0);
 }
@@ -536,7 +536,7 @@ QJsonObject QkAPIHandler::rpc_samplingMode(RPCArgs *args)
         return rpc_error(RPCError_Qk, tr("Unkown sampling mode:") + modeStr);
 
     QkConnection *conn = m_connManager->defaultConnection();
-    conn->qk->node(addr)->device()->setSamplingMode(mode);
+    conn->qk()->node(addr)->device()->setSamplingMode(mode);
 
     return rpc_result(0);
 }
@@ -563,15 +563,15 @@ QJsonObject QkAPIHandler::rpc_update(RPCArgs *args)
         int addr =  args->parsed->value("{addr}").toInt();
         if(args->path.contains("comm"))
         {
-            ack = conn->qk->node(addr)->module()->update();
+            ack = conn->qk()->node(addr)->module()->update();
         }
         else if(args->path.contains("device"))
         {
             if(!validate_rpc_device(&errObj, args))
                 return errObj;
-            ack = conn->qk->node(addr)->device()->update();
+            ack = conn->qk()->node(addr)->device()->update();
         }
-        conn->qk->getNode(addr);
+        conn->qk()->getNode(addr);
     }
     else if(args->path.contains("network"))
     {
@@ -618,7 +618,7 @@ QJsonObject QkAPIHandler::rpc_search(RPCArgs *args)
         return errObj;
 
     QkConnection *defaultConn = m_connManager->defaultConnection();
-    Qk::Comm::Ack ack = defaultConn->qk->search();
+    Qk::Comm::Ack ack = defaultConn->qk()->search();
     if(ack.code == QK_COMM_OK)
         return rpc_result(0);
     else
@@ -633,7 +633,7 @@ QJsonObject QkAPIHandler::rpc_start(RPCArgs *args)
         return errObj;
 
     QkConnection *defaultConn = m_connManager->defaultConnection();
-    Qk::Comm::Ack ack = defaultConn->qk->start();
+    Qk::Comm::Ack ack = defaultConn->qk()->start();
     if(ack.code == QK_COMM_OK)
         return rpc_result(0);
     else
@@ -648,7 +648,7 @@ QJsonObject QkAPIHandler::rpc_stop(RPCArgs *args)
         return errObj;
 
     QkConnection *defaultConn = m_connManager->defaultConnection();
-    Qk::Comm::Ack ack = defaultConn->qk->stop();
+    Qk::Comm::Ack ack = defaultConn->qk()->stop();
     if(ack.code == QK_COMM_OK)
         return rpc_result(0);
     else
@@ -726,7 +726,7 @@ QJsonObject QkAPIHandler::rpc_rt_data(RPCArgsRT *args)
 
     QJsonObject obj;
 
-    QkNode *node = args->conn->qk->node(args->address);
+    QkNode *node = args->conn->qk()->node(args->address);
     QkDevice *device = node->device();
 
     QVector<QkDevice::Data> data = device->data();
@@ -827,7 +827,7 @@ bool QkAPIHandler::validate_rpc_node(QJsonObject *errorObj, RPCArgs *args)
     }
 
     QkConnection *conn = m_connManager->defaultConnection();
-    if(conn->qk->node(addr) == 0)
+    if(conn->qk()->node(addr) == 0)
     {
         *errorObj = rpc_error(RPCError_Qk, tr("Node not found (address=") + QString().sprintf("%04X)", addr));
         return false;
@@ -841,7 +841,7 @@ bool QkAPIHandler::validate_rpc_device(QJsonObject *errorObj, RPCArgs *args)
     int addr = args->parsed->value("{addr}").toInt();
 
     QkConnection *conn = m_connManager->defaultConnection();
-    if(conn->qk->node(addr)->device() == 0)
+    if(conn->qk()->node(addr)->device() == 0)
     {
         *errorObj = rpc_error(RPCError_Qk, tr("Device not found"));
         return false;
@@ -920,16 +920,18 @@ void QkAPIHandler::_handleDebugStringReceived(int address, QString str)
 
 void QkAPIHandler::_handleConnectionAdded(QkConnection *conn)
 {
-    connect(conn->qk, SIGNAL(dataReceived(int)), this, SLOT(_handleDataReceived(int)));
-    connect(conn->qk, SIGNAL(eventReceived(int,QkDevice::Event)), this, SLOT(_handleEventReceived(int,QkDevice::Event)));
-    connect(conn->qk, SIGNAL(debugString(int,QString)), this, SLOT(_handleDebugStringReceived(int,QString)));
+    QkCore *qk = conn->qk();
+    connect(qk, SIGNAL(dataReceived(int)), this, SLOT(_handleDataReceived(int)));
+    connect(qk, SIGNAL(eventReceived(int,QkDevice::Event)), this, SLOT(_handleEventReceived(int,QkDevice::Event)));
+    connect(qk, SIGNAL(debugString(int,QString)), this, SLOT(_handleDebugStringReceived(int,QString)));
 }
 
 void QkAPIHandler::_handleConnectionRemoved(QkConnection *conn)
 {
-    disconnect(conn->qk, SIGNAL(dataReceived(int)), this, SLOT(_handleDataReceived(int)));
-    disconnect(conn->qk, SIGNAL(eventReceived(int,QkDevice::Event)), this, SLOT(_handleEventReceived(int,QkDevice::Event)));
-    disconnect(conn->qk, SIGNAL(debugString(int,QString)), this, SLOT(_handleDebugStringReceived(int,QString)));
+    QkCore *qk = conn->qk();
+    disconnect(qk, SIGNAL(dataReceived(int)), this, SLOT(_handleDataReceived(int)));
+    disconnect(qk, SIGNAL(eventReceived(int,QkDevice::Event)), this, SLOT(_handleEventReceived(int,QkDevice::Event)));
+    disconnect(qk, SIGNAL(debugString(int,QString)), this, SLOT(_handleDebugStringReceived(int,QString)));
 }
 
 void QkAPIHandler::setupConnections()
@@ -943,9 +945,10 @@ void QkAPIHandler::setupConnections()
     QList<QkConnection*> conns = m_connManager->connections();
     for(id = 0; id < conns.count(); id++)
     {
-        connect(conns[id]->qk, SIGNAL(dataReceived(int)), this, SLOT(_handleDataReceived(int)));
-        connect(conns[id]->qk, SIGNAL(eventReceived(int,QkDevice::Event)), this, SLOT(_handleEventReceived(int,QkDevice::Event)));
-        connect(conns[id]->qk, SIGNAL(debugString(int,QString)), this, SLOT(_handleDebugStringReceived(int,QString)));
+        QkCore *qk = conns[id]->qk();
+        connect(qk, SIGNAL(dataReceived(int)), this, SLOT(_handleDataReceived(int)));
+        connect(qk, SIGNAL(eventReceived(int,QkDevice::Event)), this, SLOT(_handleEventReceived(int,QkDevice::Event)));
+        connect(qk, SIGNAL(debugString(int,QString)), this, SLOT(_handleDebugStringReceived(int,QString)));
     }
 }
 

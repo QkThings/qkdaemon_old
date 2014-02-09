@@ -68,9 +68,9 @@ void MainWindow::setupLayout()
     m_tools->setMovable(false);
     m_tools->setIconSize(QSize(16,16));
 
-    m_tools->addAction(QIcon(":icons/settings_16.png"), "Settings", this, SLOT(slotShowHideSettings()));
-    m_tools->addAction(QIcon(":icons/raw.png"), "QkExplorer", this, SLOT(slotShowHideExplorer()));
-    /*m_tools->addAction(QIcon(":icons/raw.png"), "QkRaw", this, SLOT(slotShowHideRaw()));*/
+    m_tools->addAction(QIcon(":icons/settings_16.png"), "Settings", this, SLOT(slotShowHideSettings()))->setEnabled(false);
+    m_tools->addAction(QIcon(":icons/raw.png"), "Explorer", this, SLOT(slotShowHideExplorer()));
+    /*m_tools->addAction(QIcon(":icons/raw.png"), "Raw", this, SLOT(slotShowHideRaw()));*/
     m_tools->addAction(QIcon(":icons/message_16.png"), "Info", this, SLOT(slotShowHideInfo()));
     addToolBar(Qt::BottomToolBarArea, m_tools);
 
@@ -79,10 +79,10 @@ void MainWindow::setupLayout()
     setWindowIcon(QIcon(":img/qk_64.png"));
 
     QString info;
-    info.append("QkDaemon " + QString().sprintf("%d.%d.%d ", QKDAEMON_VERSION_MAJOR,
+    info.append("qkdaemon " + QString().sprintf("%d.%d.%d ", QKDAEMON_VERSION_MAJOR,
                                                 QKDAEMON_VERSION_MINOR,
                                                 QKDAEMON_VERSION_PATCH));
-    info.append("(QkCore " + QkCore::version() + ")");
+    info.append("(qkcore " + QkCore::version() + ")");
     log(info);
 }
 

@@ -89,16 +89,17 @@ void QkConnectWidget::setupConnections()
 void QkConnectWidget::fillRow(int row, QkConnection *conn)
 {
     qDebug() << "fillRow";
+
     int i, col;
     pTableWidget *table = ui->connectionsTable;
 
-    QTableWidgetItem *connType = new QTableWidgetItem(QkConnection::typeToString(conn->descriptor.type));
+    QTableWidgetItem *connType = new QTableWidgetItem(QkConnection::typeToString(conn->descriptor().type));
     table->setItem(row, ColumnConnType, connType);
 
     QTableWidgetItem *param;
-    for(i = 0, col = ColumnParam1; i < conn->descriptor.params.count() && col < ColumnMaxCount; i++, col++)
+    for(i = 0, col = ColumnParam1; i < conn->descriptor().params.count() && col < ColumnMaxCount; i++, col++)
     {
-        param = new QTableWidgetItem(conn->descriptor.params.at(i));
+        param = new QTableWidgetItem(conn->descriptor().params.at(i));
         table->setItem(row, col, param);
     }
 
@@ -129,10 +130,10 @@ void QkConnectWidget::slotOpenCloseConnection()
     QkConnection *conn = m_connManager->connection(connDesc);
     QSerialPort *sp;
 
-    switch(conn->descriptor.type)
+    switch(conn->descriptor().type)
     {
     case QkConnection::ctSerial:
-        sp = (QSerialPort*)(conn->device);
+        sp = (QSerialPort*)(conn->device());
         if(sp->isOpen())
         {
             sp->close();
@@ -198,7 +199,7 @@ void QkConnectWidget::slotConnectionAdded(QkConnection *conn)
 void QkConnectWidget::slotConnectionRemoved(QkConnection *conn)
 {
     qDebug() << "slotConnectionRemoved" << conn;
-    int r = findConnection(conn->descriptor);
+    int r = findConnection(conn->descriptor());
     qDebug() << "remove row" << r;
     ui->connectionsTable->removeRow(r);
 }
