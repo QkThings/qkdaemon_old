@@ -553,7 +553,7 @@ QJsonObject QkAPIHandler::rpc_update(RPCArgs *args)
         return errObj;
 
     QkConnection *conn = m_connManager->defaultConnection();
-    Qk::Comm::Ack ack;
+    Qk::Ack ack;
 
     if(args->path.contains("nodes"))
     {
@@ -618,7 +618,7 @@ QJsonObject QkAPIHandler::rpc_search(RPCArgs *args)
         return errObj;
 
     QkConnection *defaultConn = m_connManager->defaultConnection();
-    Qk::Comm::Ack ack = defaultConn->qk()->search();
+    Qk::Ack ack = defaultConn->qk()->search();
     if(ack.code == QK_COMM_OK)
         return rpc_result(0);
     else
@@ -633,7 +633,7 @@ QJsonObject QkAPIHandler::rpc_start(RPCArgs *args)
         return errObj;
 
     QkConnection *defaultConn = m_connManager->defaultConnection();
-    Qk::Comm::Ack ack = defaultConn->qk()->start();
+    Qk::Ack ack = defaultConn->qk()->start();
     if(ack.code == QK_COMM_OK)
         return rpc_result(0);
     else
@@ -648,7 +648,7 @@ QJsonObject QkAPIHandler::rpc_stop(RPCArgs *args)
         return errObj;
 
     QkConnection *defaultConn = m_connManager->defaultConnection();
-    Qk::Comm::Ack ack = defaultConn->qk()->stop();
+    Qk::Ack ack = defaultConn->qk()->stop();
     if(ack.code == QK_COMM_OK)
         return rpc_result(0);
     else
@@ -922,7 +922,7 @@ void QkAPIHandler::_handleConnectionAdded(QkConnection *conn)
 {
     QkCore *qk = conn->qk();
     connect(qk, SIGNAL(dataReceived(int)), this, SLOT(_handleDataReceived(int)));
-    connect(qk, SIGNAL(eventReceived(int,QkDevice::Event)), this, SLOT(_handleEventReceived(int,QkDevice::Event)));
+    //connect(qk, SIGNAL(eventReceived(int,QkDevice::Event)), this, SLOT(_handleEventReceived(int,QkDevice::Event)));
     connect(qk, SIGNAL(debugString(int,QString)), this, SLOT(_handleDebugStringReceived(int,QString)));
 }
 

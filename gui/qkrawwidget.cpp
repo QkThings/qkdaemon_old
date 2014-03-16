@@ -82,7 +82,7 @@ void QkRawWidget::setCurrentConnection(QkConnection *conn)
     connect(m_conn, SIGNAL(incomingFrame(QByteArray)),
             this, SLOT(slotIncomingFrame(QByteArray)));
 }
-void QkRawWidget::slotIncomingFrame(QByteArray frame)
+void QkRawWidget::slotIncomingFrame(Qk::Frame frame)
 {
     return;
 
@@ -107,12 +107,8 @@ void QkRawWidget::slotIncomingFrame(QByteArray frame)
     QString sourceStr;
     switch(packet.source())
     {
-    case QkBoard::btGateway:
-        sourceStr = "Gateway"; break;
-    case QkBoard::btNetwork:
-        sourceStr = "Network"; break;
-    case QkBoard::btModule:
-        sourceStr = "Module"; break;
+    case QkBoard::btComm:
+        sourceStr = "Comm"; break;
     case QkBoard::btDevice:
         sourceStr = "Device"; break;
     default: sourceStr = "???";

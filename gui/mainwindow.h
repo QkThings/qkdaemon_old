@@ -14,7 +14,6 @@ class QkExplorerWidget;
 class QkDaemonWidget;
 class QkDaemon;
 class QkConnectionManager;
-class QkConnectThread;
 
 #include "messagesdialog.h"
 
@@ -49,8 +48,6 @@ private:
     QToolBar *m_tools;
     QSystemTrayIcon *m_trayIcon;
     QMenu *m_trayIconMenu;
-
-    QkConnectThread *m_connectThread;
 
     MessagesDialog *m_messagesDialog;
 };

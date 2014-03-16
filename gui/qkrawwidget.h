@@ -22,7 +22,7 @@ public slots:
     void setCurrentConnection(QkConnection *conn);
     
 private slots:
-    void slotIncomingFrame(QByteArray frame);
+    void slotIncomingFrame(Frame frame);
     void slotSendSearch();
     void slotPrintASCII(bool enabled);
 
