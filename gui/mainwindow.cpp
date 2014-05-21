@@ -8,7 +8,6 @@
 #include "qkconnectwidget.h"
 #include "qkdaemonwidget.h"
 #include "qkexplorerwidget.h"
-#include "qkrawwidget.h"
 #include "messagesdialog.h"
 #include "settingsdialog.h"
 
@@ -24,11 +23,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    m_connect = new QkConnectionManager();
+    m_connect = new QkConnectionManager(this);
     m_daemon = new QkDaemon(m_connect);
     m_daemonWidget = new QkDaemonWidget(m_daemon, this);
     m_explorerWidget = new QkExplorerWidget(this);
-    m_rawWidget = new QkRawWidget(this);
     m_tools = new QToolBar(tr("Tools"), this);
 
     m_trayIcon = new QSystemTrayIcon(QIcon(":/img/qk_24.png"));
@@ -47,10 +45,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete m_rawWidget;
-    delete m_explorerWidget;
-    delete m_daemonWidget;
-    delete m_connect;
     delete ui;
 }
 
@@ -76,7 +70,7 @@ void MainWindow::setupLayout()
 
 
     setWindowTitle(GUI_MAINWINDOW_TITLE);
-    setWindowIcon(QIcon(":img/qk_64.png"));
+    setWindowIcon(QIcon(":img/logo_64.png"));
 
     QString info;
     info.append("qkdaemon " + QString().sprintf("%d.%d.%d ", QKDAEMON_VERSION_MAJOR,
@@ -89,8 +83,7 @@ void MainWindow::setupLayout()
 void MainWindow::setupConnections()
 {
     connect(m_daemon, SIGNAL(statusMessage(QString)), this, SLOT(_handleDaemonStatusMessage(QString)));
-    connect(ui->connectWidget, SIGNAL(currentConnectionChanged(QkConnection*)),
-            m_rawWidget, SLOT(setCurrentConnection(QkConnection*)));
+
     connect(ui->connectWidget, SIGNAL(currentConnectionChanged(QkConnection*)),
             m_explorerWidget, SLOT(setCurrentConnection(QkConnection*)));
 }
@@ -125,12 +118,4 @@ void MainWindow::slotShowHideExplorer()
         m_explorerWidget->show();
     else
         m_explorerWidget->hide();
-}
-
-void MainWindow::slotShowHideRaw()
-{
-    if(m_rawWidget->isHidden())
-        m_rawWidget->show();
-    else
-        m_rawWidget->hide();
 }

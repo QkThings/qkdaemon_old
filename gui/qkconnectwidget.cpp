@@ -116,6 +116,7 @@ void QkConnectWidget::fillRow(int row, QkConnection *conn)
 
 void QkConnectWidget::slotOpenCloseConnection()
 {   
+    qDebug() << __FUNCTION__;
     pToolButton *button = reinterpret_cast<pToolButton*>(sender());
 
     pTableWidget *table = ui->connectionsTable;
@@ -130,6 +131,7 @@ void QkConnectWidget::slotOpenCloseConnection()
     QkConnection *conn = m_connManager->connection(connDesc);
     QSerialPort *sp;
 
+    qDebug() << "conn->descriptor().type" << conn->descriptor().type;
     switch(conn->descriptor().type)
     {
     case QkConnection::ctSerial:
@@ -188,7 +190,6 @@ void QkConnectWidget::slotRemoveConnection()
 
 void QkConnectWidget::slotConnectionAdded(QkConnection *conn)
 {
-    qDebug() << "slotConnectionAdded";
     int row = ui->connectionsTable->rowCount();
     ui->connectionsTable->insertRow(row);
     fillRow(row, conn);
@@ -198,9 +199,7 @@ void QkConnectWidget::slotConnectionAdded(QkConnection *conn)
 
 void QkConnectWidget::slotConnectionRemoved(QkConnection *conn)
 {
-    qDebug() << "slotConnectionRemoved" << conn;
     int r = findConnection(conn->descriptor());
-    qDebug() << "remove row" << r;
     ui->connectionsTable->removeRow(r);
 }
 

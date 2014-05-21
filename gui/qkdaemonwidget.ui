@@ -30,6 +30,12 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="label_3">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
        <property name="palette">
         <palette>
          <active>
@@ -128,7 +134,7 @@
         <string/>
        </property>
        <property name="pixmap">
-        <pixmap resource="../resources/img/img.qrc">:/img/daemon_text.png</pixmap>
+        <pixmap resource="../resources/img/qkdaemon_img.qrc">:/img/qkdaemon_logo.png</pixmap>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -233,7 +239,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../resources/img/img.qrc"/>
+  <include location="../resources/img/qkdaemon_img.qrc"/>
  </resources>
  <connections/>
 </ui>

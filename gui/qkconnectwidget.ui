@@ -69,11 +69,6 @@
          <string>Serial Port</string>
         </property>
        </item>
-       <item>
-        <property name="text">
-         <string>TCP/IP</string>
-        </property>
-       </item>
       </widget>
      </item>
      <item>
@@ -107,7 +102,7 @@
             <string>...</string>
            </property>
            <property name="icon">
-            <iconset resource="../resources/icons/icons.qrc">
+            <iconset resource="../resources/icons/qkdaemon_icons.qrc">
              <normaloff>:/icons/reload.png</normaloff>:/icons/reload.png</iconset>
            </property>
            <property name="autoRaise">
@@ -123,7 +118,14 @@
           </widget>
          </item>
          <item>
-          <widget class="QComboBox" name="serialPort_portName_combo"/>
+          <widget class="QComboBox" name="serialPort_portName_combo">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_2">
@@ -223,7 +225,7 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset resource="../resources/icons/icons.qrc">
+        <iconset resource="../resources/icons/qkdaemon_icons.qrc">
          <normaloff>:/icons/plus_16.png</normaloff>:/icons/plus_16.png</iconset>
        </property>
        <property name="autoRaise">
@@ -237,7 +239,7 @@
         <string>...</string>
        </property>
        <property name="icon">
-        <iconset resource="../resources/icons/icons.qrc">
+        <iconset resource="../resources/icons/qkdaemon_icons.qrc">
          <normaloff>:/icons/minus_16.png</normaloff>:/icons/minus_16.png</iconset>
        </property>
        <property name="autoRaise">
@@ -291,7 +293,7 @@
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../resources/icons/icons.qrc"/>
+  <include location="../resources/icons/qkdaemon_icons.qrc"/>
  </resources>
  <connections>
   <connection>

@@ -13,7 +13,7 @@ TEMPLATE = app
 
 QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN/../shared/lib/\',-z,origin'
 
-DEFINES += QT_NO_DEBUG_OUTPUT
+#DEFINES += QT_NO_DEBUG_OUTPUT
 
 INCLUDEPATH += core
 INCLUDEPATH += gui
@@ -44,7 +44,6 @@ SOURCES += main.cpp\
     gui/qkconnectwidget.cpp \
     gui/widgets/ptablewidget.cpp \
     gui/widgets/ptoolbutton.cpp \
-    gui/qkrawwidget.cpp \
     gui/settingsdialog.cpp \
     core/qkdaemonthread.cpp \
     core/qkdaemonserver.cpp \
@@ -56,7 +55,6 @@ HEADERS  += gui/mainwindow.h \
     core/qkdaemon.h \
     gui/qkdaemonwidget.h \
     gui/qkconnectwidget.h \
-    gui/qkrawwidget.h \
     gui/widgets/ptablewidget.h \
     gui/widgets/ptoolbutton.h \
     gui/settingsdialog.h \
@@ -70,7 +68,6 @@ HEADERS  += gui/mainwindow.h \
 FORMS    += gui/mainwindow.ui \
     gui/qkdaemonwidget.ui \
     gui/qkconnectwidget.ui \
-    gui/qkrawwidget.ui \
     gui/settingsdialog.ui \
     gui/messagesdialog.ui
 

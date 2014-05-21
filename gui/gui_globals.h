@@ -9,7 +9,7 @@ const QString GUI_MAINWINDOW_TITLE = "qkdaemon";
 #ifdef Q_OS_WIN
 const QFont GUI_MONOFONT = QFont("Consolas", 9);
 #else
-const QFont GUI_MONOFONT = QFont("Monospace", 8);
+const QFont GUI_MONOFONT = QFont("Monospace", 9);
 #endif
 
 #endif // GUI_GLOBALS_H

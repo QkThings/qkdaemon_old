@@ -29,7 +29,7 @@ private slots:
     void _handleConnectionAdded(QkConnection *conn);
     void _handleConnectionRemoved(QkConnection *conn);
     void _handleDataReceived(int address);
-    void _handleEventReceived(int address, QkDevice::Event event);
+    void _handleEventReceived(int address);
     void _handleDebugStringReceived(int address, QString str);
 
 private:

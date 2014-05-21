@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/img">
-        <file>daemon_text.png</file>
-        <file>qk_24.png</file>
-        <file>qk_64.png</file>
+        <file>qkdaemon_logo.png</file>
+        <file>logo_64.png</file>
     </qresource>
 </RCC>

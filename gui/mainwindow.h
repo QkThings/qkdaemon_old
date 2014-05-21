@@ -9,7 +9,6 @@ class MainWindow;
 
 class QSystemTrayIcon;
 
-class QkRawWidget;
 class QkExplorerWidget;
 class QkDaemonWidget;
 class QkDaemon;
@@ -29,7 +28,6 @@ public slots:
     void slotShowHideInfo();
     void slotShowHideSettings();
     void slotShowHideExplorer();
-    void slotShowHideRaw();
     void log(const QString &message, MessagesDialog::MessageType type = MessagesDialog::mtInfo);
     
 private slots:
@@ -44,7 +42,6 @@ private:
     QkDaemon *m_daemon;
     QkDaemonWidget *m_daemonWidget;
     QkExplorerWidget *m_explorerWidget;
-    QkRawWidget *m_rawWidget;
     QToolBar *m_tools;
     QSystemTrayIcon *m_trayIcon;
     QMenu *m_trayIconMenu;
