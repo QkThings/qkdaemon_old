@@ -20,20 +20,20 @@ INCLUDEPATH += gui
 INCLUDEPATH += gui/widgets
 
 INCLUDEPATH += ../qkcore
-LIBS += -lqkcore
 QMAKE_LIBDIR += ../qkcore/release
+LIBS += -L../qkcore/release -lqkcore
 
 INCLUDEPATH += ../qkapi/qt/qkapi
-LIBS += -lqkapi
 QMAKE_LIBDIR += ../qkapi/qt/qkapi/release
+LIBS += -L../qkapi/qt/qkapi/release -lqkapi
 
 INCLUDEPATH += ../qkconnect
-LIBS += -lqkconnect
 QMAKE_LIBDIR += ../qkconnect/release
+LIBS += -L../qkconnect/release -lqkconnect
 
 INCLUDEPATH += ../qkwidget
-LIBS += -lqkwidget
 QMAKE_LIBDIR += ../qkwidget/release
+LIBS += -L../qkwidget/release -lqkwidget
 
 #CONFIG += extserialport
 
@@ -89,4 +89,7 @@ MOC_DIR = build/moc
 RCC_DIR = build/rcc
 UI_DIR = build/ui
 
+deploy.commands = python deploy.py
 
+QMAKE_EXTRA_TARGETS += deploy
+POST_TARGETDEPS += deploy
