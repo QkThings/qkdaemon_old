@@ -2,6 +2,8 @@
 
 #include "qkconnect.h"
 #include "qkcore.h"
+#include "qknode.h"
+#include "qkprotocol.h"
 
 #include <QDebug>
 #include <QJsonDocument>
@@ -251,11 +253,11 @@ QJsonObject QkAPIHandler::create_object_conn(int connID)
 
     QJsonArray paramsArray;
     QkConnection::Descriptor desc = conn->descriptor();
-    mainObj.insert("type", QJsonValue(QkConnection::typeToString(desc.type)));
+    //mainObj.insert("type", QJsonValue(QkConnection::typeToString(desc.type)));
 
-    for(i = 0; i < desc.params.count(); i++)
-        paramsArray.insert(i, QJsonValue(desc.params[i]));
-    mainObj.insert("params", QJsonValue(paramsArray));
+//    for(i = 0; i < desc.params.count(); i++)
+//        paramsArray.insert(i, QJsonValue(desc.params[i]));
+//    mainObj.insert("params", QJsonValue(paramsArray));
 
     return mainObj;
 }
@@ -478,7 +480,7 @@ QJsonObject QkAPIHandler::rpc_samplingFrequency(RPCArgs *args)
     qDebug() << *(args->parsed);
     qDebug() << *(args->params);
 
-    QMutexLocker locker(m_connManager->mutex());
+    //QMutexLocker locker(m_connManager->mutex());
 
     bool ok;
     QJsonObject errObj;
@@ -512,7 +514,7 @@ QJsonObject QkAPIHandler::rpc_samplingMode(RPCArgs *args)
     qDebug() << *(args->parsed);
     qDebug() << *(args->params);
 
-    QMutexLocker locker(m_connManager->mutex());
+//    QMutexLocker locker(m_connManager->mutex());
 
     QJsonObject errObj;
 
@@ -553,7 +555,7 @@ QJsonObject QkAPIHandler::rpc_update(RPCArgs *args)
         return errObj;
 
     QkConnection *conn = m_connManager->defaultConnection();
-    Qk::Ack ack;
+    QkAck ack;
 
     if(args->path.contains("nodes"))
     {
@@ -618,7 +620,7 @@ QJsonObject QkAPIHandler::rpc_search(RPCArgs *args)
         return errObj;
 
     QkConnection *defaultConn = m_connManager->defaultConnection();
-    Qk::Ack ack = defaultConn->qk()->search();
+    QkAck ack = defaultConn->qk()->search();
     if(ack.code == QK_COMM_OK)
         return rpc_result(0);
     else
@@ -633,7 +635,7 @@ QJsonObject QkAPIHandler::rpc_start(RPCArgs *args)
         return errObj;
 
     QkConnection *defaultConn = m_connManager->defaultConnection();
-    Qk::Ack ack = defaultConn->qk()->start();
+    QkAck ack = defaultConn->qk()->start();
     if(ack.code == QK_COMM_OK)
         return rpc_result(0);
     else
@@ -648,7 +650,7 @@ QJsonObject QkAPIHandler::rpc_stop(RPCArgs *args)
         return errObj;
 
     QkConnection *defaultConn = m_connManager->defaultConnection();
-    Qk::Ack ack = defaultConn->qk()->stop();
+    QkAck ack = defaultConn->qk()->stop();
     if(ack.code == QK_COMM_OK)
         return rpc_result(0);
     else
@@ -864,12 +866,10 @@ void QkAPIHandler::_handleDataReceived(int address)
     QkCore *qk = (QkCore*)sender();
     QkConnection *conn = (QkConnection*)qk->parent();
 
-    int connID = m_connManager->connectionID(conn);
-
     QJsonDocument jsonDoc;
     RPCArgsRT args;
     args.conn = conn;
-    args.connID = connID;
+    args.connID = conn->id();
     args.address = address;
 
     jsonDoc.setObject(rpc_rt_data(&args));
@@ -895,7 +895,7 @@ void QkAPIHandler::_handleEventReceived(int address)
 
     QkConnection *conn = (QkConnection*)qk->parent();
 
-    int connID = m_connManager->connectionID(conn);
+//    int connID = m_connManager->connectionID(conn);
 
     QQueue<QkDevice::Event> *events = device->eventsFired();
 
@@ -906,7 +906,7 @@ void QkAPIHandler::_handleEventReceived(int address)
     {
         QkDevice::Event event = events->dequeue();
         args.conn = conn;
-        args.connID = connID;
+        args.connID = conn->id();
         args.address = address;
         args.event = &event;
 
@@ -925,12 +925,12 @@ void QkAPIHandler::_handleDebugStringReceived(int address, QString str)
     QkCore *qk = (QkCore*)sender();
     QkConnection *conn = (QkConnection*)qk->parent();
 
-    int connID = m_connManager->connectionID(conn);
+//    int connID = m_connManager->connectionID(conn);
 
     QJsonDocument jsonDoc;
     RPCArgsRT args;
     args.conn = conn;
-    args.connID = connID;
+    args.connID = conn->id();
     args.address = address;
     args.text = str;
 

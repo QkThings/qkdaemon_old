@@ -31,7 +31,7 @@ public slots:
     void log(const QString &message, MessagesDialog::MessageType type = MessagesDialog::mtInfo);
     
 private slots:
-    void _handleDaemonStatusMessage(QString message);
+    void handleDaemonStatusMessage(QString message);
 
 private:
     void setupLayout();

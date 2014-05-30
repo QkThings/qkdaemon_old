@@ -28,7 +28,7 @@ QkDaemonWidget::~QkDaemonWidget()
 
 void QkDaemonWidget::setupConnections()
 {
-    connect(ui->connect_button, SIGNAL(clicked()), this, SLOT(_slotConnect()));
+    connect(ui->connect_button, SIGNAL(clicked()), this, SLOT(slotConnect()));
 }
 
 void QkDaemonWidget::setupLayout()
@@ -36,7 +36,7 @@ void QkDaemonWidget::setupLayout()
 
 }
 
-void QkDaemonWidget::_slotConnect()
+void QkDaemonWidget::slotConnect()
 {
     if(!m_daemon->isListening())
         m_daemon->connectToHost(ui->hostAddress_lineEdit->text(), ui->port_spinBox->value());

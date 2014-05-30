@@ -22,10 +22,9 @@ public:
 public slots:
 
 private slots:
-    void _slotConnect();
+    void slotConnect();
     void updateInterface();
 
-    
 private:
     void setupConnections();
     void setupLayout();

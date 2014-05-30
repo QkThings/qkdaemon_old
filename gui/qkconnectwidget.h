@@ -49,8 +49,9 @@ private:
     void setupLayout();
     void setupConnections();
     void fillRow(int row, QkConnection *conn);
-    int findConnection(const QkConnection::Descriptor &connDesc);
+    int findConnection(const QkConnection::Descriptor &desc);
     QkConnection::Descriptor connectionDescriptor(int row);
+    QkConnection::Type connectionType(int row);
 
     Ui::QkConnectWidget *ui;
     QkConnectionManager *m_connManager;

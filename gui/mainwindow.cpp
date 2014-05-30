@@ -76,19 +76,19 @@ void MainWindow::setupLayout()
     info.append("qkdaemon " + QString().sprintf("%d.%d.%d ", QKDAEMON_VERSION_MAJOR,
                                                 QKDAEMON_VERSION_MINOR,
                                                 QKDAEMON_VERSION_PATCH));
-    info.append("(qkcore " + QkCore::version() + ")");
+//    info.append("(qkcore " + QKCORE_LIB_VERSION + ")");
     log(info);
 }
 
 void MainWindow::setupConnections()
 {
-    connect(m_daemon, SIGNAL(statusMessage(QString)), this, SLOT(_handleDaemonStatusMessage(QString)));
+    connect(m_daemon, SIGNAL(statusMessage(QString)), this, SLOT(handleDaemonStatusMessage(QString)));
 
     connect(ui->connectWidget, SIGNAL(currentConnectionChanged(QkConnection*)),
             m_explorerWidget, SLOT(setCurrentConnection(QkConnection*)));
 }
 
-void MainWindow::_handleDaemonStatusMessage(QString message)
+void MainWindow::handleDaemonStatusMessage(QString message)
 {
     log(message, MessagesDialog::mtInfo);
 }

@@ -18,6 +18,7 @@ QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN/../shared/lib/\',-z,origin'
 INCLUDEPATH += core
 INCLUDEPATH += gui
 INCLUDEPATH += gui/widgets
+INCLUDEPATH += ../utils
 
 INCLUDEPATH += ../qkcore
 QMAKE_LIBDIR += ../qkcore/release
@@ -27,9 +28,9 @@ INCLUDEPATH += ../qkapi/qt/qkapi
 QMAKE_LIBDIR += ../qkapi/qt/qkapi/release
 LIBS += -L../qkapi/qt/qkapi/release -lqkapi
 
-INCLUDEPATH += ../qkconnect
-QMAKE_LIBDIR += ../qkconnect/release
-LIBS += -L../qkconnect/release -lqkconnect
+#INCLUDEPATH += ../qkconnect
+#QMAKE_LIBDIR += ../qkconnect/release
+#LIBS += -L../qkconnect/release -lqkconnect
 
 INCLUDEPATH += ../qkwidget
 QMAKE_LIBDIR += ../qkwidget/release

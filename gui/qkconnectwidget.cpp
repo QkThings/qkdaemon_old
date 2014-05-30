@@ -63,7 +63,7 @@ void QkConnectWidget::setupLayout()
     table->setColumnWidth(ColumnParam1, 80);
     table->setColumnWidth(ColumnOpenClose, 100);
 
-    //table->setColumnHidden(ColumnOpenClose, true);
+    table->setColumnHidden(ColumnOpenClose, true);
 
     table->setAlternatingRowColors(true);
 }
@@ -93,15 +93,30 @@ void QkConnectWidget::fillRow(int row, QkConnection *conn)
     int i, col;
     pTableWidget *table = ui->connectionsTable;
 
-    QTableWidgetItem *connType = new QTableWidgetItem(QkConnection::typeToString(conn->descriptor().type));
-    table->setItem(row, ColumnConnType, connType);
 
-    QTableWidgetItem *param;
-    for(i = 0, col = ColumnParam1; i < conn->descriptor().params.count() && col < ColumnMaxCount; i++, col++)
+    QString typeName = "typeName";
+    QString param1 = "param1";
+    QString param2 = "param2";
+
+    switch(conn->descriptor().type)
     {
-        param = new QTableWidgetItem(conn->descriptor().params.at(i));
-        table->setItem(row, col, param);
+    case QkConnection::tSerial:
+        typeName = "Serial";
+        param1 = conn->descriptor().parameters["portName"].toString();
+        param2 = conn->descriptor().parameters["baudRate"].toString();
+        break;
+    default: ;
     }
+
+    QTableWidgetItem *itemType = new QTableWidgetItem(typeName);
+    QTableWidgetItem *itemParam1 = new QTableWidgetItem(param1);
+    QTableWidgetItem *itemParam2 = new QTableWidgetItem(param2);
+
+    itemType->setTextAlignment(Qt::AlignCenter);
+
+    table->setItem(row, ColumnConnType, itemType);
+    table->setItem(row, ColumnParam1, itemParam1);
+    table->setItem(row, ColumnParam2, itemParam2);
 
     pToolButton *openCloseButton = new pToolButton(this);
     openCloseButton->setAutoRaise(true);
@@ -117,79 +132,86 @@ void QkConnectWidget::fillRow(int row, QkConnection *conn)
 void QkConnectWidget::slotOpenCloseConnection()
 {   
     qDebug() << __FUNCTION__;
-    pToolButton *button = reinterpret_cast<pToolButton*>(sender());
+//    pToolButton *button = reinterpret_cast<pToolButton*>(sender());
 
-    pTableWidget *table = ui->connectionsTable;
-    int r = table->currentRow();
+//    pTableWidget *table = ui->connectionsTable;
+//    int r = table->currentRow();
 
-    QkConnection::Descriptor connDesc;
+//    QkConnection::Descriptor connDesc;
 
-    connDesc.type = QkConnection::typeFromString(table->item(r, ColumnConnType)->text());
-    connDesc.params.append(table->item(r, ColumnParam1)->text());
-    connDesc.params.append(table->item(r, ColumnParam2)->text());
+//    //connDesc.type = QkConnection::typeFromString(table->item(r, ColumnConnType)->text());
+//    connDesc.params.append(table->item(r, ColumnParam1)->text());
+//    connDesc.params.append(table->item(r, ColumnParam2)->text());
 
-    QkConnection *conn = m_connManager->connection(connDesc);
-    QSerialPort *sp;
+//    QkConnection *conn = m_connManager->connection(connDesc);
+//    QSerialPort *sp;
 
-    qDebug() << "conn->descriptor().type" << conn->descriptor().type;
-    switch(conn->descriptor().type)
-    {
-    case QkConnection::ctSerial:
-        sp = (QSerialPort*)(conn->device());
-        if(sp->isOpen())
-        {
-            sp->close();
-            button->setText(tr("Disconnected"));
-        }
-        else
-        {
-            sp->setPortName(connDesc.params.at(0));
-            QSerialPort::BaudRate baudRate;
-            switch(connDesc.params.at(1).toInt())
-            {
-            case 9600: baudRate = QSerialPort::Baud9600; break;
-            case 38400: baudRate = QSerialPort::Baud38400; break;
-            case 115200: baudRate = QSerialPort::Baud115200; break;
-            default:
-                qDebug() << "Unable to set desired baud rate:" << connDesc.params.at(1);
-            }
+//    qDebug() << "conn->descriptor().type" << conn->descriptor().type;
+//    switch(conn->descriptor().type)
+//    {
+//    case QkConnection::ctSerial:
+//        sp = (QSerialPort*)(conn->device());
+//        if(sp->isOpen())
+//        {
+//            sp->close();
+//            button->setText(tr("Disconnected"));
+//        }
+//        else
+//        {
+//            sp->setPortName(connDesc.params.at(0));
+//            QSerialPort::BaudRate baudRate;
+//            switch(connDesc.params.at(1).toInt())
+//            {
+//            case 9600: baudRate = QSerialPort::Baud9600; break;
+//            case 38400: baudRate = QSerialPort::Baud38400; break;
+//            case 115200: baudRate = QSerialPort::Baud115200; break;
+//            default:
+//                qDebug() << "Unable to set desired baud rate:" << connDesc.params.at(1);
+//            }
 
-            sp->setBaudRate(baudRate);
-            if(sp->open(QIODevice::ReadWrite)) {
-                button->setText(tr("Connected"));
-            }
-            else
-                qDebug() << sp->errorString() << sp->portName() << sp->baudRate();
-        }
-        break;
-    default: ;
-    }
+//            sp->setBaudRate(baudRate);
+//            if(sp->open(QIODevice::ReadWrite)) {
+//                button->setText(tr("Connected"));
+//            }
+//            else
+//                qDebug() << sp->errorString() << sp->portName() << sp->baudRate();
+//        }
+//        break;
+//    default: ;
+//    }
 
 }
 
 void QkConnectWidget::slotAddConnection()
 {
-    QkConnection::Descriptor connDesc;
-    if(ui->connType_combo->currentIndex() == 0)  // Serial
+    qDebug() << __FUNCTION__;
+    QkConnection::Descriptor desc;
+
+    switch(ui->connType_combo->currentIndex())
     {
-        connDesc.type = QkConnection::ctSerial;
-        connDesc.params.append(ui->serialPort_portName_combo->currentText());
-        connDesc.params.append(ui->serialPort_baudRate_combo->currentText());
-        m_connManager->addConnection(connDesc);
+    case 0: // serial
+        desc.type = QkConnection::tSerial;
+        desc.parameters.insert("portName", ui->serialPort_portName_combo->currentText());
+        desc.parameters.insert("baudRate", ui->serialPort_baudRate_combo->currentText().toInt());
+        break;
+    default: ;
     }
+
+    m_connManager->addConnection(desc);
 }
 
 void QkConnectWidget::slotRemoveConnection()
 {
-
-    QkConnection::Descriptor connDesc;
+    qDebug() << __FUNCTION__;
+    QkConnection::Descriptor desc;
     pTableWidget *table = ui->connectionsTable;
-    connDesc = connectionDescriptor(table->currentRow());
-    m_connManager->removeConnection(connDesc);
+    desc = connectionDescriptor(table->currentRow());
+    m_connManager->removeConnection(desc);
 }
 
 void QkConnectWidget::slotConnectionAdded(QkConnection *conn)
 {
+    qDebug() << __FUNCTION__;
     int row = ui->connectionsTable->rowCount();
     ui->connectionsTable->insertRow(row);
     fillRow(row, conn);
@@ -199,6 +221,7 @@ void QkConnectWidget::slotConnectionAdded(QkConnection *conn)
 
 void QkConnectWidget::slotConnectionRemoved(QkConnection *conn)
 {
+    qDebug() << __FUNCTION__;
     int r = findConnection(conn->descriptor());
     ui->connectionsTable->removeRow(r);
 }
@@ -234,15 +257,16 @@ void QkConnectWidget::slotCurrentCellChanged(int curRow, int curCol, int prevRow
     (void)prevCol;
 
     QkConnection::Descriptor connDesc;
-    if(curRow != prevRow && curRow != -1)
+    QkConnection *conn = 0;
+
+    //if(curRow != prevRow && curRow != -1)
+    if(curRow != -1)
     {
         connDesc = connectionDescriptor(curRow);
-        QkConnection *conn = m_connManager->connection(connDesc);
-        if(conn != 0)
-        {
-            emit currentConnectionChanged(conn);
-        }
+        conn = m_connManager->connection(connDesc);
     }
+
+    emit currentConnectionChanged(conn);
 
     updateInterface();
 }
@@ -252,16 +276,25 @@ void QkConnectWidget::slotShowError(QString message)
     QMessageBox::critical(this, tr("Error"), message);
 }
 
-int QkConnectWidget::findConnection(const QkConnection::Descriptor &connDesc)
+int QkConnectWidget::findConnection(const QkConnection::Descriptor &desc)
 {
     pTableWidget *table = ui->connectionsTable;
-    int r;
-    for(r = 0; r < table->rowCount(); r++)
+    int row;
+    for(row = 0; row < table->rowCount(); row++)
     {
-        if(table->item(r, ColumnConnType)->text() == QkConnection::typeToString(connDesc.type) &&
-           table->item(r, ColumnParam1)->text() == connDesc.params.at(0))
+        QkConnection::Descriptor rowConnDesc = connectionDescriptor(row);
+
+        if(desc.type == rowConnDesc.type)
         {
-            return r;
+            switch(rowConnDesc.type)
+            {
+            case QkConnection::tSerial:
+                if(desc.parameters.keys().contains("portName"))
+                    if(desc.parameters["portName"] == rowConnDesc.parameters["portName"])
+                        return row;
+                break;
+            default: ;
+            }
         }
     }
 
@@ -270,16 +303,30 @@ int QkConnectWidget::findConnection(const QkConnection::Descriptor &connDesc)
 
 QkConnection::Descriptor QkConnectWidget::connectionDescriptor(int row)
 {
-    QkConnection::Descriptor connDesc;
+    QkConnection::Descriptor desc;
     pTableWidget *table = ui->connectionsTable;
 
     if(row >= 0 || row < table->rowCount())
     {
-        connDesc.type = QkConnection::typeFromString(table->item(row, ColumnConnType)->text());
-        connDesc.params.append(table->item(row, ColumnParam1)->text());
-        connDesc.params.append(table->item(row, ColumnParam2)->text());
+        if(connectionType(row))
+        {
+            desc.type = QkConnection::tSerial;
+            desc.parameters["portName"] = table->item(row, ColumnParam1)->text();
+            desc.parameters["baudRate"] = table->item(row, ColumnParam2)->text().toInt();
+        }
     }
-    return connDesc;
+    return desc;
+}
+
+QkConnection::Type QkConnectWidget::connectionType(int row)
+{
+    pTableWidget *table = ui->connectionsTable;
+    if(row >= 0 || row < table->rowCount())
+    {
+        if(table->item(row, ColumnConnType)->text() == "Serial")
+            return QkConnection::tSerial;
+    }
+    return QkConnection::tUnknown;
 }
 
 void QkConnectWidget::updateInterface()
@@ -288,10 +335,11 @@ void QkConnectWidget::updateInterface()
     bool okToAdd = false;
     if(ui->connType_combo->currentIndex() == 0)  // Serial
     {
-        connDesc.type = QkConnection::ctSerial;
-        connDesc.params.append(ui->serialPort_portName_combo->currentText());
-        connDesc.params.append(ui->serialPort_baudRate_combo->currentText());
-        okToAdd = m_connManager->validate(connDesc);
+//        connDesc.type = QkConnection::ctSerial;
+//        connDesc.params.append(ui->serialPort_portName_combo->currentText());
+//        connDesc.params.append(ui->serialPort_baudRate_combo->currentText());
+//        okToAdd = m_connManager->validate(connDesc);
+        okToAdd = true;
     }
     ui->add_button->setEnabled(okToAdd);
 
