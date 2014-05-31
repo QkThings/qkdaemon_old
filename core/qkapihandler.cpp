@@ -584,7 +584,7 @@ QJsonObject QkAPIHandler::rpc_update(RPCArgs *args)
 
     }
 
-    if(ack.code == QK_COMM_OK)
+    if(ack.result == QkAck::OK)
         return rpc_result(0);
     else
     {
@@ -621,7 +621,7 @@ QJsonObject QkAPIHandler::rpc_search(RPCArgs *args)
 
     QkConnection *defaultConn = m_connManager->defaultConnection();
     QkAck ack = defaultConn->qk()->search();
-    if(ack.code == QK_COMM_OK)
+    if(ack.result == QkAck::OK)
         return rpc_result(0);
     else
         return rpc_error(ack.err, QkCore::errorMessage(ack.err));
@@ -636,7 +636,7 @@ QJsonObject QkAPIHandler::rpc_start(RPCArgs *args)
 
     QkConnection *defaultConn = m_connManager->defaultConnection();
     QkAck ack = defaultConn->qk()->start();
-    if(ack.code == QK_COMM_OK)
+    if(ack.result == QkAck::OK)
         return rpc_result(0);
     else
         return rpc_error(ack.err, QkCore::errorMessage(ack.err));
@@ -651,7 +651,7 @@ QJsonObject QkAPIHandler::rpc_stop(RPCArgs *args)
 
     QkConnection *defaultConn = m_connManager->defaultConnection();
     QkAck ack = defaultConn->qk()->stop();
-    if(ack.code == QK_COMM_OK)
+    if(ack.result == QkAck::OK)
         return rpc_result(0);
     else
         return rpc_error(ack.err, QkCore::errorMessage(ack.err));
@@ -728,8 +728,15 @@ QJsonObject QkAPIHandler::rpc_rt_data(RPCArgsRT *args)
 
     QJsonObject obj;
 
+    qDebug() << "conn" << args->conn;
+    qDebug() << "qk" << args->conn->qk();
+
     QkNode *node = args->conn->qk()->node(args->address);
+
+    qDebug() << "node" << node << args->address;
+
     QkDevice *device = node->device();
+    qDebug() << "device" << device << args->address;
 
     QVector<QkDevice::Data> data = device->data();
 
@@ -856,15 +863,15 @@ bool QkAPIHandler::validate_rpc_device(QJsonObject *errorObj, RPCArgs *args)
     return true;
 }
 
-void QkAPIHandler::_handleDataReceived(int address)
+void QkAPIHandler::slotDataReceived(int address)
 {
     qDebug() << "handle data received from" << address << "sender" << sender();
 
     if(!m_realTimeEnabled || !m_subscribedNames.contains("data"))
         return;
 
-    QkCore *qk = (QkCore*)sender();
-    QkConnection *conn = (QkConnection*)qk->parent();
+    QkProtocol *protocol = dynamic_cast<QkProtocol*>(sender());
+    QkConnection *conn = protocol->qk()->connection();
 
     QJsonDocument jsonDoc;
     RPCArgsRT args;
@@ -876,26 +883,16 @@ void QkAPIHandler::_handleDataReceived(int address)
     emit sendJson(jsonDoc);
 }
 
-void QkAPIHandler::_handleEventReceived(int address)
+void QkAPIHandler::slotEventReceived(int address)
 {
     qDebug() << "handle event received from" << address;
 
     if(!m_realTimeEnabled || !m_subscribedNames.contains("event"))
         return;
 
-    QkCore *qk = (QkCore*)sender();
-    if(qk == 0)
-        return;
-    QkNode *node = qk->node(address);
-    if(node == 0)
-        return;
-    QkDevice *device = node->device();
-    if(device == 0)
-        return;
-
-    QkConnection *conn = (QkConnection*)qk->parent();
-
-//    int connID = m_connManager->connectionID(conn);
+    QkProtocol *protocol = dynamic_cast<QkProtocol*>(sender());
+    QkConnection *conn = protocol->qk()->connection();
+    QkDevice *device = protocol->qk()->node(address)->device();
 
     QQueue<QkDevice::Event> *events = device->eventsFired();
 
@@ -915,15 +912,16 @@ void QkAPIHandler::_handleEventReceived(int address)
     }
 }
 
-void QkAPIHandler::_handleDebugStringReceived(int address, QString str)
+void QkAPIHandler::slotDebugReceived(int address, QString str)
 {
     qDebug() << "handle debug received from" << address;
 
     if(!m_realTimeEnabled || !m_subscribedNames.contains("debug"))
         return;
 
-    QkCore *qk = (QkCore*)sender();
-    QkConnection *conn = (QkConnection*)qk->parent();
+
+    QkProtocol *protocol = dynamic_cast<QkProtocol*>(sender());
+    QkConnection *conn = protocol->qk()->connection();
 
 //    int connID = m_connManager->connectionID(conn);
 
@@ -938,38 +936,37 @@ void QkAPIHandler::_handleDebugStringReceived(int address, QString str)
     emit sendJson(jsonDoc);
 }
 
-void QkAPIHandler::_handleConnectionAdded(QkConnection *conn)
+void QkAPIHandler::slotConnectionAdded(QkConnection *conn)
 {
-    QkCore *qk = conn->qk();
-    connect(qk, SIGNAL(dataReceived(int)), this, SLOT(_handleDataReceived(int)));
-    connect(qk, SIGNAL(eventReceived(int)), this, SLOT(_handleEventReceived(int)));
-    connect(qk, SIGNAL(debugString(int,QString)), this, SLOT(_handleDebugStringReceived(int,QString)));
+    QkProtocol *protocol = conn->qk()->protocol();
+    connect(protocol, SIGNAL(dataReceived(int)), this, SLOT(slotDataReceived(int)));
+    connect(protocol, SIGNAL(eventReceived(int)), this, SLOT(slotEventReceived(int)));
+    connect(protocol, SIGNAL(debugRecceived(int,QString)), this, SLOT(slotDebugReceived(int,QString)));
 }
 
-void QkAPIHandler::_handleConnectionRemoved(QkConnection *conn)
+void QkAPIHandler::slotConnectionRemoved(QkConnection *conn)
 {
-    QkCore *qk = conn->qk();
-    disconnect(qk, SIGNAL(dataReceived(int)), this, SLOT(_handleDataReceived(int)));
-//    disconnect(qk, SIGNAL(eventReceived(int,QkDevice::Event)), this, SLOT(_handleEventReceived(int,QkDevice::Event)));
-    disconnect(qk, SIGNAL(eventReceived(int)), this, SLOT(_handleEventReceived(int)));
-    disconnect(qk, SIGNAL(debugString(int,QString)), this, SLOT(_handleDebugStringReceived(int,QString)));
+    QkProtocol *protocol = conn->qk()->protocol();
+    disconnect(protocol, SIGNAL(dataReceived(int)), this, SLOT(slotDataReceived(int)));
+    disconnect(protocol, SIGNAL(eventReceived(int)), this, SLOT(slotEventReceived(int)));
+    disconnect(protocol, SIGNAL(debugReceived(int,QString)), this, SLOT(slotDebugReceived(int,QString)));
 }
 
 void QkAPIHandler::setupConnections()
 {
     connect(m_connManager, SIGNAL(connectionAdded(QkConnection*)),
-            this, SLOT(_handleConnectionAdded(QkConnection*)));
+            this, SLOT(slotConnectionAdded(QkConnection*)));
     connect(m_connManager, SIGNAL(connectionRemoved(QkConnection*)),
-            this, SLOT(_handleConnectionRemoved(QkConnection*)));
+            this, SLOT(slotConnectionRemoved(QkConnection*)));
 
     int id;
     QList<QkConnection*> conns = m_connManager->connections();
     for(id = 0; id < conns.count(); id++)
     {
-        QkCore *qk = conns[id]->qk();
-        connect(qk, SIGNAL(dataReceived(int)), this, SLOT(_handleDataReceived(int)));
-        connect(qk, SIGNAL(eventReceived(int)), this, SLOT(_handleEventReceived(int)));
-        connect(qk, SIGNAL(debugString(int,QString)), this, SLOT(_handleDebugStringReceived(int,QString)));
+        QkProtocol *protocol = conns[id]->qk()->protocol();
+        connect(protocol, SIGNAL(dataReceived(int)), this, SLOT(slotDataReceived(int)));
+        connect(protocol, SIGNAL(eventReceived(int)), this, SLOT(slotEventReceived(int)));
+        connect(protocol, SIGNAL(debugReceived(int,QString)), this, SLOT(slotDebugReceived(int,QString)));
     }
 }
 

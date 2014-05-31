@@ -26,11 +26,11 @@ public slots:
     void handleJsonRpc(const QString &jsonRpc);
 
 private slots:
-    void _handleConnectionAdded(QkConnection *conn);
-    void _handleConnectionRemoved(QkConnection *conn);
-    void _handleDataReceived(int address);
-    void _handleEventReceived(int address);
-    void _handleDebugStringReceived(int address, QString str);
+    void slotConnectionAdded(QkConnection *conn);
+    void slotConnectionRemoved(QkConnection *conn);
+    void slotDataReceived(int address);
+    void slotEventReceived(int address);
+    void slotDebugReceived(int address, QString str);
 
 private:
     enum Constants

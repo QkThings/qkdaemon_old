@@ -13,7 +13,7 @@ def deploy():
 	rootdir = getcwd()
 	
 #	environ["LD_LIBRARY_PATH"] += path.join(rootdir, "../../qkcore/release")
-	environ["LD_LIBRARY_PATH"] += "/home/mribeiro/bitbucket/qkthings/software/qkcore/release"
+#	environ["LD_LIBRARY_PATH"] += "/home/mribeiro/bitbucket/qkthings/software/qkcore/release"
 
 	print "Done"
 
