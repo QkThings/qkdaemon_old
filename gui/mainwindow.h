@@ -38,7 +38,7 @@ private:
     void setupConnections();
 
     Ui::MainWindow *ui;
-    QkConnectionManager *m_connect;
+    QkConnectionManager *m_connManager;
     QkDaemon *m_daemon;
     QkDaemonWidget *m_daemonWidget;
     QkExplorerWidget *m_explorerWidget;

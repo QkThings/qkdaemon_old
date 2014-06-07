@@ -23,8 +23,10 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    m_connect = new QkConnectionManager(this);
-    m_daemon = new QkDaemon(m_connect);
+    m_connManager = new QkConnectionManager(this);
+    m_connManager->setSearchOnConnect(true);
+
+    m_daemon = new QkDaemon(m_connManager);
     m_daemonWidget = new QkDaemonWidget(m_daemon, this);
     m_explorerWidget = new QkExplorerWidget(this);
     m_tools = new QToolBar(tr("Tools"), this);
@@ -54,7 +56,7 @@ void MainWindow::setupLayout()
     ui->mainToolBar->addWidget(m_daemonWidget);
     ui->mainToolBar->setMovable(false);
     ui->statusBar->hide();
-    ui->connectWidget->setQkConnect(m_connect);
+    ui->connectWidget->setQkConnect(m_connManager);
 
     ui->log->hide();
 
