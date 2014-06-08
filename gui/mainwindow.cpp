@@ -24,7 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     m_connManager = new QkConnectionManager(this);
-    m_connManager->setSearchOnConnect(true);
+    m_connManager->setSearchOnConnect(false);
 
     m_daemon = new QkDaemon(m_connManager);
     m_daemonWidget = new QkDaemonWidget(m_daemon, this);
@@ -87,7 +87,7 @@ void MainWindow::setupConnections()
     connect(m_daemon, SIGNAL(statusMessage(QString)), this, SLOT(handleDaemonStatusMessage(QString)));
 
     connect(ui->connectWidget, SIGNAL(currentConnectionChanged(QkConnection*)),
-            m_explorerWidget, SLOT(setCurrentConnection(QkConnection*)));
+            m_explorerWidget, SLOT(setConnection(QkConnection*)));
 }
 
 void MainWindow::handleDaemonStatusMessage(QString message)

@@ -28,8 +28,8 @@ public slots:
 private slots:
     void slotConnectionAdded(QkConnection *conn);
     void slotConnectionRemoved(QkConnection *conn);
-    void slotDataReceived(int address);
-    void slotEventReceived(int address);
+    void slotDataReceived(int address, QkDevice::DataArray dataArray);
+    void slotEventReceived(int address, QkDevice::Event event);
     void slotDebugReceived(int address, QString str);
 
 private:
@@ -68,6 +68,7 @@ private:
         int connID;
         QkConnection *conn;
         int address;
+        QkDevice::DataArray *dataArray;
         QkDevice::Event *event;
         QString text;
         int errCode, errArg;
