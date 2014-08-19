@@ -24,19 +24,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     m_connManager = new QkConnectionManager(this);
-    m_connManager->setSearchOnConnect(false);
+    m_connManager->setSearchOnConnect(true);
 
     m_daemon = new QkDaemon(m_connManager);
     m_daemonWidget = new QkDaemonWidget(m_daemon, this);
     m_explorerWidget = new QkExplorerWidget(this);
     m_tools = new QToolBar(tr("Tools"), this);
-
-    m_trayIcon = new QSystemTrayIcon(QIcon(":/img/qk_24.png"));
-//    m_trayIconMenu = new QMenu();
-//    m_trayIconMenu->addAction("Option 1");
-//    m_trayIconMenu->addAction("Option 2");
-//    m_trayIcon->setContextMenu(m_trayIconMenu);
-//    m_trayIcon->show();
 
     m_messagesDialog = new MessagesDialog(this);
     m_messagesDialog->hide();
@@ -75,10 +68,10 @@ void MainWindow::setupLayout()
     setWindowIcon(QIcon(":img/logo_64.png"));
 
     QString info;
-    info.append("qkdaemon " + QString().sprintf("%d.%d.%d ", QKDAEMON_VERSION_MAJOR,
+    info.append("QkDaemon " + QString().sprintf("%d.%d.%d ", QKDAEMON_VERSION_MAJOR,
                                                 QKDAEMON_VERSION_MINOR,
                                                 QKDAEMON_VERSION_PATCH));
-//    info.append("(qkcore " + QKCORE_LIB_VERSION + ")");
+//    info.append("(QkCore " + QKCORE_LIB_VERSION + ")");
     log(info);
 }
 

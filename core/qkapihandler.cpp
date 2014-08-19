@@ -620,7 +620,7 @@ QJsonObject QkAPIHandler::rpc_search(RPCArgs *args)
         return errObj;
 
     QkConnection *defaultConn = m_connManager->defaultConnection();
-    QkAck ack = defaultConn->qk()->search();
+    QkAck ack = QkAck::fromInt(defaultConn->qk()->search());
     if(ack.result == QkAck::OK)
         return rpc_result(0);
     else
@@ -635,7 +635,7 @@ QJsonObject QkAPIHandler::rpc_start(RPCArgs *args)
         return errObj;
 
     QkConnection *defaultConn = m_connManager->defaultConnection();
-    QkAck ack = defaultConn->qk()->start();
+    QkAck ack = QkAck::fromInt(defaultConn->qk()->start());
     if(ack.result == QkAck::OK)
         return rpc_result(0);
     else
@@ -650,7 +650,7 @@ QJsonObject QkAPIHandler::rpc_stop(RPCArgs *args)
         return errObj;
 
     QkConnection *defaultConn = m_connManager->defaultConnection();
-    QkAck ack = defaultConn->qk()->stop();
+    QkAck ack = QkAck::fromInt(defaultConn->qk()->stop());
     if(ack.result == QkAck::OK)
         return rpc_result(0);
     else

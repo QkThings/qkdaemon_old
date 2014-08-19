@@ -4,7 +4,7 @@
 #include <QtGlobal>
 #include <QFont>
 
-const QString GUI_MAINWINDOW_TITLE = "qkdaemon";
+const QString GUI_MAINWINDOW_TITLE = "QkDaemon";
 
 #ifdef Q_OS_WIN
 const QFont GUI_MONOFONT = QFont("Consolas", 9);
