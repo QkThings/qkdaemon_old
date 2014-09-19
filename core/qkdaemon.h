@@ -17,6 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef QKDAEMON_H
+#define QKDAEMON_H
+
 #include <QObject>
 
 #define QKDAEMON_VERSION_MAJOR  0

@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "qkdaemonthread.h"
+
 #include "qkdaemonsocket.h"
 #include "qkconnect.h"
 #include "qkapihandler.h"

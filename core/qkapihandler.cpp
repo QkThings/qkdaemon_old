@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "qkapihandler.h"
 #include "qkconnect.h"
 #include "qkcore.h"
 #include "qknode.h"

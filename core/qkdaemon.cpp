@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "qkdaemon.h"
 #include "qkcore.h"
 #include "qkdaemonserver.h"
 #include "qkdaemonsocket.h"

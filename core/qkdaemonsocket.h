@@ -17,6 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef QKDAEMONSOCKET_H
+#define QKDAEMONSOCKET_H
+
 //#include <QTcpSocket>
 #include "qkapisocket.h"
 

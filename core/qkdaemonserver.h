@@ -17,6 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef QKDAEMONSERVER_H
+#define QKDAEMONSERVER_H
+
 #include <QTcpServer>
 #include <QMap>
 

@@ -16,6 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+#include "mainwindow.h"
 #include "ui_mainwindow.h"
 
 #include "gui_globals.h"

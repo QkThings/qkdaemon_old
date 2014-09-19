@@ -17,6 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef QKDAEMONWIDGET_H
+#define QKDAEMONWIDGET_H
+
 #include <QWidget>
 
 namespace Ui {

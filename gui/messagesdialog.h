@@ -17,6 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef MESSAGESDIALOG_H
+#define MESSAGESDIALOG_H
+
 #include <QDialog>
 
 namespace Ui {
