@@ -92,7 +92,7 @@ QJsonObject QkAPIHandler::run(const QString &methodName, const QString &path, QV
     if(resource != curTreeItem->resource)
     {
         qDebug() << "The first RPC name must be \"qk\"," << resource << curTreeItem->resource;
-        return rpc_error(RPCError_Qk, "The first name must be qk");
+        return rpc_error(RPCError_Qk, "The first resource name must be \"qk\".");
     }
 
     while(!resourceList.isEmpty())
@@ -103,7 +103,7 @@ QJsonObject QkAPIHandler::run(const QString &methodName, const QString &path, QV
         // Try to find a child with the same resource name
         foreach(APITreeItem *child, curTreeItem->children)
         {
-            qDebug() << child->resource << resource;
+//            qDebug() << child->resource << resource;
             if(child->resource == resource)
             {
                 nextTreeItem = child;
@@ -176,7 +176,7 @@ void QkAPIHandler::create()
     while(!in.atEnd())
     {
         line = in.readLine();
-        level = line.count('\t');
+        level = line.count('-');
         if(level > maxLevel)
             maxLevel = level;
     }
@@ -202,8 +202,9 @@ void QkAPIHandler::create()
         QString attrStr = cols[1].remove(QRegularExpression("\\t|\\s"));
         QString rpcName = cols[2].remove(QRegularExpression("\\t|\\s"));
 
-        level = resource.count('\t');
+        level = resource.count('-');
         resource.remove('\\');
+        resource.remove("-");
         resource.remove(QRegularExpression("\\t|\\s"));
 
         if(level == 0)
@@ -223,6 +224,7 @@ void QkAPIHandler::create()
         else
         {
             parentItem = parentArray.at(level - 1);
+//            qDebug() << QString().fill(' ', level) << resource << rpcName;
             if(parentItem == 0)
                 qDebug() << "ERROR: parent is null";
             treeItem = new APITreeItem(resource, rpcName, parentItem);
@@ -231,13 +233,21 @@ void QkAPIHandler::create()
         }
 
         parentArray[level] = treeItem;
-        qDebug() << level << treeItem->resource;
+        qDebug() << QString().fill(' ', level) + treeItem->resource;
     }
     file.close();
 
     m_rpcMapper.insert("listQk",            &QkAPIHandler::rpc_listQk);
     m_rpcMapper.insert("listConns",         &QkAPIHandler::rpc_listConns);
     m_rpcMapper.insert("conn",              &QkAPIHandler::rpc_conn);
+    m_rpcMapper.insert("listSubscriptions", &QkAPIHandler::rpc_listSubscriptions);
+    m_rpcMapper.insert("subscribeData",     &QkAPIHandler::rpc_subscribeData);
+    m_rpcMapper.insert("subscribeEvent",    &QkAPIHandler::rpc_subscribeEvent);
+    m_rpcMapper.insert("subscribeDebug",    &QkAPIHandler::rpc_subscribeDebug);
+    m_rpcMapper.insert("listCmds",          &QkAPIHandler::rpc_listCmds);
+    m_rpcMapper.insert("search",            &QkAPIHandler::rpc_search);
+    m_rpcMapper.insert("start",             &QkAPIHandler::rpc_start);
+    m_rpcMapper.insert("stop",              &QkAPIHandler::rpc_stop);
     m_rpcMapper.insert("listNodes",         &QkAPIHandler::rpc_listNodes);
     m_rpcMapper.insert("node",              &QkAPIHandler::rpc_node);
     m_rpcMapper.insert("nodeComm",          &QkAPIHandler::rpc_comm);
@@ -248,15 +258,13 @@ void QkAPIHandler::create()
     m_rpcMapper.insert("samplingInfo",      &QkAPIHandler::rpc_samplingInfo);
     m_rpcMapper.insert("samplingFrequency", &QkAPIHandler::rpc_samplingFrequency);
     m_rpcMapper.insert("samplingMode",      &QkAPIHandler::rpc_samplingMode);
+    m_rpcMapper.insert("data",              &QkAPIHandler::rpc_data);
+    m_rpcMapper.insert("listEvents",        &QkAPIHandler::rpc_events);
+    m_rpcMapper.insert("listActions",       &QkAPIHandler::rpc_actions);
+    m_rpcMapper.insert("action",            &QkAPIHandler::rpc_action);
     m_rpcMapper.insert("update",            &QkAPIHandler::rpc_update);
-    m_rpcMapper.insert("listCmds",          &QkAPIHandler::rpc_listCmds);
-    m_rpcMapper.insert("search",            &QkAPIHandler::rpc_search);
-    m_rpcMapper.insert("start",             &QkAPIHandler::rpc_start);
-    m_rpcMapper.insert("stop",              &QkAPIHandler::rpc_stop);
-    m_rpcMapper.insert("listSubscriptions", &QkAPIHandler::rpc_listSubscriptions);
-    m_rpcMapper.insert("subData",           &QkAPIHandler::rpc_subData);
-    m_rpcMapper.insert("subEvent",          &QkAPIHandler::rpc_subEvent);
-    m_rpcMapper.insert("subDebug",          &QkAPIHandler::rpc_subDebug);
+
+
 }
 
 QJsonObject QkAPIHandler::create_object_conn(int connID)
@@ -280,9 +288,8 @@ QJsonObject QkAPIHandler::create_object_conn(int connID)
     return mainObj;
 }
 
-QJsonObject QkAPIHandler::create_object_node(int address, bool insertAddress)
+QJsonObject QkAPIHandler::create_object_node(QkConnection *conn, int address, bool insertAddress)
 {
-    QkConnection *conn = m_connManager->defaultConnection();
     QkNode *node = conn->qk()->node(address);
 
     QJsonObject mainObj, commObj, deviceObj;
@@ -381,14 +388,14 @@ QJsonObject QkAPIHandler::rpc_conn(RPCArgs *args)
 
     bool ok;
     QString parsedValueStr;
-    parsedValueStr = args->parsed->value("{connID}").toString();
+    parsedValueStr = args->parsed->value("{conn_id}").toString();
     int connID = parsedValueStr.toInt(&ok);
     if(!ok)
-        return rpc_error(RPCError_Qk, tr("Invalid connID: ") + parsedValueStr);
+        return rpc_error(RPCError_Qk, tr("Invalid connection ID: ") + parsedValueStr);
 
     QkConnection *conn = m_connManager->connection(connID);
     if(conn == 0)
-        return rpc_error(RPCError_Qk, tr("Invalid connID: ") + parsedValueStr);
+        return rpc_error(RPCError_Qk, tr("Invalid connection ID: ") + parsedValueStr);
 
     QJsonObject obj;
     QJsonObject connObj;
@@ -409,7 +416,8 @@ QJsonObject QkAPIHandler::rpc_listNodes(RPCArgs *args)
     if(!check_rpc_connection(&errObj))
         return errObj;
 
-    QkConnection *conn = m_connManager->defaultConnection();
+    int conn_id = args->parsed->value("{conn_id}").toInt();
+    QkConnection *conn = m_connManager->connections()[conn_id];
 
     QJsonObject nodesObj;
     QJsonObject nodeObj;
@@ -418,7 +426,7 @@ QJsonObject QkAPIHandler::rpc_listNodes(RPCArgs *args)
 
     foreach(int address, addressList)
     {
-        nodeObj = create_object_node(address, false);
+        nodeObj = create_object_node(conn, address, false);
         nodesObj.insert(QString::number(address), QJsonObject(nodeObj));
     }
     mainObj.insert("nodes", QJsonValue(nodesObj));
@@ -439,8 +447,11 @@ QJsonObject QkAPIHandler::rpc_node(RPCArgs *args)
     if(!validate_rpc_node(&errObj, args))
         return errObj;
 
+    int conn_id = args->parsed->value("{conn_id}").toInt();
+    QkConnection *conn = m_connManager->connections()[conn_id];
+
     int addr =  args->parsed->value("{addr}").toInt();
-    nodeObj = create_object_node(addr);
+    nodeObj = create_object_node(conn, addr);
     mainObj.insert("node", QJsonValue(nodeObj));
 
     return mainObj;
@@ -561,6 +572,26 @@ QJsonObject QkAPIHandler::rpc_samplingMode(RPCArgs *args)
     return rpc_result(0);
 }
 
+QJsonObject QkAPIHandler::rpc_data(RPCArgs *args)
+{
+
+}
+
+QJsonObject QkAPIHandler::rpc_events(RPCArgs *args)
+{
+
+}
+
+QJsonObject QkAPIHandler::rpc_actions(RPCArgs *args)
+{
+
+}
+
+QJsonObject QkAPIHandler::rpc_action(RPCArgs *args)
+{
+
+}
+
 QJsonObject QkAPIHandler::rpc_update(RPCArgs *args)
 {
     qDebug() << "rpc_update";
@@ -652,8 +683,11 @@ QJsonObject QkAPIHandler::rpc_start(RPCArgs *args)
     if(!check_rpc_connection(&errObj))
         return errObj;
 
-    QkConnection *defaultConn = m_connManager->defaultConnection();
-    QkAck ack = QkAck::fromInt(defaultConn->qk()->start());
+//    QkConnection *defaultConn = m_connManager->defaultConnection();
+    int conn_id = args->parsed->value("{conn_id}").toInt();
+    QkConnection *conn = m_connManager->connections()[conn_id];
+
+    QkAck ack = QkAck::fromInt(conn->qk()->start());
     if(ack.result == QkAck::OK)
         return rpc_result(0);
     else
@@ -667,8 +701,11 @@ QJsonObject QkAPIHandler::rpc_stop(RPCArgs *args)
     if(!check_rpc_connection(&errObj))
         return errObj;
 
-    QkConnection *defaultConn = m_connManager->defaultConnection();
-    QkAck ack = QkAck::fromInt(defaultConn->qk()->stop());
+//    QkConnection *defaultConn = m_connManager->defaultConnection();
+    int conn_id = args->parsed->value("{conn_id}").toInt();
+    QkConnection *conn = m_connManager->connections()[conn_id];
+
+    QkAck ack = QkAck::fromInt(conn->qk()->stop());
     if(ack.result == QkAck::OK)
         return rpc_result(0);
     else
@@ -695,9 +732,9 @@ QJsonObject QkAPIHandler::rpc_listSubscriptions(RPCArgs *args)
     return obj;
 }
 
-QJsonObject QkAPIHandler::rpc_subData(RPCArgs *args)
+QJsonObject QkAPIHandler::rpc_subscribeData(RPCArgs *args)
 {
-    qDebug() << "rpc_subData";
+    qDebug() << __FUNCTION__;
     qDebug() << *(args->parsed);
     qDebug() << *(args->params);
 
@@ -710,9 +747,9 @@ QJsonObject QkAPIHandler::rpc_subData(RPCArgs *args)
     return rpc_result(0);
 }
 
-QJsonObject QkAPIHandler::rpc_subEvent(RPCArgs *args)
+QJsonObject QkAPIHandler::rpc_subscribeEvent(RPCArgs *args)
 {
-    qDebug() << "rpc_subEvent";
+    qDebug() << __FUNCTION__;
     qDebug() << *(args->parsed);
     qDebug() << *(args->params);
 
@@ -725,9 +762,9 @@ QJsonObject QkAPIHandler::rpc_subEvent(RPCArgs *args)
     return rpc_result(0);
 }
 
-QJsonObject QkAPIHandler::rpc_subDebug(RPCArgs *args)
+QJsonObject QkAPIHandler::rpc_subscribeDebug(RPCArgs *args)
 {
-    qDebug() << "rpc_subDebug";
+    qDebug() << __FUNCTION__;
     qDebug() << *(args->parsed);
     qDebug() << *(args->params);
 
@@ -742,27 +779,16 @@ QJsonObject QkAPIHandler::rpc_subDebug(RPCArgs *args)
 #include "qkdevice.h"
 QJsonObject QkAPIHandler::rpc_rt_data(RPCArgsRT *args)
 {
-    qDebug() << "rpc_rt_data";
+    qDebug() << __FUNCTION__;
 
     QJsonObject obj;
 
-//    qDebug() << "conn" << args->conn;
-//    qDebug() << "qk" << args->conn->qk();
-
-//    QkNode *node = args->conn->qk()->node(args->address);
-
-//    qDebug() << "node" << node << args->address;
-
-//    QkDevice *device = node->device();
-//    qDebug() << "device" << device << args->address;
-
-//    QVector<QkDevice::Data> data = device->data();
     QkDevice::DataArray *dataArray = args->dataArray;
 
     QJsonObject dataObj, valueObj;
     QJsonArray valuesArray;
 
-    dataObj.insert("connID", QJsonValue(args->connID));
+    dataObj.insert("conn_id", QJsonValue(args->connID));
     dataObj.insert("address", QJsonValue(args->address));
     int i;
     for(i = 0; i < dataArray->count(); i++)
@@ -788,7 +814,7 @@ QJsonObject QkAPIHandler::rpc_rt_event(RPCArgsRT *args)
     QJsonObject eventObj;
     QJsonArray argsArray;
 
-    eventObj.insert("connID", QJsonValue(args->connID));
+    eventObj.insert("conn_id", QJsonValue(args->connID));
     eventObj.insert("address", QJsonValue(args->address));
     eventObj.insert("label", QJsonValue(event->label()));
     eventObj.insert("message", QJsonValue(event->message()));
@@ -812,7 +838,7 @@ QJsonObject QkAPIHandler::rpc_rt_debug(RPCArgsRT *args)
 
     QJsonObject debugObj;
 
-    debugObj.insert("connID", QJsonValue(args->connID));
+    debugObj.insert("conn_id", QJsonValue(args->connID));
     debugObj.insert("address", QJsonValue(args->address));
     debugObj.insert("message", QJsonValue(args->text));
 

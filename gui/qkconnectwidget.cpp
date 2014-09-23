@@ -78,6 +78,8 @@ void QkConnectWidget::setupLayout()
 
     header->setSortIndicatorShown(false);
 
+//    table->verticalHeader()->setHidden(false);
+
     table->setColumnWidth(ColumnConnType, 80);
     table->setColumnWidth(ColumnParam1, 80);
     table->setColumnWidth(ColumnOpenClose, 100);

@@ -115,7 +115,7 @@ private:
     QJsonObject run(const QString &methodName, const QString &path, QVariantList params);
 
     QJsonObject create_object_conn(int connID);
-    QJsonObject create_object_node(int address = 0, bool insertAddress = true);
+    QJsonObject create_object_node(QkConnection *conn, int address = 0, bool insertAddress = true);
     QJsonObject create_object_samplingInfo(int address);
 
 
@@ -124,6 +124,14 @@ private:
     QJsonObject rpc_listQk(RPCArgs *args);
     QJsonObject rpc_listConns(RPCArgs *args);
     QJsonObject rpc_conn(RPCArgs *args);
+    QJsonObject rpc_listSubscriptions(RPCArgs *args);
+    QJsonObject rpc_subscribeData(RPCArgs *args);
+    QJsonObject rpc_subscribeEvent(RPCArgs *args);
+    QJsonObject rpc_subscribeDebug(RPCArgs *args);
+    QJsonObject rpc_listCmds(RPCArgs *args);
+    QJsonObject rpc_search(RPCArgs *args);
+    QJsonObject rpc_start(RPCArgs *args);
+    QJsonObject rpc_stop(RPCArgs *args);
     QJsonObject rpc_listNodes(RPCArgs *args);
     QJsonObject rpc_node(RPCArgs *args);
     QJsonObject rpc_comm(RPCArgs *args);
@@ -134,15 +142,12 @@ private:
     QJsonObject rpc_samplingInfo(RPCArgs *args);
     QJsonObject rpc_samplingFrequency(RPCArgs *args);
     QJsonObject rpc_samplingMode(RPCArgs *args);
+    QJsonObject rpc_data(RPCArgs *args);
+    QJsonObject rpc_events(RPCArgs *args);
+    QJsonObject rpc_actions(RPCArgs *args);
+    QJsonObject rpc_action(RPCArgs *args);
     QJsonObject rpc_update(RPCArgs *args);
-    QJsonObject rpc_listCmds(RPCArgs *args);
-    QJsonObject rpc_search(RPCArgs *args);
-    QJsonObject rpc_start(RPCArgs *args);
-    QJsonObject rpc_stop(RPCArgs *args);
-    QJsonObject rpc_listSubscriptions(RPCArgs *args);
-    QJsonObject rpc_subData(RPCArgs *args);
-    QJsonObject rpc_subEvent(RPCArgs *args);
-    QJsonObject rpc_subDebug(RPCArgs *args);
+
 
     // Real-time (sent when subscribed)
     QJsonObject rpc_rt_data(RPCArgsRT *args);
