@@ -11,7 +11,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets serialport printsupport
 TARGET = qkdaemon
 TEMPLATE = app
 
+unix {
 QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN/../shared/lib/\',-z,origin'
+}
 
 #DEFINES += QT_NO_DEBUG_OUTPUT
 
