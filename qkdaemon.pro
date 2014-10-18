@@ -23,16 +23,16 @@ INCLUDEPATH += gui/widgets
 INCLUDEPATH += ../utils
 
 INCLUDEPATH += ../qkcore
-QMAKE_LIBDIR += ../qkcore/release
-LIBS += -L../qkcore/release -lqkcore
+QMAKE_LIBDIR += /home/$$(USER)/qkthings_local/build/qt/qkcore/release
+LIBS += -L/home/$$(USER)/qkthings_local/build/qt/qkcore/release -lqkcore
 
 INCLUDEPATH += ../qkapi/qt
-QMAKE_LIBDIR += ../qkapi/qt/release
-LIBS += -L../qkapi/qt/release -lqkapi
+QMAKE_LIBDIR += /home/$$(USER)/qkthings_local/build/qt/qkapi/release
+LIBS += -L/home/$$(USER)/qkthings_local/build/qt/qkapi/release -lqkapi
 
 INCLUDEPATH += ../qkwidget
-QMAKE_LIBDIR += ../qkwidget/release
-LIBS += -L../qkwidget/release -lqkwidget
+QMAKE_LIBDIR += /home/$$(USER)/qkthings_local/build/qt/qkwidget/release
+LIBS += -L/home/$$(USER)/qkthings_local/build/qt/qkwidget/release -lqkwidget
 
 #CONFIG += extserialport
 
@@ -88,7 +88,7 @@ MOC_DIR = build/moc
 RCC_DIR = build/rcc
 UI_DIR = build/ui
 
-deploy.commands = python deploy.py
+#deploy.commands = python deploy.py
 
-QMAKE_EXTRA_TARGETS += deploy
-POST_TARGETDEPS += deploy
+#QMAKE_EXTRA_TARGETS += deploy
+#POST_TARGETDEPS += deploy
