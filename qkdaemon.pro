@@ -13,6 +13,9 @@ TEMPLATE = app
 
 unix {
 QMAKE_LFLAGS += '-Wl,-rpath,\'\$$ORIGIN/../shared/lib/\',-z,origin'
+QMAKE_RPATHDIR += /home/$$(USER)/qkthings_local/build/qt/qkcore/release
+QMAKE_RPATHDIR += /home/$$(USER)/qkthings_local/build/qt/qkapi/release
+QMAKE_RPATHDIR += /home/$$(USER)/qkthings_local/build/qt/qkwidget/release
 }
 
 #DEFINES += QT_NO_DEBUG_OUTPUT
