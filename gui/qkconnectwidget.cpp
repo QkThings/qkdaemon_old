@@ -153,54 +153,6 @@ void QkConnectWidget::fillRow(int row, QkConnection *conn)
 void QkConnectWidget::slotOpenCloseConnection()
 {   
     qDebug() << __FUNCTION__;
-//    pToolButton *button = reinterpret_cast<pToolButton*>(sender());
-
-//    pTableWidget *table = ui->connectionsTable;
-//    int r = table->currentRow();
-
-//    QkConnection::Descriptor connDesc;
-
-//    //connDesc.type = QkConnection::typeFromString(table->item(r, ColumnConnType)->text());
-//    connDesc.params.append(table->item(r, ColumnParam1)->text());
-//    connDesc.params.append(table->item(r, ColumnParam2)->text());
-
-//    QkConnection *conn = m_connManager->connection(connDesc);
-//    QSerialPort *sp;
-
-//    qDebug() << "conn->descriptor().type" << conn->descriptor().type;
-//    switch(conn->descriptor().type)
-//    {
-//    case QkConnection::ctSerial:
-//        sp = (QSerialPort*)(conn->device());
-//        if(sp->isOpen())
-//        {
-//            sp->close();
-//            button->setText(tr("Disconnected"));
-//        }
-//        else
-//        {
-//            sp->setPortName(connDesc.params.at(0));
-//            QSerialPort::BaudRate baudRate;
-//            switch(connDesc.params.at(1).toInt())
-//            {
-//            case 9600: baudRate = QSerialPort::Baud9600; break;
-//            case 38400: baudRate = QSerialPort::Baud38400; break;
-//            case 115200: baudRate = QSerialPort::Baud115200; break;
-//            default:
-//                qDebug() << "Unable to set desired baud rate:" << connDesc.params.at(1);
-//            }
-
-//            sp->setBaudRate(baudRate);
-//            if(sp->open(QIODevice::ReadWrite)) {
-//                button->setText(tr("Connected"));
-//            }
-//            else
-//                qDebug() << sp->errorString() << sp->portName() << sp->baudRate();
-//        }
-//        break;
-//    default: ;
-//    }
-
 }
 
 void QkConnectWidget::slotAddConnection()
@@ -214,6 +166,7 @@ void QkConnectWidget::slotAddConnection()
         desc.type = QkConnection::tSerial;
         desc.parameters.insert("portName", ui->serialPort_portName_combo->currentText());
         desc.parameters.insert("baudRate", ui->serialPort_baudRate_combo->currentText().toInt());
+        desc.parameters.insert("bootPol", ui->checkBootPol->isChecked());
         break;
     default: ;
     }

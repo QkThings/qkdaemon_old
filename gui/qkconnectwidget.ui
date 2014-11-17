@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>508</width>
-    <height>75</height>
+    <height>77</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -136,6 +136,13 @@
          </item>
          <item>
           <widget class="QComboBox" name="serialPort_baudRate_combo"/>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="checkBootPol">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
