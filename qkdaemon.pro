@@ -62,7 +62,8 @@ SOURCES += main.cpp\
     core/qkdaemonserver.cpp \
     core/qkdaemonsocket.cpp \
     core/qkapihandler.cpp \
-    gui/messagesdialog.cpp
+    gui/messagesdialog.cpp \
+    ../utils/qkgui.cpp
 
 HEADERS  += gui/mainwindow.h \
     core/qkdaemon.h \
@@ -76,7 +77,8 @@ HEADERS  += gui/mainwindow.h \
     core/qkdaemonsocket.h \
     core/qkapihandler.h \
     gui/messagesdialog.h \
-    gui/gui_globals.h
+    gui/gui_globals.h \
+    ../utils/qkgui.h
 
 FORMS    += gui/mainwindow.ui \
     gui/qkdaemonwidget.ui \
@@ -87,7 +89,8 @@ FORMS    += gui/mainwindow.ui \
 RESOURCES += \
     resources/api/qkdaemon_api.qrc \
     resources/icons/qkdaemon_icons.qrc \
-    resources/img/qkdaemon_img.qrc
+    resources/img/qkdaemon_img.qrc \
+    resources/img.qrc
 
 #RC_ICONS = resources/img/qk_64.png
 
